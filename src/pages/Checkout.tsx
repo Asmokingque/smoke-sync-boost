@@ -205,22 +205,14 @@ const Checkout = () => {
           <aside className="bg-charcoal-light border border-border rounded-lg p-6 h-fit lg:sticky lg:top-24">
             <h2 className="font-display text-2xl mb-4 tracking-wider">Order Summary</h2>
             <ul className="space-y-3 mb-6 max-h-96 overflow-auto pr-2">
-              {items.map((i) => {
+              {items.map((i, idx) => {
                 const opts = i.selectedOptions ?? [];
                 const optionsTotal = opts.reduce((s, o) => s + Number(o.price_adjustment ?? 0), 0);
                 const basePrice = i.price - optionsTotal;
-                const lineTotal = Math.max(0, i.price * i.quantity);
-                // Per-line discount: percent applies directly; fixed is allocated proportionally.
-                // Clamp to lineTotal so a line can never go negative.
-                const rawLineDiscount = promo
-                  ? promo.type === "percent"
-                    ? lineTotal * discountRate
-                    : sub > 0
-                    ? (lineTotal / sub) * fixedDiscount
-                    : 0
-                  : 0;
-                const lineDiscount = Math.min(Math.max(rawLineDiscount, 0), lineTotal);
-                const lineAfter = Math.max(0, lineTotal - lineDiscount);
+                const alloc = breakdown.lines[idx] ?? { lineTotal: i.price * i.quantity, lineDiscount: 0, lineAfter: i.price * i.quantity };
+                const lineTotal = alloc.lineTotal;
+                const lineDiscount = alloc.lineDiscount;
+                const lineAfter = alloc.lineAfter;
                 return (
                   <li key={i.id} className="border-b border-border/40 pb-3">
                     <div className="flex justify-between gap-2 mb-1">
