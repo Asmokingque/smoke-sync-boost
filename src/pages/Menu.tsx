@@ -185,10 +185,19 @@ const Menu = () => {
                         <Button
                           onClick={() => handleAdd(item)}
                           className="w-full h-11 bg-primary hover:bg-primary/90 font-stencil text-sm"
-                          aria-label={`Add ${item.name} to cart`}
+                          aria-label={item.requires_options ? `Customize ${item.name}` : `Add ${item.name} to cart`}
                         >
-                          <Plus className="h-4 w-4" />
-                          Add to Cart
+                          {item.requires_options ? (
+                            <>
+                              <Settings2 className="h-4 w-4" />
+                              Customize
+                            </>
+                          ) : (
+                            <>
+                              <Plus className="h-4 w-4" />
+                              Add to Cart
+                            </>
+                          )}
                         </Button>
                       )}
                     </div>
@@ -200,6 +209,38 @@ const Menu = () => {
           ))
         )}
       </section>
+
+      <OptionsPickerDialog
+        open={!!pickerItem}
+        onOpenChange={(o) => !o && setPickerItem(null)}
+        item={
+          pickerItem
+            ? {
+                id: pickerItem.id,
+                name: pickerItem.name,
+                base_price: Number(pickerItem.price ?? 0),
+                allow_notes: pickerItem.allow_notes,
+              }
+            : null
+        }
+        onConfirm={({ selectedOptions, notes, finalUnitPrice, optionLabel }) => {
+          if (!pickerItem) return;
+          const variantHash = selectedOptions
+            .map((o) => `${o.group}:${o.name}`)
+            .join("|");
+          addItem({
+            id: `${pickerItem.id}__${variantHash}`,
+            menuItemId: pickerItem.id,
+            name: pickerItem.name,
+            price: finalUnitPrice,
+            priceLabel: optionLabel || pickerItem.price_label || undefined,
+            optionLabel,
+            selectedOptions,
+            notes: notes || undefined,
+          });
+          toast.success(`${pickerItem.name} added`, { duration: 1800 });
+        }}
+      />
     </SiteLayout>
   );
 };
