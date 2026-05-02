@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Loader2, ShoppingBag, Tag, X, Bug } from "lucide-react";
+import { Loader2, ShoppingBag, Tag, X, Bug, Download } from "lucide-react";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
 import { computeDiscount, buildSafeOrderTotals, type Promo } from "@/lib/promo";
@@ -44,6 +44,53 @@ const Checkout = () => {
     if (debugEnabled) next.delete("debug");
     else next.set("debug", "1");
     setSearchParams(next, { replace: true });
+  };
+
+  const exportDebugJson = () => {
+    const summed = breakdown.lines.reduce((s, l) => s + l.lineDiscount, 0);
+    const payload = {
+      generatedAt: new Date().toISOString(),
+      promo: promo
+        ? { code: promo.code, label: promo.label, type: promo.type, value: promo.value }
+        : null,
+      taxRate: TAX_RATE,
+      items: items.map((i, idx) => ({
+        index: idx,
+        name: i.name,
+        unitPrice: i.price,
+        quantity: i.quantity,
+        optionLabel: i.optionLabel ?? null,
+        notes: i.notes ?? null,
+        selectedOptions: i.selectedOptions ?? [],
+        allocation: breakdown.lines[idx] ?? null,
+      })),
+      totals: {
+        subtotal: sub,
+        discount: discountAmount,
+        discountedSubtotal: discountedSub,
+        tax,
+        total,
+      },
+      invariants: {
+        sumOfLineDiscounts: summed,
+        driftFromDiscount: Math.abs(summed - discountAmount),
+        discountWithinSubtotal: discountAmount <= sub + 0.001,
+        allLinesNonNegative: breakdown.lines.every((l) => l.lineAfter >= 0),
+        taxNonNegative: tax >= 0,
+        totalNonNegative: total >= 0,
+      },
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    const stamp = new Date().toISOString().replace(/[:.]/g, "-");
+    a.href = url;
+    a.download = `checkout-debug-${stamp}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast.success("Debug breakdown exported");
   };
   const [form, setForm] = useState({
     customer_name: "",
@@ -378,15 +425,27 @@ const Checkout = () => {
 
             {/* Debug panel */}
             <div className="mt-4 pt-4 border-t border-border/40">
-              <button
-                type="button"
-                onClick={toggleDebug}
-                className="flex items-center gap-1.5 text-[11px] text-muted-foreground hover:text-foreground transition-colors"
-                aria-expanded={debugEnabled}
-              >
-                <Bug className="h-3 w-3" />
-                {debugEnabled ? "Hide" : "Show"} debug breakdown
-              </button>
+              <div className="flex items-center justify-between gap-2">
+                <button
+                  type="button"
+                  onClick={toggleDebug}
+                  className="flex items-center gap-1.5 text-[11px] text-muted-foreground hover:text-foreground transition-colors"
+                  aria-expanded={debugEnabled}
+                >
+                  <Bug className="h-3 w-3" />
+                  {debugEnabled ? "Hide" : "Show"} debug breakdown
+                </button>
+                {debugEnabled && (
+                  <button
+                    type="button"
+                    onClick={exportDebugJson}
+                    className="flex items-center gap-1.5 text-[11px] text-primary hover:text-primary/80 transition-colors"
+                  >
+                    <Download className="h-3 w-3" />
+                    Export JSON
+                  </button>
+                )}
+              </div>
 
               {debugEnabled && (
                 <div className="mt-3 rounded-md bg-background/60 border border-border/40 p-3 text-[11px] font-mono space-y-3">
