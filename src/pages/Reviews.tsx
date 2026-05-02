@@ -99,9 +99,9 @@ const Reviews = () => {
       if (file) {
         if (file.size > 5_000_000) throw new Error("Photo must be under 5 MB");
         const path = `${user.id}/${Date.now()}-${file.name.replace(/[^a-z0-9.-]/gi, "_")}`;
-        const { error: upErr } = await supabase.storage.from("review-photos").upload(path, file);
+        const { error: upErr } = await supabase.storage.from("experience-photos").upload(path, file);
         if (upErr) throw upErr;
-        const { data: pub } = supabase.storage.from("review-photos").getPublicUrl(path);
+        const { data: pub } = supabase.storage.from("experience-photos").getPublicUrl(path);
         photo_url = pub.publicUrl;
       }
 
