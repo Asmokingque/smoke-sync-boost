@@ -192,16 +192,18 @@ const Checkout = () => {
                 const opts = i.selectedOptions ?? [];
                 const optionsTotal = opts.reduce((s, o) => s + Number(o.price_adjustment ?? 0), 0);
                 const basePrice = i.price - optionsTotal;
-                const lineTotal = i.price * i.quantity;
-                // Per-line discount: percent applies directly; fixed is allocated proportionally
-                const lineDiscount = promo
+                const lineTotal = Math.max(0, i.price * i.quantity);
+                // Per-line discount: percent applies directly; fixed is allocated proportionally.
+                // Clamp to lineTotal so a line can never go negative.
+                const rawLineDiscount = promo
                   ? promo.type === "percent"
-                    ? lineTotal * promo.value
+                    ? lineTotal * discountRate
                     : sub > 0
                     ? (lineTotal / sub) * fixedDiscount
                     : 0
                   : 0;
-                const lineAfter = lineTotal - lineDiscount;
+                const lineDiscount = Math.min(Math.max(rawLineDiscount, 0), lineTotal);
+                const lineAfter = Math.max(0, lineTotal - lineDiscount);
                 return (
                   <li key={i.id} className="border-b border-border/40 pb-3">
                     <div className="flex justify-between gap-2 mb-1">
