@@ -48,6 +48,55 @@ const Checkout = () => {
 
   const exportDebugJson = () => {
     const summed = breakdown.lines.reduce((s, l) => s + l.lineDiscount, 0);
+
+    // Reproduce the exact server submission payload (without persisting).
+    const guard = buildSafeOrderTotals(
+      items.map((i) => ({ price: i.price, quantity: i.quantity })),
+      promo,
+      TAX_RATE
+    );
+    const safe = guard.ok === true ? guard.totals : null;
+    const guardError = guard.ok === true ? null : guard.error;
+
+    const orderInsert = safe
+      ? {
+          user_id: user?.id ?? null,
+          customer_name: form.customer_name,
+          customer_email: form.customer_email,
+          customer_phone: form.customer_phone,
+          pickup_time: form.pickup_time ? new Date(form.pickup_time).toISOString() : null,
+          notes:
+            [
+              form.notes,
+              promo ? `Promo: ${promo.code} (${promo.label}) −$${safe.discount.toFixed(2)}` : null,
+            ]
+              .filter(Boolean)
+              .join(" • ") || null,
+          subtotal: safe.subtotal,
+          tax: safe.tax,
+          total: safe.total,
+          status: "pending",
+          payment_status: "unpaid",
+        }
+      : null;
+
+    const orderItemsInsert = safe
+      ? items.map((i, idx) => {
+          const alloc = safe.lines[idx];
+          const lineTotal = alloc ? Math.max(0, alloc.lineAfter) : Math.max(0, i.price * i.quantity);
+          return {
+            order_id: "<assigned-after-order-insert>",
+            menu_item_id: i.menuItemId,
+            item_name: i.optionLabel ? `${i.name} — ${i.optionLabel}` : i.name,
+            unit_price: i.price,
+            quantity: i.quantity,
+            line_total: lineTotal,
+            selected_options: i.selectedOptions ?? [],
+            notes: i.notes ?? null,
+          };
+        })
+      : null;
+
     const payload = {
       generatedAt: new Date().toISOString(),
       promo: promo
@@ -78,6 +127,22 @@ const Checkout = () => {
         allLinesNonNegative: breakdown.lines.every((l) => l.lineAfter >= 0),
         taxNonNegative: tax >= 0,
         totalNonNegative: total >= 0,
+      },
+      serverPayload: {
+        guardOk: guard.ok,
+        guardError,
+        promoInputs: promo
+          ? { code: promo.code, type: promo.type, value: promo.value }
+          : null,
+        taxRate: TAX_RATE,
+        items: items.map((i) => ({
+          menuItemId: i.menuItemId,
+          unitPrice: i.price,
+          quantity: i.quantity,
+        })),
+        computedTotals: safe,
+        orderInsert,
+        orderItemsInsert,
       },
     };
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
