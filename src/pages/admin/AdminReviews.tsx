@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Star, Check, Trash2 } from "lucide-react";
+import { Loader2, Star, Check, Trash2, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
@@ -19,6 +19,11 @@ const AdminReviews = () => {
     const { error } = await supabase.from("reviews").update({ is_approved: true }).eq("id", id);
     if (error) return toast.error(error.message);
     toast.success("Approved"); fetch();
+  };
+  const hide = async (id: string) => {
+    const { error } = await supabase.from("reviews").update({ is_approved: false }).eq("id", id);
+    if (error) return toast.error(error.message);
+    toast.success("Hidden from wall"); fetch();
   };
   const remove = async (id: string) => {
     if (!confirm("Delete review?")) return;
@@ -50,9 +55,11 @@ const AdminReviews = () => {
               <p className="text-sm text-muted-foreground mb-2">{r.body}</p>
               {r.photo_url && <img src={r.photo_url} alt="" loading="lazy" className="w-full h-32 object-cover rounded mb-2" />}
               <div className="text-xs text-muted-foreground mb-3">— {r.author_name}</div>
-              <div className="flex gap-2">
-                {!r.is_approved && (
+              <div className="flex gap-2 flex-wrap">
+                {!r.is_approved ? (
                   <Button size="sm" onClick={() => approve(r.id)} className="bg-primary"><Check className="h-3.5 w-3.5" /> Approve</Button>
+                ) : (
+                  <Button size="sm" variant="outline" onClick={() => hide(r.id)}><EyeOff className="h-3.5 w-3.5" /> Hide</Button>
                 )}
                 <Button size="sm" variant="outline" onClick={() => remove(r.id)}><Trash2 className="h-3.5 w-3.5" /> Delete</Button>
               </div>
