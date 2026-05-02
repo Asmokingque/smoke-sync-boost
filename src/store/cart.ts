@@ -1,13 +1,22 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-export type CartItem = {
-  id: string;          // menu_item_id
+export type SelectedOption = {
+  group: string;
   name: string;
-  price: number;
+  price_adjustment: number;
+};
+
+export type CartItem = {
+  id: string;          // unique cart line id (menu_item_id + options hash)
+  menuItemId: string;  // original menu_items.id (for FK on order_items)
+  name: string;
+  price: number;       // unit price including option adjustments
   quantity: number;
   notes?: string;
   priceLabel?: string | null;
+  optionLabel?: string;
+  selectedOptions?: SelectedOption[];
 };
 
 type CartState = {
@@ -47,6 +56,6 @@ export const useCart = create<CartState>()(
       subtotal: () => get().items.reduce((sum, i) => sum + i.price * i.quantity, 0),
       itemCount: () => get().items.reduce((sum, i) => sum + i.quantity, 0),
     }),
-    { name: "asq-cart" }
+    { name: "asq-cart", version: 2 }
   )
 );
