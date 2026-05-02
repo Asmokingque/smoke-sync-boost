@@ -18,6 +18,16 @@ export function Footer() {
             Authentic southern barbecue, smoked low and slow over hardwood. Order online for pickup or
             book us for your next event.
           </p>
+          <a
+            href="https://www.facebook.com/people/Andersons-Smoking-Que"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 mt-4 text-sm text-muted-foreground hover:text-primary transition-colors"
+            aria-label="Follow Anderson's Smoking Que on Facebook"
+          >
+            <Facebook className="h-4 w-4" />
+            Follow us on Facebook
+          </a>
         </div>
 
         <div>
