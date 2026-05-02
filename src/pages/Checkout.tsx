@@ -119,7 +119,7 @@ const Checkout = () => {
       promo,
       TAX_RATE
     );
-    if (!guard.ok) {
+    if (guard.ok === false) {
       toast.error(`Order rejected: ${guard.error}`);
       return;
     }
