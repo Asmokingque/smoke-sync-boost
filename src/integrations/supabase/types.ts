@@ -14,8 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      business_settings: {
+        Row: {
+          created_at: string
+          id: string
+          setting_key: string
+          setting_value: Json
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          setting_key: string
+          setting_value: Json
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          setting_key?: string
+          setting_value?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
       catering_inquiries: {
         Row: {
+          budget_range: string | null
           created_at: string
           email: string
           event_date: string | null
@@ -30,6 +55,7 @@ export type Database = {
           status: string
         }
         Insert: {
+          budget_range?: string | null
           created_at?: string
           email: string
           event_date?: string | null
@@ -44,6 +70,7 @@ export type Database = {
           status?: string
         }
         Update: {
+          budget_range?: string | null
           created_at?: string
           email?: string
           event_date?: string | null
@@ -116,8 +143,50 @@ export type Database = {
         }
         Relationships: []
       }
+      menu_item_options: {
+        Row: {
+          created_at: string
+          display_order: number
+          id: string
+          is_required: boolean
+          menu_item_id: string
+          option_group: string
+          option_name: string
+          price_adjustment: number
+        }
+        Insert: {
+          created_at?: string
+          display_order?: number
+          id?: string
+          is_required?: boolean
+          menu_item_id: string
+          option_group: string
+          option_name: string
+          price_adjustment?: number
+        }
+        Update: {
+          created_at?: string
+          display_order?: number
+          id?: string
+          is_required?: boolean
+          menu_item_id?: string
+          option_group?: string
+          option_name?: string
+          price_adjustment?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "menu_item_options_menu_item_id_fkey"
+            columns: ["menu_item_id"]
+            isOneToOne: false
+            referencedRelation: "menu_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       menu_items: {
         Row: {
+          allow_notes: boolean
           category_id: string
           created_at: string
           description: string | null
@@ -129,9 +198,11 @@ export type Database = {
           price: number | null
           price_alt: number | null
           price_label: string | null
+          requires_options: boolean
           updated_at: string
         }
         Insert: {
+          allow_notes?: boolean
           category_id: string
           created_at?: string
           description?: string | null
@@ -143,9 +214,11 @@ export type Database = {
           price?: number | null
           price_alt?: number | null
           price_label?: string | null
+          requires_options?: boolean
           updated_at?: string
         }
         Update: {
+          allow_notes?: boolean
           category_id?: string
           created_at?: string
           description?: string | null
@@ -157,6 +230,7 @@ export type Database = {
           price?: number | null
           price_alt?: number | null
           price_label?: string | null
+          requires_options?: boolean
           updated_at?: string
         }
         Relationships: [
@@ -223,13 +297,21 @@ export type Database = {
           customer_email: string
           customer_name: string
           customer_phone: string
+          delivery_address: string | null
+          delivery_fee: number
           id: string
           notes: string | null
+          order_number: string | null
+          order_type: string
           payment_status: string
           pickup_time: string | null
+          service_fee: number
           status: Database["public"]["Enums"]["order_status"]
+          stripe_payment_intent_id: string | null
+          stripe_session_id: string | null
           subtotal: number
           tax: number
+          tip: number
           total: number
           updated_at: string
           user_id: string | null
@@ -239,13 +321,21 @@ export type Database = {
           customer_email: string
           customer_name: string
           customer_phone: string
+          delivery_address?: string | null
+          delivery_fee?: number
           id?: string
           notes?: string | null
+          order_number?: string | null
+          order_type?: string
           payment_status?: string
           pickup_time?: string | null
+          service_fee?: number
           status?: Database["public"]["Enums"]["order_status"]
+          stripe_payment_intent_id?: string | null
+          stripe_session_id?: string | null
           subtotal?: number
           tax?: number
+          tip?: number
           total?: number
           updated_at?: string
           user_id?: string | null
@@ -255,13 +345,21 @@ export type Database = {
           customer_email?: string
           customer_name?: string
           customer_phone?: string
+          delivery_address?: string | null
+          delivery_fee?: number
           id?: string
           notes?: string | null
+          order_number?: string | null
+          order_type?: string
           payment_status?: string
           pickup_time?: string | null
+          service_fee?: number
           status?: Database["public"]["Enums"]["order_status"]
+          stripe_payment_intent_id?: string | null
+          stripe_session_id?: string | null
           subtotal?: number
           tax?: number
+          tip?: number
           total?: number
           updated_at?: string
           user_id?: string | null
