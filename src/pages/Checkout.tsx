@@ -103,7 +103,7 @@ const Checkout = () => {
           customer_email: parsed.data.customer_email,
           customer_phone: parsed.data.customer_phone,
           pickup_time: parsed.data.pickup_time ? new Date(parsed.data.pickup_time).toISOString() : null,
-          notes: parsed.data.notes || null,
+          notes: [parsed.data.notes, promo ? `Promo: ${promo.code} (${promo.label})` : null].filter(Boolean).join(" • ") || null,
           subtotal: sub,
           tax,
           total,
