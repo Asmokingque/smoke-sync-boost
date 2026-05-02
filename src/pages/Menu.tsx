@@ -121,8 +121,19 @@ const Menu = () => {
                 {grouped[cat.id]?.map((item) => (
                   <article
                     key={item.id}
-                    className="bg-gradient-card border border-border rounded-lg p-5 flex flex-col gap-3 hover:border-primary/60 transition-colors"
+                    className="bg-gradient-card border border-border rounded-lg overflow-hidden flex flex-col hover:border-primary/60 transition-colors"
                   >
+                    {item.image_url && (
+                      <div className="aspect-[4/3] overflow-hidden bg-charcoal">
+                        <img
+                          src={item.image_url}
+                          alt={item.name}
+                          loading="lazy"
+                          className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                        />
+                      </div>
+                    )}
+                    <div className="p-5 flex flex-col gap-3 flex-1">
                     <div className="flex items-start justify-between gap-3">
                       <h3 className="font-stencil text-base text-foreground leading-tight">{item.name}</h3>
                       <div className="text-right shrink-0">
