@@ -195,6 +195,11 @@ export function OptionsPickerDialog({ open, onOpenChange, item, onConfirm }: Pro
                   <div className="grid grid-cols-2 gap-2">
                     {opts.map((o) => {
                       const selected = chosen.includes(o.option_name);
+                      const adj = Number(o.price_adjustment);
+                      const deltaLabel =
+                        adj > 0 ? `+$${adj.toFixed(2)}`
+                        : adj < 0 ? `−$${Math.abs(adj).toFixed(2)}`
+                        : "Included";
                       return (
                         <button
                           key={o.id}
@@ -206,12 +211,18 @@ export function OptionsPickerDialog({ open, onOpenChange, item, onConfirm }: Pro
                               : "border-border bg-background hover:border-primary/50 text-muted-foreground hover:text-foreground"
                           }`}
                         >
-                          <div className="font-stencil text-xs">{o.option_name}</div>
-                          {Number(o.price_adjustment) > 0 && (
-                            <div className="text-[11px] text-primary mt-0.5">
-                              +${Number(o.price_adjustment).toFixed(2)}
+                          <div className="flex items-baseline justify-between gap-2">
+                            <div className="font-stencil text-xs leading-tight">{o.option_name}</div>
+                            <div
+                              className={`text-[11px] font-stencil shrink-0 ${
+                                adj > 0 ? "text-primary"
+                                : adj < 0 ? "text-emerald-400"
+                                : selected ? "text-muted-foreground" : "text-muted-foreground/60"
+                              }`}
+                            >
+                              {deltaLabel}
                             </div>
-                          )}
+                          </div>
                         </button>
                       );
                     })}
@@ -243,19 +254,32 @@ export function OptionsPickerDialog({ open, onOpenChange, item, onConfirm }: Pro
           </div>
         )}
 
-        <DialogFooter className="sm:justify-between gap-2 mt-2">
-          <div className="text-sm text-muted-foreground">
-            <div className="font-display text-xl text-primary leading-none">
-              ${finalUnitPrice.toFixed(2)}
+        <DialogFooter className="sm:justify-between gap-3 mt-2 border-t border-border pt-4">
+          <div className="text-sm">
+            <div className="space-y-0.5 text-xs text-muted-foreground">
+              <div className="flex justify-between gap-6">
+                <span>Base</span>
+                <span>${(item?.base_price ?? 0).toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between gap-6">
+                <span>Options</span>
+                <span className={summary.adj > 0 ? "text-primary" : summary.adj < 0 ? "text-emerald-400" : ""}>
+                  {summary.adj > 0 ? "+" : summary.adj < 0 ? "−" : ""}
+                  ${Math.abs(summary.adj).toFixed(2)}
+                </span>
+              </div>
             </div>
-            {summary.adj > 0 && (
-              <div className="text-[11px] mt-1">includes +${summary.adj.toFixed(2)} options</div>
-            )}
+            <div className="flex justify-between gap-6 mt-1 pt-1 border-t border-border/50">
+              <span className="font-stencil text-xs">Total</span>
+              <span className="font-display text-xl text-primary leading-none">
+                ${finalUnitPrice.toFixed(2)}
+              </span>
+            </div>
           </div>
           <Button
             onClick={handleConfirm}
             disabled={loading}
-            className="bg-primary hover:bg-primary/90 font-stencil"
+            className="bg-primary hover:bg-primary/90 font-stencil h-11 px-5"
           >
             <Plus className="h-4 w-4" /> Add to Cart
           </Button>
