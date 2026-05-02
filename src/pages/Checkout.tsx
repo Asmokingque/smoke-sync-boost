@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Loader2, ShoppingBag } from "lucide-react";
+import { Loader2, ShoppingBag, Tag, X } from "lucide-react";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
 
@@ -23,11 +23,20 @@ const schema = z.object({
 
 const TAX_RATE = 0.07;
 
+type Promo = { code: string; label: string; type: "percent" | "fixed"; value: number };
+const PROMOS: Promo[] = [
+  { code: "SMOKE10", label: "10% off", type: "percent", value: 0.1 },
+  { code: "BBQ20", label: "20% off", type: "percent", value: 0.2 },
+  { code: "PITMASTER5", label: "$5 off order", type: "fixed", value: 5 },
+];
+
 const Checkout = () => {
   const { items, subtotal, clear } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [submitting, setSubmitting] = useState(false);
+  const [promoInput, setPromoInput] = useState("");
+  const [promo, setPromo] = useState<Promo | null>(null);
   const [form, setForm] = useState({
     customer_name: "",
     customer_email: user?.email ?? "",
@@ -37,8 +46,29 @@ const Checkout = () => {
   });
 
   const sub = subtotal();
-  const tax = sub * TAX_RATE;
-  const total = sub + tax;
+  const discountRate = promo?.type === "percent" ? promo.value : 0;
+  const fixedDiscount = promo?.type === "fixed" ? Math.min(promo.value, sub) : 0;
+  const discountAmount = promo?.type === "percent" ? sub * promo.value : fixedDiscount;
+  const discountedSub = Math.max(0, sub - discountAmount);
+  const tax = discountedSub * TAX_RATE;
+  const total = discountedSub + tax;
+
+  const applyPromo = () => {
+    const code = promoInput.trim().toUpperCase();
+    if (!code) return;
+    const found = PROMOS.find((p) => p.code === code);
+    if (!found) {
+      toast.error("Invalid promo code");
+      return;
+    }
+    setPromo(found);
+    toast.success(`Promo applied: ${found.label}`);
+  };
+
+  const removePromo = () => {
+    setPromo(null);
+    setPromoInput("");
+  };
 
   if (items.length === 0) {
     return (
@@ -73,7 +103,7 @@ const Checkout = () => {
           customer_email: parsed.data.customer_email,
           customer_phone: parsed.data.customer_phone,
           pickup_time: parsed.data.pickup_time ? new Date(parsed.data.pickup_time).toISOString() : null,
-          notes: parsed.data.notes || null,
+          notes: [parsed.data.notes, promo ? `Promo: ${promo.code} (${promo.label})` : null].filter(Boolean).join(" • ") || null,
           subtotal: sub,
           tax,
           total,
@@ -161,11 +191,29 @@ const Checkout = () => {
                 const optionsTotal = opts.reduce((s, o) => s + Number(o.price_adjustment ?? 0), 0);
                 const basePrice = i.price - optionsTotal;
                 const lineTotal = i.price * i.quantity;
+                // Per-line discount: percent applies directly; fixed is allocated proportionally
+                const lineDiscount = promo
+                  ? promo.type === "percent"
+                    ? lineTotal * promo.value
+                    : sub > 0
+                    ? (lineTotal / sub) * fixedDiscount
+                    : 0
+                  : 0;
+                const lineAfter = lineTotal - lineDiscount;
                 return (
                   <li key={i.id} className="border-b border-border/40 pb-3">
                     <div className="flex justify-between gap-2 mb-1">
                       <div className="font-stencil text-sm">{i.name}</div>
-                      <div className="font-display text-base text-primary shrink-0">${lineTotal.toFixed(2)}</div>
+                      <div className="text-right shrink-0">
+                        {lineDiscount > 0 ? (
+                          <>
+                            <div className="text-[11px] text-muted-foreground line-through">${lineTotal.toFixed(2)}</div>
+                            <div className="font-display text-base text-primary">${lineAfter.toFixed(2)}</div>
+                          </>
+                        ) : (
+                          <div className="font-display text-base text-primary">${lineTotal.toFixed(2)}</div>
+                        )}
+                      </div>
                     </div>
 
                     {opts.length > 0 ? (
@@ -211,12 +259,78 @@ const Checkout = () => {
                       <span>${i.price.toFixed(2)} × {i.quantity}</span>
                       {opts.length === 0 && i.priceLabel && <span>{i.priceLabel}</span>}
                     </div>
+
+                    {lineDiscount > 0 && (
+                      <div className="flex justify-between text-[11px] text-emerald-400 mt-0.5">
+                        <span>Promo {promo?.code} {promo?.type === "percent" ? `(−${Math.round(discountRate * 100)}%)` : "(allocated)"}</span>
+                        <span>−${lineDiscount.toFixed(2)}</span>
+                      </div>
+                    )}
                   </li>
                 );
               })}
             </ul>
+
+            {/* Promo code */}
+            <div className="border-t border-border pt-4 mb-4">
+              <Label htmlFor="promo" className="flex items-center gap-1.5 mb-2 text-xs uppercase tracking-wider text-muted-foreground">
+                <Tag className="h-3.5 w-3.5" /> Promo Code
+              </Label>
+              {promo ? (
+                <div className="flex items-center justify-between gap-2 rounded-md border border-emerald-500/40 bg-emerald-500/10 px-3 py-2">
+                  <div className="text-sm">
+                    <span className="font-stencil text-emerald-400">{promo.code}</span>
+                    <span className="text-muted-foreground ml-2 text-xs">{promo.label}</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={removePromo}
+                    className="text-muted-foreground hover:text-foreground"
+                    aria-label="Remove promo"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+              ) : (
+                <div className="flex gap-2">
+                  <Input
+                    id="promo"
+                    value={promoInput}
+                    onChange={(e) => setPromoInput(e.target.value)}
+                    placeholder="Enter code"
+                    className="h-10 uppercase"
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        applyPromo();
+                      }
+                    }}
+                  />
+                  <Button type="button" variant="outline" onClick={applyPromo} className="h-10 font-stencil">
+                    Apply
+                  </Button>
+                </div>
+              )}
+              <p className="text-[10px] text-muted-foreground/60 mt-1.5">Try SMOKE10, BBQ20, or PITMASTER5</p>
+            </div>
+
             <div className="space-y-1.5 text-sm border-t border-border pt-4">
-              <div className="flex justify-between"><span>Subtotal</span><span>${sub.toFixed(2)}</span></div>
+              <div className="flex justify-between">
+                <span>Subtotal</span>
+                <span>${sub.toFixed(2)}</span>
+              </div>
+              {promo && discountAmount > 0 && (
+                <div className="flex justify-between text-emerald-400">
+                  <span>Discount ({promo.code})</span>
+                  <span>−${discountAmount.toFixed(2)}</span>
+                </div>
+              )}
+              {promo && discountAmount > 0 && (
+                <div className="flex justify-between text-muted-foreground">
+                  <span>Subtotal after discount</span>
+                  <span>${discountedSub.toFixed(2)}</span>
+                </div>
+              )}
               <div className="flex justify-between text-muted-foreground"><span>Tax (7%)</span><span>${tax.toFixed(2)}</span></div>
               <div className="flex justify-between text-lg font-display tracking-wider pt-2">
                 <span>Total</span>
