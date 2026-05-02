@@ -32,7 +32,13 @@ export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange
                   <li key={item.id} className="flex gap-3 pb-4 border-b border-border/50">
                     <div className="flex-1 min-w-0">
                       <div className="font-stencil text-sm text-foreground">{item.name}</div>
-                      {item.priceLabel && <div className="text-xs text-muted-foreground">{item.priceLabel}</div>}
+                      {item.optionLabel && (
+                        <div className="text-[11px] text-muted-foreground mt-0.5 leading-snug">{item.optionLabel}</div>
+                      )}
+                      {item.notes && (
+                        <div className="text-[11px] italic text-muted-foreground/80 mt-0.5">Note: {item.notes}</div>
+                      )}
+                      {item.priceLabel && !item.optionLabel && <div className="text-xs text-muted-foreground">{item.priceLabel}</div>}
                       <div className="text-sm text-primary mt-1">${item.price.toFixed(2)}</div>
                     </div>
                     <div className="flex flex-col items-end gap-2">
