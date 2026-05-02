@@ -23,11 +23,20 @@ const schema = z.object({
 
 const TAX_RATE = 0.07;
 
+type Promo = { code: string; label: string; type: "percent" | "fixed"; value: number };
+const PROMOS: Promo[] = [
+  { code: "SMOKE10", label: "10% off", type: "percent", value: 0.1 },
+  { code: "BBQ20", label: "20% off", type: "percent", value: 0.2 },
+  { code: "PITMASTER5", label: "$5 off order", type: "fixed", value: 5 },
+];
+
 const Checkout = () => {
   const { items, subtotal, clear } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [submitting, setSubmitting] = useState(false);
+  const [promoInput, setPromoInput] = useState("");
+  const [promo, setPromo] = useState<Promo | null>(null);
   const [form, setForm] = useState({
     customer_name: "",
     customer_email: user?.email ?? "",
@@ -37,8 +46,29 @@ const Checkout = () => {
   });
 
   const sub = subtotal();
-  const tax = sub * TAX_RATE;
-  const total = sub + tax;
+  const discountRate = promo?.type === "percent" ? promo.value : 0;
+  const fixedDiscount = promo?.type === "fixed" ? Math.min(promo.value, sub) : 0;
+  const discountAmount = promo?.type === "percent" ? sub * promo.value : fixedDiscount;
+  const discountedSub = Math.max(0, sub - discountAmount);
+  const tax = discountedSub * TAX_RATE;
+  const total = discountedSub + tax;
+
+  const applyPromo = () => {
+    const code = promoInput.trim().toUpperCase();
+    if (!code) return;
+    const found = PROMOS.find((p) => p.code === code);
+    if (!found) {
+      toast.error("Invalid promo code");
+      return;
+    }
+    setPromo(found);
+    toast.success(`Promo applied: ${found.label}`);
+  };
+
+  const removePromo = () => {
+    setPromo(null);
+    setPromoInput("");
+  };
 
   if (items.length === 0) {
     return (
