@@ -10,91 +10,111 @@
 
 @layer base {
   :root {
+    /* === Anderson's Smoking Que brand palette ===
+       Source hex (do not change without brand approval):
+       --bbq-black:#090909  --bbq-charcoal:#1B1B1B  --bbq-smoke-dark:#2B2B2B
+       --bbq-smoke:#494949  --bbq-steel-gray:#6A6A6A --bbq-white:#FEFEFE
+       --bbq-bone:#E8E8E8   --bbq-silver:#D1D2D3
+       --bbq-crimson:#93160C --bbq-deep-red:#6E1D17 --bbq-ember:#BD0F24
+       All values stored as HSL components for Tailwind. */
+
+    --bbq-black: 0 0% 4%;
+    --bbq-charcoal: 0 0% 11%;
+    --bbq-smoke-dark: 0 0% 17%;
+    --bbq-smoke: 0 0% 29%;
+    --bbq-steel-gray: 0 0% 42%;
+    --bbq-white: 0 0% 100%;
+    --bbq-bone: 0 0% 91%;
+    --bbq-silver: 210 2% 82%;
+    --bbq-crimson: 4 85% 31%;
+    --bbq-deep-red: 5 65% 26%;
+    --bbq-ember: 354 86% 40%;
+
     /* Surfaces */
-    --background: 0 0% 7%;            /* deep charcoal */
-    --foreground: 30 12% 92%;         /* warm bone */
+    --background: var(--bbq-black);
+    --foreground: var(--bbq-bone);
 
-    --card: 0 0% 10%;
-    --card-foreground: 30 12% 92%;
+    --card: var(--bbq-charcoal);
+    --card-foreground: var(--bbq-bone);
 
-    --popover: 0 0% 9%;
-    --popover-foreground: 30 12% 92%;
+    --popover: var(--bbq-charcoal);
+    --popover-foreground: var(--bbq-bone);
 
     /* Brand */
-    --primary: 350 78% 42%;           /* crimson */
-    --primary-foreground: 30 15% 96%;
-    --primary-glow: 12 88% 55%;       /* ember */
+    --primary: var(--bbq-crimson);
+    --primary-foreground: var(--bbq-white);
+    --primary-glow: var(--bbq-ember);
 
-    --secondary: 0 0% 14%;
-    --secondary-foreground: 30 12% 92%;
+    --secondary: var(--bbq-smoke-dark);
+    --secondary-foreground: var(--bbq-bone);
 
-    --muted: 0 0% 13%;
-    --muted-foreground: 30 5% 62%;
+    --muted: var(--bbq-smoke-dark);
+    --muted-foreground: var(--bbq-steel-gray);
 
-    --accent: 350 78% 42%;
-    --accent-foreground: 30 15% 96%;
+    --accent: var(--bbq-ember);
+    --accent-foreground: var(--bbq-white);
 
-    --destructive: 0 70% 45%;
-    --destructive-foreground: 30 15% 96%;
+    --destructive: var(--bbq-crimson);
+    --destructive-foreground: var(--bbq-white);
 
-    --border: 0 0% 18%;
-    --input: 0 0% 16%;
-    --ring: 350 78% 50%;
+    --border: var(--bbq-smoke-dark);
+    --input: var(--bbq-smoke-dark);
+    --ring: var(--bbq-ember);
 
     --radius: 0.375rem;
 
-    /* Brand-specific */
-    --crimson: 350 78% 42%;
-    --crimson-deep: 350 80% 30%;
-    --ember: 12 88% 55%;
-    --smoke: 30 5% 70%;
-    --bone: 30 15% 92%;
-    --charcoal: 0 0% 7%;
-    --charcoal-light: 0 0% 12%;
+    /* Brand-specific aliases (kept for existing class usage) */
+    --crimson: var(--bbq-crimson);
+    --crimson-deep: var(--bbq-deep-red);
+    --ember: var(--bbq-ember);
+    --smoke: var(--bbq-steel-gray);
+    --bone: var(--bbq-bone);
+    --charcoal: var(--bbq-black);
+    --charcoal-light: var(--bbq-charcoal);
 
     /* Gradients */
-    --gradient-hero: linear-gradient(135deg, hsl(0 0% 7% / 0.95), hsl(0 0% 4% / 0.85));
-    --gradient-ember: linear-gradient(135deg, hsl(var(--crimson)), hsl(var(--ember)));
-    --gradient-smoke: linear-gradient(180deg, hsl(0 0% 7%), hsl(0 0% 11%));
-    --gradient-card: linear-gradient(180deg, hsl(0 0% 11%), hsl(0 0% 8%));
+    --gradient-hero: linear-gradient(135deg, hsl(var(--bbq-black) / 0.95), hsl(var(--bbq-black) / 0.85));
+    --gradient-ember: linear-gradient(135deg, hsl(var(--bbq-crimson)), hsl(var(--bbq-ember)));
+    --gradient-smoke: linear-gradient(180deg, hsl(var(--bbq-black)), hsl(var(--bbq-charcoal)));
+    --gradient-card: linear-gradient(180deg, hsl(var(--bbq-charcoal)), hsl(var(--bbq-black)));
 
     /* Shadows */
-    --shadow-ember: 0 10px 40px -10px hsl(var(--crimson) / 0.4);
+    --shadow-ember: 0 10px 40px -10px hsl(var(--bbq-crimson) / 0.4);
     --shadow-card: 0 8px 30px -12px hsl(0 0% 0% / 0.6);
-    --shadow-glow: 0 0 60px hsl(var(--ember) / 0.25);
+    --shadow-glow: 0 0 60px hsl(var(--bbq-ember) / 0.25);
 
     /* Sidebar (admin) */
-    --sidebar-background: 0 0% 5%;
-    --sidebar-foreground: 30 12% 88%;
-    --sidebar-primary: 350 78% 42%;
-    --sidebar-primary-foreground: 30 15% 96%;
-    --sidebar-accent: 0 0% 12%;
-    --sidebar-accent-foreground: 30 12% 92%;
-    --sidebar-border: 0 0% 15%;
-    --sidebar-ring: 350 78% 50%;
+    --sidebar-background: var(--bbq-black);
+    --sidebar-foreground: var(--bbq-bone);
+    --sidebar-primary: var(--bbq-crimson);
+    --sidebar-primary-foreground: var(--bbq-white);
+    --sidebar-accent: var(--bbq-charcoal);
+    --sidebar-accent-foreground: var(--bbq-bone);
+    --sidebar-border: var(--bbq-smoke-dark);
+    --sidebar-ring: var(--bbq-ember);
   }
 
   /* Dark is the default; .dark mirrors :root */
   .dark {
-    --background: 0 0% 7%;
-    --foreground: 30 12% 92%;
-    --card: 0 0% 10%;
-    --card-foreground: 30 12% 92%;
-    --popover: 0 0% 9%;
-    --popover-foreground: 30 12% 92%;
-    --primary: 350 78% 42%;
-    --primary-foreground: 30 15% 96%;
-    --secondary: 0 0% 14%;
-    --secondary-foreground: 30 12% 92%;
-    --muted: 0 0% 13%;
-    --muted-foreground: 30 5% 62%;
-    --accent: 350 78% 42%;
-    --accent-foreground: 30 15% 96%;
-    --destructive: 0 70% 45%;
-    --destructive-foreground: 30 15% 96%;
-    --border: 0 0% 18%;
-    --input: 0 0% 16%;
-    --ring: 350 78% 50%;
+    --background: var(--bbq-black);
+    --foreground: var(--bbq-bone);
+    --card: var(--bbq-charcoal);
+    --card-foreground: var(--bbq-bone);
+    --popover: var(--bbq-charcoal);
+    --popover-foreground: var(--bbq-bone);
+    --primary: var(--bbq-crimson);
+    --primary-foreground: var(--bbq-white);
+    --secondary: var(--bbq-smoke-dark);
+    --secondary-foreground: var(--bbq-bone);
+    --muted: var(--bbq-smoke-dark);
+    --muted-foreground: var(--bbq-steel-gray);
+    --accent: var(--bbq-ember);
+    --accent-foreground: var(--bbq-white);
+    --destructive: var(--bbq-crimson);
+    --destructive-foreground: var(--bbq-white);
+    --border: var(--bbq-smoke-dark);
+    --input: var(--bbq-smoke-dark);
+    --ring: var(--bbq-ember);
   }
 }
 
