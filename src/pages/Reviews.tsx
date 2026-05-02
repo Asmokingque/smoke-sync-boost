@@ -7,9 +7,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Star, Loader2, Camera } from "lucide-react";
+import { Star, Loader2, Camera, Heart } from "lucide-react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
+import { getVisitorId } from "@/lib/visitorId";
 
 type Review = {
   id: string;
@@ -19,6 +20,7 @@ type Review = {
   body: string;
   photo_url: string | null;
   created_at: string;
+  likes_count: number;
 };
 
 const schema = z.object({
@@ -37,6 +39,8 @@ const Reviews = () => {
   const [file, setFile] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
+  const [likedIds, setLikedIds] = useState<Set<string>>(new Set());
+
   const fetchReviews = async () => {
     const { data } = await supabase
       .from("reviews")
@@ -47,7 +51,39 @@ const Reviews = () => {
     setLoading(false);
   };
 
-  useEffect(() => { fetchReviews(); }, []);
+  const fetchMyLikes = async () => {
+    const visitor = getVisitorId();
+    const { data } = await supabase
+      .from("review_likes")
+      .select("review_id")
+      .eq("visitor_id", visitor);
+    setLikedIds(new Set((data ?? []).map((r: any) => r.review_id)));
+  };
+
+  useEffect(() => { fetchReviews(); fetchMyLikes(); }, []);
+
+  const toggleLike = async (reviewId: string) => {
+    const visitor = getVisitorId();
+    const liked = likedIds.has(reviewId);
+    // Optimistic update
+    setLikedIds((prev) => {
+      const next = new Set(prev);
+      liked ? next.delete(reviewId) : next.add(reviewId);
+      return next;
+    });
+    setReviews((prev) => prev.map((r) =>
+      r.id === reviewId ? { ...r, likes_count: r.likes_count + (liked ? -1 : 1) } : r
+    ));
+    if (liked) {
+      const { error } = await supabase.from("review_likes").delete()
+        .eq("review_id", reviewId).eq("visitor_id", visitor);
+      if (error) { toast.error("Could not unlike"); fetchReviews(); fetchMyLikes(); }
+    } else {
+      const { error } = await supabase.from("review_likes")
+        .insert({ review_id: reviewId, visitor_id: visitor });
+      if (error) { toast.error("Could not like"); fetchReviews(); fetchMyLikes(); }
+    }
+  };
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
