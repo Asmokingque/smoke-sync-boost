@@ -248,30 +248,36 @@ export type Database = {
           created_at: string
           id: string
           item_name: string
+          line_total: number
           menu_item_id: string | null
           notes: string | null
           order_id: string
           quantity: number
+          selected_options: Json
           unit_price: number
         }
         Insert: {
           created_at?: string
           id?: string
           item_name: string
+          line_total?: number
           menu_item_id?: string | null
           notes?: string | null
           order_id: string
           quantity?: number
+          selected_options?: Json
           unit_price: number
         }
         Update: {
           created_at?: string
           id?: string
           item_name?: string
+          line_total?: number
           menu_item_id?: string | null
           notes?: string | null
           order_id?: string
           quantity?: number
+          selected_options?: Json
           unit_price?: number
         }
         Relationships: [
