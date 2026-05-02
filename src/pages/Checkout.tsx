@@ -86,10 +86,12 @@ const Checkout = () => {
 
       const orderItems = items.map((i) => ({
         order_id: order.id,
-        menu_item_id: i.id.endsWith("-alt") ? i.id.slice(0, -4) : i.id,
-        item_name: i.name,
+        menu_item_id: i.menuItemId,
+        item_name: i.optionLabel ? `${i.name} — ${i.optionLabel}` : i.name,
         unit_price: i.price,
         quantity: i.quantity,
+        line_total: i.price * i.quantity,
+        selected_options: (i.selectedOptions ?? []) as any,
         notes: i.notes ?? null,
       }));
 
