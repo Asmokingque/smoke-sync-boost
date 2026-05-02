@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { z } from "zod";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { SiteLayout } from "@/components/layout/SiteLayout";
 import { useCart } from "@/store/cart";
@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Loader2, ShoppingBag, Tag, X } from "lucide-react";
+import { Loader2, ShoppingBag, Tag, X, Bug } from "lucide-react";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
 import { computeDiscount, buildSafeOrderTotals, type Promo } from "@/lib/promo";
@@ -34,9 +34,17 @@ const Checkout = () => {
   const { items, subtotal, clear } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const debugEnabled = searchParams.get("debug") === "1";
   const [submitting, setSubmitting] = useState(false);
   const [promoInput, setPromoInput] = useState("");
   const [promo, setPromo] = useState<Promo | null>(null);
+  const toggleDebug = () => {
+    const next = new URLSearchParams(searchParams);
+    if (debugEnabled) next.delete("debug");
+    else next.set("debug", "1");
+    setSearchParams(next, { replace: true });
+  };
   const [form, setForm] = useState({
     customer_name: "",
     customer_email: user?.email ?? "",
@@ -366,6 +374,97 @@ const Checkout = () => {
                 <span>Total</span>
                 <span className="text-primary">${total.toFixed(2)}</span>
               </div>
+            </div>
+
+            {/* Debug panel */}
+            <div className="mt-4 pt-4 border-t border-border/40">
+              <button
+                type="button"
+                onClick={toggleDebug}
+                className="flex items-center gap-1.5 text-[11px] text-muted-foreground hover:text-foreground transition-colors"
+                aria-expanded={debugEnabled}
+              >
+                <Bug className="h-3 w-3" />
+                {debugEnabled ? "Hide" : "Show"} debug breakdown
+              </button>
+
+              {debugEnabled && (
+                <div className="mt-3 rounded-md bg-background/60 border border-border/40 p-3 text-[11px] font-mono space-y-3">
+                  <div>
+                    <div className="text-muted-foreground/70 uppercase tracking-wider mb-1">Promo</div>
+                    {promo ? (
+                      <div className="grid grid-cols-2 gap-x-3">
+                        <span className="text-muted-foreground">code</span><span>{promo.code}</span>
+                        <span className="text-muted-foreground">type</span><span>{promo.type}</span>
+                        <span className="text-muted-foreground">value</span><span>{promo.type === "percent" ? `${(promo.value * 100).toFixed(0)}%` : `$${promo.value.toFixed(2)}`}</span>
+                      </div>
+                    ) : (
+                      <div className="text-muted-foreground">none</div>
+                    )}
+                  </div>
+
+                  <div>
+                    <div className="text-muted-foreground/70 uppercase tracking-wider mb-1">Per-line allocation</div>
+                    <div className="space-y-1.5">
+                      {breakdown.lines.map((l, idx) => {
+                        const it = items[idx];
+                        return (
+                          <div key={idx} className="border border-border/40 rounded p-1.5">
+                            <div className="truncate text-foreground mb-0.5">{idx + 1}. {it?.name ?? "—"} × {it?.quantity ?? 0}</div>
+                            <div className="grid grid-cols-2 gap-x-3 text-muted-foreground">
+                              <span>lineTotal</span><span>${l.lineTotal.toFixed(4)}</span>
+                              <span>lineDiscount</span><span className="text-emerald-400">−${l.lineDiscount.toFixed(4)}</span>
+                              <span>lineAfter</span><span className="text-primary">${l.lineAfter.toFixed(4)}</span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                      {breakdown.lines.length === 0 && (
+                        <div className="text-muted-foreground">no lines</div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="text-muted-foreground/70 uppercase tracking-wider mb-1">Totals</div>
+                    <div className="grid grid-cols-2 gap-x-3">
+                      <span className="text-muted-foreground">subtotal</span><span>${sub.toFixed(4)}</span>
+                      <span className="text-muted-foreground">discount</span><span className="text-emerald-400">−${discountAmount.toFixed(4)}</span>
+                      <span className="text-muted-foreground">discountedSub</span><span>${discountedSub.toFixed(4)}</span>
+                      <span className="text-muted-foreground">taxRate</span><span>{(TAX_RATE * 100).toFixed(2)}%</span>
+                      <span className="text-muted-foreground">tax</span><span>${tax.toFixed(4)}</span>
+                      <span className="text-muted-foreground">total</span><span className="text-primary">${total.toFixed(4)}</span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="text-muted-foreground/70 uppercase tracking-wider mb-1">Invariants</div>
+                    {(() => {
+                      const summed = breakdown.lines.reduce((s, l) => s + l.lineDiscount, 0);
+                      const drift = Math.abs(summed - discountAmount);
+                      const checks = [
+                        { label: "Σ lineDiscount ≈ discount", ok: drift < 0.02, detail: `drift ${drift.toFixed(4)}` },
+                        { label: "discount ≤ subtotal", ok: discountAmount <= sub + 0.001 },
+                        { label: "all lineAfter ≥ 0", ok: breakdown.lines.every((l) => l.lineAfter >= 0) },
+                        { label: "tax ≥ 0", ok: tax >= 0 },
+                        { label: "total ≥ 0", ok: total >= 0 },
+                      ];
+                      return (
+                        <div className="space-y-0.5">
+                          {checks.map((c, i) => (
+                            <div key={i} className="flex justify-between gap-2">
+                              <span className="text-muted-foreground">{c.label}</span>
+                              <span className={c.ok ? "text-emerald-400" : "text-destructive"}>
+                                {c.ok ? "OK" : "FAIL"}{c.detail ? ` (${c.detail})` : ""}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      );
+                    })()}
+                  </div>
+                </div>
+              )}
             </div>
           </aside>
         </div>
