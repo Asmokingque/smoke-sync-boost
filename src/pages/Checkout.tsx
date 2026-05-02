@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2, ShoppingBag, Tag, X } from "lucide-react";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
+import { computeDiscount, type Promo } from "@/lib/promo";
 
 const schema = z.object({
   customer_name: z.string().trim().min(1, "Name is required").max(100),
@@ -23,7 +24,6 @@ const schema = z.object({
 
 const TAX_RATE = 0.07;
 
-type Promo = { code: string; label: string; type: "percent" | "fixed"; value: number };
 const PROMOS: Promo[] = [
   { code: "SMOKE10", label: "10% off", type: "percent", value: 0.1 },
   { code: "BBQ20", label: "20% off", type: "percent", value: 0.2 },
@@ -45,15 +45,32 @@ const Checkout = () => {
     notes: "",
   });
 
-  const sub = Math.max(0, subtotal());
+  const breakdown = computeDiscount(
+    items.map((i) => ({ price: i.price, quantity: i.quantity })),
+    promo
+  );
+  const sub = breakdown.sub;
+  const discountAmount = breakdown.discountAmount;
+  const discountedSub = breakdown.discountedSub;
   const discountRate = promo?.type === "percent" ? Math.min(Math.max(promo.value, 0), 1) : 0;
-  const fixedDiscount = promo?.type === "fixed" ? Math.min(Math.max(promo.value, 0), sub) : 0;
-  const rawDiscount = promo?.type === "percent" ? sub * discountRate : fixedDiscount;
-  // Hard clamp: discount can never exceed subtotal
-  const discountAmount = Math.min(Math.max(rawDiscount, 0), sub);
-  const discountedSub = Math.max(0, sub - discountAmount);
   const tax = Math.max(0, discountedSub * TAX_RATE);
   const total = Math.max(0, discountedSub + tax);
+
+  // Dev-time invariant assertion (non-production safety net).
+  if (import.meta.env.DEV) {
+    const summed = breakdown.lines.reduce((s, l) => s + l.lineDiscount, 0);
+    const drift = Math.abs(summed - discountAmount);
+    if (drift > 0.01) {
+      // eslint-disable-next-line no-console
+      console.error("[promo] line discount sum mismatch", { summed, discountAmount, drift });
+    }
+    for (const l of breakdown.lines) {
+      if (l.lineAfter < 0 || l.lineDiscount < 0 || l.lineDiscount > l.lineTotal) {
+        // eslint-disable-next-line no-console
+        console.error("[promo] invalid line allocation", l);
+      }
+    }
+  }
 
   const applyPromo = () => {
     const code = promoInput.trim().toUpperCase();
@@ -188,22 +205,14 @@ const Checkout = () => {
           <aside className="bg-charcoal-light border border-border rounded-lg p-6 h-fit lg:sticky lg:top-24">
             <h2 className="font-display text-2xl mb-4 tracking-wider">Order Summary</h2>
             <ul className="space-y-3 mb-6 max-h-96 overflow-auto pr-2">
-              {items.map((i) => {
+              {items.map((i, idx) => {
                 const opts = i.selectedOptions ?? [];
                 const optionsTotal = opts.reduce((s, o) => s + Number(o.price_adjustment ?? 0), 0);
                 const basePrice = i.price - optionsTotal;
-                const lineTotal = Math.max(0, i.price * i.quantity);
-                // Per-line discount: percent applies directly; fixed is allocated proportionally.
-                // Clamp to lineTotal so a line can never go negative.
-                const rawLineDiscount = promo
-                  ? promo.type === "percent"
-                    ? lineTotal * discountRate
-                    : sub > 0
-                    ? (lineTotal / sub) * fixedDiscount
-                    : 0
-                  : 0;
-                const lineDiscount = Math.min(Math.max(rawLineDiscount, 0), lineTotal);
-                const lineAfter = Math.max(0, lineTotal - lineDiscount);
+                const alloc = breakdown.lines[idx] ?? { lineTotal: i.price * i.quantity, lineDiscount: 0, lineAfter: i.price * i.quantity };
+                const lineTotal = alloc.lineTotal;
+                const lineDiscount = alloc.lineDiscount;
+                const lineAfter = alloc.lineAfter;
                 return (
                   <li key={i.id} className="border-b border-border/40 pb-3">
                     <div className="flex justify-between gap-2 mb-1">
