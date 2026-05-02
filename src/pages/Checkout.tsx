@@ -45,13 +45,15 @@ const Checkout = () => {
     notes: "",
   });
 
-  const sub = subtotal();
-  const discountRate = promo?.type === "percent" ? promo.value : 0;
-  const fixedDiscount = promo?.type === "fixed" ? Math.min(promo.value, sub) : 0;
-  const discountAmount = promo?.type === "percent" ? sub * promo.value : fixedDiscount;
+  const sub = Math.max(0, subtotal());
+  const discountRate = promo?.type === "percent" ? Math.min(Math.max(promo.value, 0), 1) : 0;
+  const fixedDiscount = promo?.type === "fixed" ? Math.min(Math.max(promo.value, 0), sub) : 0;
+  const rawDiscount = promo?.type === "percent" ? sub * discountRate : fixedDiscount;
+  // Hard clamp: discount can never exceed subtotal
+  const discountAmount = Math.min(Math.max(rawDiscount, 0), sub);
   const discountedSub = Math.max(0, sub - discountAmount);
-  const tax = discountedSub * TAX_RATE;
-  const total = discountedSub + tax;
+  const tax = Math.max(0, discountedSub * TAX_RATE);
+  const total = Math.max(0, discountedSub + tax);
 
   const applyPromo = () => {
     const code = promoInput.trim().toUpperCase();
@@ -190,16 +192,18 @@ const Checkout = () => {
                 const opts = i.selectedOptions ?? [];
                 const optionsTotal = opts.reduce((s, o) => s + Number(o.price_adjustment ?? 0), 0);
                 const basePrice = i.price - optionsTotal;
-                const lineTotal = i.price * i.quantity;
-                // Per-line discount: percent applies directly; fixed is allocated proportionally
-                const lineDiscount = promo
+                const lineTotal = Math.max(0, i.price * i.quantity);
+                // Per-line discount: percent applies directly; fixed is allocated proportionally.
+                // Clamp to lineTotal so a line can never go negative.
+                const rawLineDiscount = promo
                   ? promo.type === "percent"
-                    ? lineTotal * promo.value
+                    ? lineTotal * discountRate
                     : sub > 0
                     ? (lineTotal / sub) * fixedDiscount
                     : 0
                   : 0;
-                const lineAfter = lineTotal - lineDiscount;
+                const lineDiscount = Math.min(Math.max(rawLineDiscount, 0), lineTotal);
+                const lineAfter = Math.max(0, lineTotal - lineDiscount);
                 return (
                   <li key={i.id} className="border-b border-border/40 pb-3">
                     <div className="flex justify-between gap-2 mb-1">
