@@ -24,7 +24,6 @@ const schema = z.object({
 
 const TAX_RATE = 0.07;
 
-type Promo = { code: string; label: string; type: "percent" | "fixed"; value: number };
 const PROMOS: Promo[] = [
   { code: "SMOKE10", label: "10% off", type: "percent", value: 0.1 },
   { code: "BBQ20", label: "20% off", type: "percent", value: 0.2 },
