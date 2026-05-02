@@ -74,3 +74,64 @@ describe("computeDiscount invariants", () => {
     expect(summed).toBe(5);
   });
 });
+
+import { buildSafeOrderTotals } from "./promo";
+
+describe("buildSafeOrderTotals guard", () => {
+  it("accepts a normal order and returns sanitized totals", () => {
+    const r = buildSafeOrderTotals(
+      [{ price: 10, quantity: 2 }, { price: 5.5, quantity: 1 }],
+      PITMASTER5,
+      0.07
+    );
+    expect(r.ok).toBe(true);
+    if (r.ok) {
+      expect(r.totals.subtotal).toBe(25.5);
+      expect(r.totals.discount).toBe(5);
+      expect(r.totals.discountedSubtotal).toBe(20.5);
+      expect(r.totals.tax).toBeGreaterThanOrEqual(0);
+      expect(r.totals.total).toBeGreaterThanOrEqual(r.totals.discountedSubtotal);
+    }
+  });
+
+  it("rejects negative item price", () => {
+    const r = buildSafeOrderTotals([{ price: -1, quantity: 1 }], null, 0.07);
+    expect(r.ok).toBe(false);
+  });
+
+  it("rejects non-integer quantity", () => {
+    const r = buildSafeOrderTotals([{ price: 5, quantity: 1.5 }], null, 0.07);
+    expect(r.ok).toBe(false);
+  });
+
+  it("rejects negative tax rate", () => {
+    const r = buildSafeOrderTotals([{ price: 5, quantity: 1 }], null, -0.1);
+    expect(r.ok).toBe(false);
+  });
+
+  it("rejects NaN/Infinity inputs", () => {
+    expect(buildSafeOrderTotals([{ price: NaN, quantity: 1 }], null, 0.07).ok).toBe(false);
+    expect(buildSafeOrderTotals([{ price: Infinity, quantity: 1 }], null, 0.07).ok).toBe(false);
+  });
+
+  it("never produces negative totals even with huge fixed promo", () => {
+    const r = buildSafeOrderTotals([{ price: 4, quantity: 1 }], HUGE, 0.07);
+    expect(r.ok).toBe(true);
+    if (r.ok) {
+      expect(r.totals.discount).toBeLessThanOrEqual(r.totals.subtotal);
+      expect(r.totals.discountedSubtotal).toBeGreaterThanOrEqual(0);
+      expect(r.totals.tax).toBeGreaterThanOrEqual(0);
+      expect(r.totals.total).toBeGreaterThanOrEqual(0);
+    }
+  });
+
+  it("handles empty cart safely", () => {
+    const r = buildSafeOrderTotals([], PITMASTER5, 0.07);
+    expect(r.ok).toBe(true);
+    if (r.ok) {
+      expect(r.totals.subtotal).toBe(0);
+      expect(r.totals.discount).toBe(0);
+      expect(r.totals.total).toBe(0);
+    }
+  });
+});
