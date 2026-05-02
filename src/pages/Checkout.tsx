@@ -34,9 +34,17 @@ const Checkout = () => {
   const { items, subtotal, clear } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const debugEnabled = searchParams.get("debug") === "1";
   const [submitting, setSubmitting] = useState(false);
   const [promoInput, setPromoInput] = useState("");
   const [promo, setPromo] = useState<Promo | null>(null);
+  const toggleDebug = () => {
+    const next = new URLSearchParams(searchParams);
+    if (debugEnabled) next.delete("debug");
+    else next.set("debug", "1");
+    setSearchParams(next, { replace: true });
+  };
   const [form, setForm] = useState({
     customer_name: "",
     customer_email: user?.email ?? "",
