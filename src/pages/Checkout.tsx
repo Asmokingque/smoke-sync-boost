@@ -55,8 +55,8 @@ const Checkout = () => {
       promo,
       TAX_RATE
     );
-    const safe = guard.ok ? guard.totals : null;
-    const guardError = guard.ok ? null : guard.error;
+    const safe = guard.ok === true ? guard.totals : null;
+    const guardError = guard.ok === true ? null : guard.error;
 
     const orderInsert = safe
       ? {
