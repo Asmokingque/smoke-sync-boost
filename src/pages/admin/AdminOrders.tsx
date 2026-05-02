@@ -72,13 +72,26 @@ const AdminOrders = () => {
                   </Select>
                 </div>
               </div>
-              <ul className="text-sm border-t border-border/50 pt-3 space-y-0.5">
-                {o.order_items.map((i: any) => (
-                  <li key={i.id} className="flex justify-between">
-                    <span>{i.quantity}× {i.item_name}</span>
-                    <span className="text-muted-foreground">${(i.unit_price * i.quantity).toFixed(2)}</span>
-                  </li>
-                ))}
+              <ul className="text-sm border-t border-border/50 pt-3 space-y-1.5">
+                {o.order_items.map((i: any) => {
+                  const opts = Array.isArray(i.selected_options) ? i.selected_options : [];
+                  return (
+                    <li key={i.id} className="flex justify-between gap-2">
+                      <div className="min-w-0">
+                        <div>{i.quantity}× {i.item_name}</div>
+                        {opts.length > 0 && (
+                          <div className="text-[11px] text-muted-foreground pl-4">
+                            {opts.map((o: any) => `${o.group}: ${o.name}`).join(" · ")}
+                          </div>
+                        )}
+                        {i.notes && (
+                          <div className="text-[11px] italic text-muted-foreground/80 pl-4">Note: {i.notes}</div>
+                        )}
+                      </div>
+                      <span className="text-muted-foreground shrink-0">${(i.unit_price * i.quantity).toFixed(2)}</span>
+                    </li>
+                  );
+                })}
               </ul>
               {o.notes && <div className="mt-3 text-xs text-muted-foreground italic">Note: {o.notes}</div>}
             </div>
