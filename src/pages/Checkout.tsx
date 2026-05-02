@@ -45,13 +45,32 @@ const Checkout = () => {
     notes: "",
   });
 
-  const sub = Math.max(0, subtotal());
+  const breakdown = computeDiscount(
+    items.map((i) => ({ price: i.price, quantity: i.quantity })),
+    promo
+  );
+  const sub = breakdown.sub;
+  const discountAmount = breakdown.discountAmount;
+  const discountedSub = breakdown.discountedSub;
   const discountRate = promo?.type === "percent" ? Math.min(Math.max(promo.value, 0), 1) : 0;
-  const fixedDiscount = promo?.type === "fixed" ? Math.min(Math.max(promo.value, 0), sub) : 0;
-  const rawDiscount = promo?.type === "percent" ? sub * discountRate : fixedDiscount;
-  // Hard clamp: discount can never exceed subtotal
-  const discountAmount = Math.min(Math.max(rawDiscount, 0), sub);
-  const discountedSub = Math.max(0, sub - discountAmount);
+  const tax = Math.max(0, discountedSub * TAX_RATE);
+  const total = Math.max(0, discountedSub + tax);
+
+  // Dev-time invariant assertion (non-production safety net).
+  if (import.meta.env.DEV) {
+    const summed = breakdown.lines.reduce((s, l) => s + l.lineDiscount, 0);
+    const drift = Math.abs(summed - discountAmount);
+    if (drift > 0.01) {
+      // eslint-disable-next-line no-console
+      console.error("[promo] line discount sum mismatch", { summed, discountAmount, drift });
+    }
+    for (const l of breakdown.lines) {
+      if (l.lineAfter < 0 || l.lineDiscount < 0 || l.lineDiscount > l.lineTotal) {
+        // eslint-disable-next-line no-console
+        console.error("[promo] invalid line allocation", l);
+      }
+    }
+  }
   const tax = Math.max(0, discountedSub * TAX_RATE);
   const total = Math.max(0, discountedSub + tax);
 
