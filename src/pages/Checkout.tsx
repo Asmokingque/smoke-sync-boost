@@ -112,6 +112,19 @@ const Checkout = () => {
       return;
     }
 
+    // Final guard: recompute totals from authoritative item data so a tampered
+    // client state can't submit negative or inconsistent amounts.
+    const guard = buildSafeOrderTotals(
+      items.map((i) => ({ price: i.price, quantity: i.quantity })),
+      promo,
+      TAX_RATE
+    );
+    if (!guard.ok) {
+      toast.error(`Order rejected: ${guard.error}`);
+      return;
+    }
+    const safe = guard.totals;
+
     setSubmitting(true);
     try {
       const { data: order, error: orderErr } = await supabase
@@ -122,10 +135,10 @@ const Checkout = () => {
           customer_email: parsed.data.customer_email,
           customer_phone: parsed.data.customer_phone,
           pickup_time: parsed.data.pickup_time ? new Date(parsed.data.pickup_time).toISOString() : null,
-          notes: [parsed.data.notes, promo ? `Promo: ${promo.code} (${promo.label})` : null].filter(Boolean).join(" • ") || null,
-          subtotal: sub,
-          tax,
-          total,
+          notes: [parsed.data.notes, promo ? `Promo: ${promo.code} (${promo.label}) −$${safe.discount.toFixed(2)}` : null].filter(Boolean).join(" • ") || null,
+          subtotal: safe.subtotal,
+          tax: safe.tax,
+          total: safe.total,
           status: "pending",
           payment_status: "unpaid",
         })
@@ -133,16 +146,20 @@ const Checkout = () => {
         .single();
       if (orderErr) throw orderErr;
 
-      const orderItems = items.map((i) => ({
-        order_id: order.id,
-        menu_item_id: i.menuItemId,
-        item_name: i.optionLabel ? `${i.name} — ${i.optionLabel}` : i.name,
-        unit_price: i.price,
-        quantity: i.quantity,
-        line_total: i.price * i.quantity,
-        selected_options: (i.selectedOptions ?? []) as any,
-        notes: i.notes ?? null,
-      }));
+      const orderItems = items.map((i, idx) => {
+        const alloc = safe.lines[idx];
+        const lineTotal = alloc ? Math.max(0, alloc.lineAfter) : Math.max(0, i.price * i.quantity);
+        return {
+          order_id: order.id,
+          menu_item_id: i.menuItemId,
+          item_name: i.optionLabel ? `${i.name} — ${i.optionLabel}` : i.name,
+          unit_price: i.price,
+          quantity: i.quantity,
+          line_total: lineTotal,
+          selected_options: (i.selectedOptions ?? []) as any,
+          notes: i.notes ?? null,
+        };
+      });
 
       const { error: itemsErr } = await supabase.from("order_items").insert(orderItems);
       if (itemsErr) throw itemsErr;
