@@ -129,8 +129,8 @@
     @apply bg-background text-foreground antialiased;
     font-family: 'Inter', system-ui, sans-serif;
     background-image:
-      radial-gradient(ellipse at top, hsl(0 0% 11% / 0.6), transparent 60%),
-      radial-gradient(ellipse at bottom right, hsl(350 78% 18% / 0.3), transparent 50%);
+      radial-gradient(ellipse at top, hsl(var(--bbq-charcoal) / 0.6), transparent 60%),
+      radial-gradient(ellipse at bottom right, hsl(var(--bbq-deep-red) / 0.3), transparent 50%);
   }
   h1, h2, h3, h4, .font-display {
     font-family: 'Bebas Neue', 'Oswald', sans-serif;
