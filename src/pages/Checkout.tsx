@@ -45,13 +45,15 @@ const Checkout = () => {
     notes: "",
   });
 
-  const sub = subtotal();
-  const discountRate = promo?.type === "percent" ? promo.value : 0;
-  const fixedDiscount = promo?.type === "fixed" ? Math.min(promo.value, sub) : 0;
-  const discountAmount = promo?.type === "percent" ? sub * promo.value : fixedDiscount;
+  const sub = Math.max(0, subtotal());
+  const discountRate = promo?.type === "percent" ? Math.min(Math.max(promo.value, 0), 1) : 0;
+  const fixedDiscount = promo?.type === "fixed" ? Math.min(Math.max(promo.value, 0), sub) : 0;
+  const rawDiscount = promo?.type === "percent" ? sub * discountRate : fixedDiscount;
+  // Hard clamp: discount can never exceed subtotal
+  const discountAmount = Math.min(Math.max(rawDiscount, 0), sub);
   const discountedSub = Math.max(0, sub - discountAmount);
-  const tax = discountedSub * TAX_RATE;
-  const total = discountedSub + tax;
+  const tax = Math.max(0, discountedSub * TAX_RATE);
+  const total = Math.max(0, discountedSub + tax);
 
   const applyPromo = () => {
     const code = promoInput.trim().toUpperCase();
