@@ -86,3 +86,81 @@ export function computeDiscount(items: CartLine[], promo: Promo | null): Discoun
     lines,
   };
 }
+
+/**
+ * Final pre-submit guard: recompute totals from authoritative item data and
+ * validate every value is finite, non-negative, and internally consistent.
+ * Returns sanitized totals if valid, or an error message describing the violation.
+ */
+export type OrderTotals = {
+  subtotal: number;
+  discount: number;
+  discountedSubtotal: number;
+  tax: number;
+  total: number;
+  lines: LineAllocation[];
+};
+
+export function buildSafeOrderTotals(
+  items: CartLine[],
+  promo: Promo | null,
+  taxRate: number
+): { ok: true; totals: OrderTotals } | { ok: false; error: string } {
+  if (!Number.isFinite(taxRate) || taxRate < 0 || taxRate > 1) {
+    return { ok: false, error: "Invalid tax rate" };
+  }
+  for (const i of items) {
+    if (!Number.isFinite(i.price) || !Number.isFinite(i.quantity)) {
+      return { ok: false, error: "Invalid item price or quantity" };
+    }
+    if (i.price < 0 || i.quantity < 0 || !Number.isInteger(i.quantity)) {
+      return { ok: false, error: "Item price and quantity must be non-negative" };
+    }
+  }
+
+  const breakdown = computeDiscount(items, promo);
+  const round2n = (n: number) => Math.round(n * 100) / 100;
+
+  const subtotal = breakdown.sub;
+  const discount = breakdown.discountAmount;
+  const discountedSubtotal = breakdown.discountedSub;
+  const tax = round2n(Math.max(0, discountedSubtotal * taxRate));
+  const total = round2n(Math.max(0, discountedSubtotal + tax));
+
+  // Hard invariants — any failure means we refuse to submit.
+  const checks: [boolean, string][] = [
+    [Number.isFinite(subtotal) && subtotal >= 0, "Subtotal must be a non-negative number"],
+    [Number.isFinite(discount) && discount >= 0, "Discount must be a non-negative number"],
+    [discount <= subtotal + 0.001, "Discount cannot exceed subtotal"],
+    [Number.isFinite(discountedSubtotal) && discountedSubtotal >= 0, "Discounted subtotal must be non-negative"],
+    [Number.isFinite(tax) && tax >= 0, "Tax must be non-negative"],
+    [Number.isFinite(total) && total >= 0, "Total must be non-negative"],
+    [total + 0.001 >= discountedSubtotal, "Total cannot be less than discounted subtotal"],
+  ];
+  for (const [ok, msg] of checks) {
+    if (!ok) return { ok: false, error: msg };
+  }
+
+  // Re-verify per-line allocation invariants too.
+  const summed = round2n(breakdown.lines.reduce((s, l) => s + l.lineDiscount, 0));
+  if (Math.abs(summed - discount) > 0.02) {
+    return { ok: false, error: "Line discount allocation does not match total discount" };
+  }
+  for (const l of breakdown.lines) {
+    if (l.lineDiscount < 0 || l.lineAfter < 0 || l.lineDiscount > l.lineTotal + 0.001) {
+      return { ok: false, error: "Invalid per-line discount allocation" };
+    }
+  }
+
+  return {
+    ok: true,
+    totals: {
+      subtotal: round2n(subtotal),
+      discount: round2n(discount),
+      discountedSubtotal: round2n(discountedSubtotal),
+      tax,
+      total,
+      lines: breakdown.lines,
+    },
+  };
+}
