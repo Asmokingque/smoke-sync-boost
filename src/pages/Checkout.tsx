@@ -155,16 +155,65 @@ const Checkout = () => {
 
           <aside className="bg-charcoal-light border border-border rounded-lg p-6 h-fit lg:sticky lg:top-24">
             <h2 className="font-display text-2xl mb-4 tracking-wider">Order Summary</h2>
-            <ul className="space-y-3 mb-6 max-h-72 overflow-auto pr-2">
-              {items.map((i) => (
-                <li key={i.id} className="flex justify-between text-sm border-b border-border/40 pb-2">
-                  <div>
-                    <div className="font-stencil">{i.name}</div>
-                    <div className="text-xs text-muted-foreground">Qty {i.quantity}</div>
-                  </div>
-                  <div className="text-foreground">${(i.price * i.quantity).toFixed(2)}</div>
-                </li>
-              ))}
+            <ul className="space-y-3 mb-6 max-h-96 overflow-auto pr-2">
+              {items.map((i) => {
+                const opts = i.selectedOptions ?? [];
+                const optionsTotal = opts.reduce((s, o) => s + Number(o.price_adjustment ?? 0), 0);
+                const basePrice = i.price - optionsTotal;
+                const lineTotal = i.price * i.quantity;
+                return (
+                  <li key={i.id} className="border-b border-border/40 pb-3">
+                    <div className="flex justify-between gap-2 mb-1">
+                      <div className="font-stencil text-sm">{i.name}</div>
+                      <div className="font-display text-base text-primary shrink-0">${lineTotal.toFixed(2)}</div>
+                    </div>
+
+                    {opts.length > 0 ? (
+                      <div className="rounded-md bg-background/60 border border-border/40 p-2 space-y-0.5 text-[11px] mt-1">
+                        <div className="flex justify-between text-muted-foreground">
+                          <span>Base</span>
+                          <span>${basePrice.toFixed(2)}</span>
+                        </div>
+                        {opts.map((o, idx) => (
+                          <div key={idx} className="flex justify-between text-muted-foreground">
+                            <span className="truncate pr-2">
+                              <span className="text-muted-foreground/60">{o.group}:</span> {o.name}
+                            </span>
+                            <span
+                              className={
+                                o.price_adjustment > 0
+                                  ? "text-primary shrink-0"
+                                  : o.price_adjustment < 0
+                                  ? "text-emerald-400 shrink-0"
+                                  : "text-muted-foreground/60 shrink-0"
+                              }
+                            >
+                              {o.price_adjustment > 0
+                                ? `+$${Number(o.price_adjustment).toFixed(2)}`
+                                : o.price_adjustment < 0
+                                ? `−$${Math.abs(Number(o.price_adjustment)).toFixed(2)}`
+                                : "Included"}
+                            </span>
+                          </div>
+                        ))}
+                        <div className="flex justify-between pt-1 mt-1 border-t border-border/40 text-foreground">
+                          <span className="font-stencil">Unit</span>
+                          <span className="font-stencil">${i.price.toFixed(2)}</span>
+                        </div>
+                      </div>
+                    ) : null}
+
+                    {i.notes && (
+                      <div className="text-[11px] italic text-muted-foreground/80 mt-1">Note: {i.notes}</div>
+                    )}
+
+                    <div className="flex justify-between text-[11px] text-muted-foreground mt-1.5">
+                      <span>${i.price.toFixed(2)} × {i.quantity}</span>
+                      {opts.length === 0 && i.priceLabel && <span>{i.priceLabel}</span>}
+                    </div>
+                  </li>
+                );
+              })}
             </ul>
             <div className="space-y-1.5 text-sm border-t border-border pt-4">
               <div className="flex justify-between"><span>Subtotal</span><span>${sub.toFixed(2)}</span></div>
