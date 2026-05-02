@@ -425,15 +425,27 @@ const Checkout = () => {
 
             {/* Debug panel */}
             <div className="mt-4 pt-4 border-t border-border/40">
-              <button
-                type="button"
-                onClick={toggleDebug}
-                className="flex items-center gap-1.5 text-[11px] text-muted-foreground hover:text-foreground transition-colors"
-                aria-expanded={debugEnabled}
-              >
-                <Bug className="h-3 w-3" />
-                {debugEnabled ? "Hide" : "Show"} debug breakdown
-              </button>
+              <div className="flex items-center justify-between gap-2">
+                <button
+                  type="button"
+                  onClick={toggleDebug}
+                  className="flex items-center gap-1.5 text-[11px] text-muted-foreground hover:text-foreground transition-colors"
+                  aria-expanded={debugEnabled}
+                >
+                  <Bug className="h-3 w-3" />
+                  {debugEnabled ? "Hide" : "Show"} debug breakdown
+                </button>
+                {debugEnabled && (
+                  <button
+                    type="button"
+                    onClick={exportDebugJson}
+                    className="flex items-center gap-1.5 text-[11px] text-primary hover:text-primary/80 transition-colors"
+                  >
+                    <Download className="h-3 w-3" />
+                    Export JSON
+                  </button>
+                )}
+              </div>
 
               {debugEnabled && (
                 <div className="mt-3 rounded-md bg-background/60 border border-border/40 p-3 text-[11px] font-mono space-y-3">
