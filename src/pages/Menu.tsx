@@ -3,8 +3,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { SiteLayout } from "@/components/layout/SiteLayout";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/store/cart";
-import { Plus, Loader2 } from "lucide-react";
+import { Plus, Loader2, Settings2 } from "lucide-react";
 import { toast } from "sonner";
+import { OptionsPickerDialog } from "@/components/menu/OptionsPickerDialog";
 
 type Category = { id: string; name: string; slug: string; display_order: number };
 type Item = {
@@ -18,9 +19,13 @@ type Item = {
   image_url: string | null;
   is_available: boolean;
   display_order: number;
+  requires_options: boolean;
+  allow_notes: boolean;
 };
 
 const Menu = () => {
+  const [pickerItem, setPickerItem] = useState<Item | null>(null);
+
   const [categories, setCategories] = useState<Category[]>([]);
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
@@ -47,6 +52,10 @@ const Menu = () => {
   }, [categories, items]);
 
   const handleAdd = (item: Item, useAltPrice = false) => {
+    if (item.requires_options) {
+      setPickerItem(item);
+      return;
+    }
     const price = useAltPrice && item.price_alt ? Number(item.price_alt) : Number(item.price ?? 0);
     if (price <= 0) {
       toast.info("Contact us for pricing on this item.");
@@ -58,6 +67,7 @@ const Menu = () => {
       : item.price_label;
     addItem({
       id: variantId,
+      menuItemId: item.id,
       name: item.name,
       price,
       priceLabel: variantLabel ?? undefined,
