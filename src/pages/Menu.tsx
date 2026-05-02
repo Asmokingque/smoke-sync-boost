@@ -3,8 +3,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { SiteLayout } from "@/components/layout/SiteLayout";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/store/cart";
-import { Plus, Loader2 } from "lucide-react";
+import { Plus, Loader2, Settings2 } from "lucide-react";
 import { toast } from "sonner";
+import { OptionsPickerDialog } from "@/components/menu/OptionsPickerDialog";
 
 type Category = { id: string; name: string; slug: string; display_order: number };
 type Item = {
@@ -18,9 +19,13 @@ type Item = {
   image_url: string | null;
   is_available: boolean;
   display_order: number;
+  requires_options: boolean;
+  allow_notes: boolean;
 };
 
 const Menu = () => {
+  const [pickerItem, setPickerItem] = useState<Item | null>(null);
+
   const [categories, setCategories] = useState<Category[]>([]);
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
@@ -47,6 +52,10 @@ const Menu = () => {
   }, [categories, items]);
 
   const handleAdd = (item: Item, useAltPrice = false) => {
+    if (item.requires_options) {
+      setPickerItem(item);
+      return;
+    }
     const price = useAltPrice && item.price_alt ? Number(item.price_alt) : Number(item.price ?? 0);
     if (price <= 0) {
       toast.info("Contact us for pricing on this item.");
@@ -58,6 +67,7 @@ const Menu = () => {
       : item.price_label;
     addItem({
       id: variantId,
+      menuItemId: item.id,
       name: item.name,
       price,
       priceLabel: variantLabel ?? undefined,
@@ -175,10 +185,19 @@ const Menu = () => {
                         <Button
                           onClick={() => handleAdd(item)}
                           className="w-full h-11 bg-primary hover:bg-primary/90 font-stencil text-sm"
-                          aria-label={`Add ${item.name} to cart`}
+                          aria-label={item.requires_options ? `Customize ${item.name}` : `Add ${item.name} to cart`}
                         >
-                          <Plus className="h-4 w-4" />
-                          Add to Cart
+                          {item.requires_options ? (
+                            <>
+                              <Settings2 className="h-4 w-4" />
+                              Customize
+                            </>
+                          ) : (
+                            <>
+                              <Plus className="h-4 w-4" />
+                              Add to Cart
+                            </>
+                          )}
                         </Button>
                       )}
                     </div>
@@ -190,6 +209,38 @@ const Menu = () => {
           ))
         )}
       </section>
+
+      <OptionsPickerDialog
+        open={!!pickerItem}
+        onOpenChange={(o) => !o && setPickerItem(null)}
+        item={
+          pickerItem
+            ? {
+                id: pickerItem.id,
+                name: pickerItem.name,
+                base_price: Number(pickerItem.price ?? 0),
+                allow_notes: pickerItem.allow_notes,
+              }
+            : null
+        }
+        onConfirm={({ selectedOptions, notes, finalUnitPrice, optionLabel }) => {
+          if (!pickerItem) return;
+          const variantHash = selectedOptions
+            .map((o) => `${o.group}:${o.name}`)
+            .join("|");
+          addItem({
+            id: `${pickerItem.id}__${variantHash}`,
+            menuItemId: pickerItem.id,
+            name: pickerItem.name,
+            price: finalUnitPrice,
+            priceLabel: optionLabel || pickerItem.price_label || undefined,
+            optionLabel,
+            selectedOptions,
+            notes: notes || undefined,
+          });
+          toast.success(`${pickerItem.name} added`, { duration: 1800 });
+        }}
+      />
     </SiteLayout>
   );
 };
