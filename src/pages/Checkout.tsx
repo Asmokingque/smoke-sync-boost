@@ -45,6 +45,53 @@ const Checkout = () => {
     else next.set("debug", "1");
     setSearchParams(next, { replace: true });
   };
+
+  const exportDebugJson = () => {
+    const summed = breakdown.lines.reduce((s, l) => s + l.lineDiscount, 0);
+    const payload = {
+      generatedAt: new Date().toISOString(),
+      promo: promo
+        ? { code: promo.code, label: promo.label, type: promo.type, value: promo.value }
+        : null,
+      taxRate: TAX_RATE,
+      items: items.map((i, idx) => ({
+        index: idx,
+        name: i.name,
+        unitPrice: i.price,
+        quantity: i.quantity,
+        optionLabel: i.optionLabel ?? null,
+        notes: i.notes ?? null,
+        selectedOptions: i.selectedOptions ?? [],
+        allocation: breakdown.lines[idx] ?? null,
+      })),
+      totals: {
+        subtotal: sub,
+        discount: discountAmount,
+        discountedSubtotal: discountedSub,
+        tax,
+        total,
+      },
+      invariants: {
+        sumOfLineDiscounts: summed,
+        driftFromDiscount: Math.abs(summed - discountAmount),
+        discountWithinSubtotal: discountAmount <= sub + 0.001,
+        allLinesNonNegative: breakdown.lines.every((l) => l.lineAfter >= 0),
+        taxNonNegative: tax >= 0,
+        totalNonNegative: total >= 0,
+      },
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    const stamp = new Date().toISOString().replace(/[:.]/g, "-");
+    a.href = url;
+    a.download = `checkout-debug-${stamp}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast.success("Debug breakdown exported");
+  };
   const [form, setForm] = useState({
     customer_name: "",
     customer_email: user?.email ?? "",
