@@ -182,6 +182,7 @@ const Menu = () => {
                         </Button>
                       )}
                     </div>
+                    </div>
                   </article>
                 ))}
               </div>
