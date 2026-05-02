@@ -14,7 +14,10 @@ const schema = z.object({
   email: z.string().trim().email().max(255),
   phone: z.string().trim().min(7).max(30),
   event_date: z.string().optional(),
+  event_time: z.string().trim().max(50).optional(),
+  event_location: z.string().trim().max(300).optional(),
   guest_count: z.number().int().min(1).max(10000).optional(),
+  food_requested: z.string().trim().max(1000).optional(),
   message: z.string().trim().max(2000).optional(),
 });
 
@@ -22,7 +25,9 @@ const Catering = () => {
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
   const [form, setForm] = useState({
-    name: "", email: "", phone: "", event_date: "", guest_count: "", message: "",
+    name: "", email: "", phone: "",
+    event_date: "", event_time: "", event_location: "",
+    guest_count: "", food_requested: "", message: "",
   });
 
   const submit = async (e: React.FormEvent) => {
@@ -41,7 +46,10 @@ const Catering = () => {
       email: parsed.data.email,
       phone: parsed.data.phone,
       event_date: parsed.data.event_date || null,
+      event_time: parsed.data.event_time || null,
+      event_location: parsed.data.event_location || null,
       guest_count: parsed.data.guest_count ?? null,
+      food_requested: parsed.data.food_requested || null,
       message: parsed.data.message || null,
     });
     setSubmitting(false);
@@ -111,13 +119,27 @@ const Catering = () => {
                   <Input id="cdate" type="date" value={form.event_date} onChange={(e) => setForm({ ...form, event_date: e.target.value })} className="h-12" />
                 </div>
                 <div className="space-y-2">
+                  <Label htmlFor="ctime">Event Time</Label>
+                  <Input id="ctime" placeholder="e.g. 5:00 PM" value={form.event_time} onChange={(e) => setForm({ ...form, event_time: e.target.value })} className="h-12" />
+                </div>
+              </div>
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="cloc">Event Location</Label>
+                  <Input id="cloc" placeholder="Address or venue" value={form.event_location} onChange={(e) => setForm({ ...form, event_location: e.target.value })} className="h-12" />
+                </div>
+                <div className="space-y-2">
                   <Label htmlFor="cguests">Guest Count</Label>
                   <Input id="cguests" type="number" min="1" value={form.guest_count} onChange={(e) => setForm({ ...form, guest_count: e.target.value })} className="h-12" />
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="cmsg">Tell us about your event</Label>
-                <Textarea id="cmsg" rows={4} value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} placeholder="Type of event, menu preferences, location, etc." />
+                <Label htmlFor="cfood">Food Requested</Label>
+                <Textarea id="cfood" rows={3} placeholder="Brisket, ribs, sides, etc." value={form.food_requested} onChange={(e) => setForm({ ...form, food_requested: e.target.value })} />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="cmsg">Additional Notes</Label>
+                <Textarea id="cmsg" rows={3} value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} placeholder="Anything else we should know" />
               </div>
               <Button type="submit" disabled={submitting} className="w-full h-12 bg-primary hover:bg-primary/90 font-stencil">
                 {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Send Inquiry"}

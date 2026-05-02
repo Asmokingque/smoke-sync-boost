@@ -40,11 +40,18 @@ const AdminCatering = () => {
                 </div>
                 <div className="text-right">
                   <div className="font-stencil text-xs text-muted-foreground uppercase">{i.status}</div>
-                  {i.event_date && <div className="text-sm">{i.event_date}</div>}
+                  {i.event_date && <div className="text-sm">{i.event_date}{i.event_time ? ` · ${i.event_time}` : ""}</div>}
                   {i.guest_count && <div className="text-sm">{i.guest_count} guests</div>}
+                  {i.event_location && <div className="text-sm text-muted-foreground">{i.event_location}</div>}
                 </div>
               </div>
-              {i.message && <p className="text-sm text-muted-foreground border-t border-border/50 pt-2">{i.message}</p>}
+              {i.food_requested && (
+                <div className="text-sm border-t border-border/50 pt-2 mt-2">
+                  <span className="font-stencil text-xs text-primary uppercase mr-2">Food:</span>
+                  <span className="text-muted-foreground">{i.food_requested}</span>
+                </div>
+              )}
+              {i.message && <p className="text-sm text-muted-foreground border-t border-border/50 pt-2 mt-2">{i.message}</p>}
               <div className="flex gap-2 mt-3">
                 <Button size="sm" variant="outline" onClick={() => setStatus(i.id, "contacted")}>Mark Contacted</Button>
                 <Button size="sm" variant="outline" onClick={() => setStatus(i.id, "booked")}>Mark Booked</Button>

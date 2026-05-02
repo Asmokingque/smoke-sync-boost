@@ -12,6 +12,7 @@ const navItems = [
   { to: "/admin/menu", label: "Menu", icon: UtensilsCrossed },
   { to: "/admin/reviews", label: "Reviews", icon: MessageSquareText },
   { to: "/admin/catering", label: "Catering", icon: Mail },
+  { to: "/admin/contact", label: "Contact", icon: MessageSquareText },
 ];
 
 const AdminLayout = () => {

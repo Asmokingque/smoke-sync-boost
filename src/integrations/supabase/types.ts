@@ -19,6 +19,9 @@ export type Database = {
           created_at: string
           email: string
           event_date: string | null
+          event_location: string | null
+          event_time: string | null
+          food_requested: string | null
           guest_count: number | null
           id: string
           message: string | null
@@ -30,6 +33,9 @@ export type Database = {
           created_at?: string
           email: string
           event_date?: string | null
+          event_location?: string | null
+          event_time?: string | null
+          food_requested?: string | null
           guest_count?: number | null
           id?: string
           message?: string | null
@@ -41,11 +47,44 @@ export type Database = {
           created_at?: string
           email?: string
           event_date?: string | null
+          event_location?: string | null
+          event_time?: string | null
+          food_requested?: string | null
           guest_count?: number | null
           id?: string
           message?: string | null
           name?: string
           phone?: string
+          status?: string
+        }
+        Relationships: []
+      }
+      contact_messages: {
+        Row: {
+          created_at: string
+          customer_name: string
+          email: string | null
+          id: string
+          message: string
+          phone: string | null
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          customer_name: string
+          email?: string | null
+          id?: string
+          message: string
+          phone?: string | null
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          customer_name?: string
+          email?: string | null
+          id?: string
+          message?: string
+          phone?: string | null
           status?: string
         }
         Relationships: []
@@ -259,6 +298,35 @@ export type Database = {
         }
         Relationships: []
       }
+      review_likes: {
+        Row: {
+          created_at: string
+          id: string
+          review_id: string
+          visitor_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          review_id: string
+          visitor_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          review_id?: string
+          visitor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "review_likes_review_id_fkey"
+            columns: ["review_id"]
+            isOneToOne: false
+            referencedRelation: "reviews"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       reviews: {
         Row: {
           author_name: string
@@ -266,6 +334,7 @@ export type Database = {
           created_at: string
           id: string
           is_approved: boolean
+          likes_count: number
           photo_url: string | null
           rating: number
           title: string | null
@@ -277,6 +346,7 @@ export type Database = {
           created_at?: string
           id?: string
           is_approved?: boolean
+          likes_count?: number
           photo_url?: string | null
           rating: number
           title?: string | null
@@ -288,6 +358,7 @@ export type Database = {
           created_at?: string
           id?: string
           is_approved?: boolean
+          likes_count?: number
           photo_url?: string | null
           rating?: number
           title?: string | null
