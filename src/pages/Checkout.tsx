@@ -71,8 +71,6 @@ const Checkout = () => {
       }
     }
   }
-  const tax = Math.max(0, discountedSub * TAX_RATE);
-  const total = Math.max(0, discountedSub + tax);
 
   const applyPromo = () => {
     const code = promoInput.trim().toUpperCase();
