@@ -66,19 +66,19 @@ const Catering = () => {
 
   return (
     <SiteLayout>
-      <section className="relative bg-gradient-smoke border-b border-gold/20 overflow-hidden">
+      <section className="relative border-b border-gold/20 overflow-hidden">
         <div aria-hidden className="absolute left-1/2 top-0 -translate-x-1/2 h-[24rem] w-[40rem] rounded-full bg-primary/20 blur-[140px]" />
-        <div className="relative container py-20 md:py-28 text-center">
-          <span className="badge-premium mb-6"><Sparkles className="h-3 w-3" />Catering</span>
-          <h1 className="font-serif text-6xl md:text-7xl mb-2 leading-[0.95] tracking-tight">
+        <div className="relative container py-28 md:py-36 text-center">
+          <span className="luxury-eyebrow mb-6 inline-flex items-center gap-2"><Sparkles className="h-3 w-3" />Catering</span>
+          <h1 className="luxury-hero-title text-6xl md:text-7xl mb-2">
             Catering by Anderson's <span className="italic text-gradient-ember">Smoking Que</span>
           </h1>
-          <div className="flex items-center justify-center gap-4 mt-6 mb-5">
-            <span className="gold-rule-short" />
+          <div className="flex items-center justify-center gap-4 mt-8 mb-6">
+            <span className="luxury-gold-line" />
             <p className="font-stencil text-xs md:text-sm text-gold tracking-[0.32em]">Smoked Low · Served Bold</p>
-            <span className="gold-rule-short" />
+            <span className="luxury-gold-line" />
           </div>
-          <p className="text-muted-foreground max-w-xl mx-auto leading-relaxed">
+          <p className="luxury-subtitle max-w-xl mx-auto">
             Bring bold smokehouse flavor to your next gathering — from family reunions to corporate galas.
           </p>
         </div>
