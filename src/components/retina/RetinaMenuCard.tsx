@@ -95,7 +95,7 @@ function PricePill({ item }: { item: RetinaMenuItem }) {
   }
   return (
     <div className="text-right shrink-0">
-      <span className="price-pill-premium font-serif text-base leading-none">
+      <span className="luxury-price font-serif text-base leading-none">
         {item.price_alt
           ? `$${Number(item.price).toFixed(0)} / $${Number(item.price_alt).toFixed(0)}`
           : `$${Number(item.price).toFixed(2)}`}
