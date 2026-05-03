@@ -31,6 +31,13 @@ const AdminOrders = () => {
     fetchOrders();
   };
 
+  const updatePayment = async (id: string, payment_status: "paid" | "failed") => {
+    const { error } = await supabase.from("orders").update({ payment_status }).eq("id", id);
+    if (error) return toast.error(error.message);
+    toast.success(payment_status === "paid" ? "Marked as paid" : "Marked as failed");
+    fetchOrders();
+  };
+
   const updateHeroes = async (
     o: any,
     patch: { status?: "verified" | "removed" | "pending_verification"; amount?: number }
