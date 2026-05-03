@@ -190,27 +190,95 @@ const AdminSpecials = () => {
     load();
   };
 
-  const saveHeroes = async () => {
-    const { error } = await supabase
-      .from("business_settings")
-      .update({ setting_value: heroesSettings as any })
-      .eq("setting_key", "community_heroes");
-    if (error) return toast.error(error.message);
-    toast.success("Heroes deal updated");
-  };
+  // Holiday events CRUD
+  const blankHoliday = (): Partial<HolidayEvt> => ({
+    holiday_name: "",
+    holiday_date: new Date().toISOString().slice(0, 10),
+    holiday_type: "custom",
+    business_status: "Open",
+    is_active: true,
+    display_order: holidays.length,
+  });
 
-  const addHourOverride = async () => {
-    const date = prompt("Date (YYYY-MM-DD)?");
-    if (!date) return;
-    const status = prompt("Status: open / closed / special_hours", "closed") || "closed";
-    const label = prompt("Label (e.g., Christmas Day)?", "") || null;
-    const { error } = await supabase.from("business_hours_overrides").insert({ override_date: date, status: status as any, label });
-    if (error) return toast.error(error.message);
+  const saveHoliday = async () => {
+    if (!editingHoliday) return;
+    if (!editingHoliday.holiday_name?.trim()) return toast.error("Name required");
+    if (!editingHoliday.holiday_date) return toast.error("Date required");
+    const payload: any = { ...editingHoliday };
+    if (payload.id) {
+      const { id, ...rest } = payload;
+      const { error } = await supabase.from("holiday_events").update(rest).eq("id", id);
+      if (error) return toast.error(error.message);
+    } else {
+      const { error } = await supabase.from("holiday_events").insert(payload);
+      if (error) return toast.error(error.message);
+    }
+    toast.success("Holiday saved");
+    setEditingHoliday(null);
     load();
   };
 
-  const removeOverride = async (id: string) => {
-    await supabase.from("business_hours_overrides").delete().eq("id", id);
+  const removeHoliday = async (id: string) => {
+    if (!confirm("Delete this holiday?")) return;
+    await supabase.from("holiday_events").delete().eq("id", id);
+    load();
+  };
+
+  // Community discount CRUD
+  const blankDiscount = (): Partial<CommunityDisc> => ({
+    title: "Community Heroes Deal",
+    description: "",
+    eligible_groups: ["Law Enforcement", "Firefighter", "Teacher", "Veteran"],
+    discount_type: "percentage",
+    discount_value: 10,
+    min_subtotal: 0,
+    max_discount: null,
+    requires_id_verification: true,
+    allow_online_selection: true,
+    is_active: true,
+    terms: "Valid ID may be required at pickup or delivery. Discount may be adjusted if eligibility cannot be verified.",
+  });
+
+  const saveDiscount = async () => {
+    if (!editingDiscount) return;
+    if (!editingDiscount.title?.trim()) return toast.error("Title required");
+    const payload: any = {
+      ...editingDiscount,
+      eligible_groups: editingDiscount.eligible_groups ?? [],
+      discount_value: Number(editingDiscount.discount_value ?? 0),
+      min_subtotal: editingDiscount.min_subtotal == null ? 0 : Number(editingDiscount.min_subtotal),
+      max_discount: editingDiscount.max_discount == null || (editingDiscount.max_discount as any) === "" ? null : Number(editingDiscount.max_discount),
+    };
+    if (payload.id) {
+      const { id, ...rest } = payload;
+      const { error } = await supabase.from("community_discounts").update(rest).eq("id", id);
+      if (error) return toast.error(error.message);
+    } else {
+      const { error } = await supabase.from("community_discounts").insert(payload);
+      if (error) return toast.error(error.message);
+    }
+    toast.success("Discount saved");
+    setEditingDiscount(null);
+    load();
+  };
+
+  const removeDiscount = async (id: string) => {
+    if (!confirm("Delete this discount?")) return;
+    await supabase.from("community_discounts").delete().eq("id", id);
+    load();
+  };
+
+  const toggleDiscountActive = async (d: CommunityDisc) => {
+    await supabase.from("community_discounts").update({ is_active: !d.is_active }).eq("id", d.id);
+    load();
+  };
+
+  const verifyDiscountOrder = async (orderId: string, status: "Verified" | "Removed") => {
+    const patch: any = { discount_status: status };
+    if (status === "Removed") patch.discount_amount = 0;
+    const { error } = await supabase.from("orders").update(patch).eq("id", orderId);
+    if (error) return toast.error(error.message);
+    toast.success(`Marked ${status}`);
     load();
   };
 
