@@ -20,6 +20,9 @@ import AdminReviews from "./pages/admin/AdminReviews";
 import AdminCatering from "./pages/admin/AdminCatering";
 import AdminContact from "./pages/admin/AdminContact";
 import NotFound from "./pages/NotFound";
+import Specials from "./pages/Specials";
+import HolidayCalendar from "./pages/HolidayCalendar";
+import AdminSpecials from "./pages/admin/AdminSpecials";
 
 const queryClient = new QueryClient();
 
