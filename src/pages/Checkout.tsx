@@ -48,15 +48,9 @@ const Checkout = () => {
   const [submitting, setSubmitting] = useState(false);
   const [promoInput, setPromoInput] = useState("");
   const [promo, setPromo] = useState<Promo | null>(null);
-  const [heroesSettings, setHeroesSettings] = useState<HeroesSettings | null>(null);
+  const { discount: communityDiscount } = useCommunityDiscount();
   const [heroesGroup, setHeroesGroup] = useState<string>("");
   const [heroesAck, setHeroesAck] = useState(false);
-
-  useEffect(() => {
-    supabase.from("business_settings").select("setting_value").eq("setting_key", "community_heroes").maybeSingle().then(({ data }) => {
-      if (data?.setting_value) setHeroesSettings(data.setting_value as any);
-    });
-  }, []);
   const toggleDebug = () => {
     const next = new URLSearchParams(searchParams);
     if (debugEnabled) next.delete("debug");
@@ -193,13 +187,15 @@ const Checkout = () => {
   const discountAmount = breakdown.discountAmount;
   const discountedSub = breakdown.discountedSub;
   const discountRate = promo?.type === "percent" ? Math.min(Math.max(promo.value, 0), 1) : 0;
-  const heroesEnabled = !!heroesSettings?.enabled;
-  const heroesPercent = Math.min(Math.max(Number(heroesSettings?.discount_percent ?? 0), 0), 100) / 100;
-  const heroesActive = heroesEnabled && !!heroesGroup && heroesAck && heroesPercent > 0;
-  const heroesDiscount = heroesActive ? Math.round(discountedSub * heroesPercent * 100) / 100 : 0;
+  const heroesEnabled = !!communityDiscount?.is_active && (communityDiscount?.allow_online_selection ?? true);
+  const heroesActive = heroesEnabled && !!heroesGroup && heroesAck;
+  const heroesDiscount = heroesActive ? computeCommunityDiscountAmount(communityDiscount, discountedSub) : 0;
   const subAfterAll = Math.max(0, discountedSub - heroesDiscount);
   const tax = Math.max(0, subAfterAll * TAX_RATE);
   const total = Math.max(0, subAfterAll + tax);
+  const heroesPercent = communityDiscount?.discount_type === "percentage"
+    ? Math.min(Math.max(Number(communityDiscount.discount_value), 0), 100) / 100
+    : 0;
 
   // Dev-time invariant assertion (non-production safety net).
   if (import.meta.env.DEV) {
