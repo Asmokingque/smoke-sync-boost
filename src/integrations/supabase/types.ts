@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      business_hours_overrides: {
+        Row: {
+          close_time: string | null
+          created_at: string
+          holiday_key: string | null
+          id: string
+          label: string | null
+          note: string | null
+          open_time: string | null
+          override_date: string
+          status: Database["public"]["Enums"]["hours_override_status"]
+          updated_at: string
+        }
+        Insert: {
+          close_time?: string | null
+          created_at?: string
+          holiday_key?: string | null
+          id?: string
+          label?: string | null
+          note?: string | null
+          open_time?: string | null
+          override_date: string
+          status?: Database["public"]["Enums"]["hours_override_status"]
+          updated_at?: string
+        }
+        Update: {
+          close_time?: string | null
+          created_at?: string
+          holiday_key?: string | null
+          id?: string
+          label?: string | null
+          note?: string | null
+          open_time?: string | null
+          override_date?: string
+          status?: Database["public"]["Enums"]["hours_override_status"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
       business_settings: {
         Row: {
           created_at: string
@@ -311,6 +350,12 @@ export type Database = {
           customer_phone: string
           delivery_address: string | null
           delivery_fee: number
+          heroes_acknowledged: boolean
+          heroes_discount_amount: number
+          heroes_discount_status:
+            | Database["public"]["Enums"]["heroes_status"]
+            | null
+          heroes_group: string | null
           id: string
           notes: string | null
           order_number: string | null
@@ -335,6 +380,12 @@ export type Database = {
           customer_phone: string
           delivery_address?: string | null
           delivery_fee?: number
+          heroes_acknowledged?: boolean
+          heroes_discount_amount?: number
+          heroes_discount_status?:
+            | Database["public"]["Enums"]["heroes_status"]
+            | null
+          heroes_group?: string | null
           id?: string
           notes?: string | null
           order_number?: string | null
@@ -359,6 +410,12 @@ export type Database = {
           customer_phone?: string
           delivery_address?: string | null
           delivery_fee?: number
+          heroes_acknowledged?: boolean
+          heroes_discount_amount?: number
+          heroes_discount_status?:
+            | Database["public"]["Enums"]["heroes_status"]
+            | null
+          heroes_group?: string | null
           id?: string
           notes?: string | null
           order_number?: string | null
@@ -476,6 +533,72 @@ export type Database = {
         }
         Relationships: []
       }
+      specials: {
+        Row: {
+          all_day_orderable: boolean
+          available_from: string | null
+          available_until: string | null
+          created_at: string
+          description: string | null
+          display_order: number
+          end_time: string | null
+          holiday_key: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean
+          regular_price: number | null
+          sold_out: boolean
+          special_price: number
+          start_time: string | null
+          title: string
+          type: Database["public"]["Enums"]["special_type"]
+          updated_at: string
+          weekdays: number[] | null
+        }
+        Insert: {
+          all_day_orderable?: boolean
+          available_from?: string | null
+          available_until?: string | null
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          end_time?: string | null
+          holiday_key?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          regular_price?: number | null
+          sold_out?: boolean
+          special_price: number
+          start_time?: string | null
+          title: string
+          type: Database["public"]["Enums"]["special_type"]
+          updated_at?: string
+          weekdays?: number[] | null
+        }
+        Update: {
+          all_day_orderable?: boolean
+          available_from?: string | null
+          available_until?: string | null
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          end_time?: string | null
+          holiday_key?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          regular_price?: number | null
+          sold_out?: boolean
+          special_price?: number
+          start_time?: string | null
+          title?: string
+          type?: Database["public"]["Enums"]["special_type"]
+          updated_at?: string
+          weekdays?: number[] | null
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -512,6 +635,8 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "customer"
+      heroes_status: "pending_verification" | "verified" | "removed"
+      hours_override_status: "open" | "closed" | "special_hours"
       order_status:
         | "pending"
         | "confirmed"
@@ -519,6 +644,7 @@ export type Database = {
         | "ready"
         | "completed"
         | "cancelled"
+      special_type: "daily" | "lunch" | "holiday" | "featured" | "catering"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -647,6 +773,8 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "customer"],
+      heroes_status: ["pending_verification", "verified", "removed"],
+      hours_override_status: ["open", "closed", "special_hours"],
       order_status: [
         "pending",
         "confirmed",
@@ -655,6 +783,7 @@ export const Constants = {
         "completed",
         "cancelled",
       ],
+      special_type: ["daily", "lunch", "holiday", "featured", "catering"],
     },
   },
 } as const
