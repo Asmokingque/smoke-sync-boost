@@ -307,9 +307,9 @@ const Menu = () => {
                 {idx > 0 && idx % 2 === 0 && <CateringCallout />}
                 <div id={`cat-${cat.slug}`} className="scroll-mt-32">
                   <div className="text-center mb-8">
-                    <div className="menu-divider mb-4" />
-                    <h2 className="font-display text-4xl md:text-5xl text-primary tracking-widest">{cat.name.toUpperCase()}</h2>
-                    <div className="menu-divider mt-4" />
+                    <SmokeDivider className="mb-4" />
+                    <h2 className="font-display text-4xl md:text-5xl retina-heading">{cat.name.toUpperCase()}</h2>
+                    <SmokeDivider className="mt-4" />
                     {cat.description && (
                       <p className="text-sm text-muted-foreground mt-3 max-w-xl mx-auto">{cat.description}</p>
                     )}
