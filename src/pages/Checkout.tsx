@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Loader2, ShoppingBag, Tag, X, Bug, Download, Check, ShoppingCart, User, Receipt, Sparkles, Clock, Phone, Mail, MessageSquare } from "lucide-react";
+import { Loader2, ShoppingBag, Tag, X, Bug, Download, Check, ShoppingCart, User, Receipt, Sparkles, Clock, Phone, Mail, MessageSquare, MapPin, Store, Truck, Plus, Minus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
 import { computeDiscount, buildSafeOrderTotals, type Promo } from "@/lib/promo";
@@ -20,6 +20,11 @@ const schema = z.object({
   customer_phone: z.string().trim().min(7, "Phone is required").max(30),
   pickup_time: z.string().optional(),
   notes: z.string().max(500).optional(),
+  order_type: z.enum(["Pickup", "Delivery"]),
+  delivery_address: z.string().trim().max(300).optional(),
+}).refine((d) => d.order_type !== "Delivery" || (d.delivery_address && d.delivery_address.length >= 6), {
+  message: "Delivery address is required",
+  path: ["delivery_address"],
 });
 
 const TAX_RATE = 0.07;
@@ -31,7 +36,7 @@ const PROMOS: Promo[] = [
 ];
 
 const Checkout = () => {
-  const { items, subtotal, clear } = useCart();
+  const { items, subtotal, clear, updateQuantity, removeItem } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -163,6 +168,8 @@ const Checkout = () => {
     customer_phone: "",
     pickup_time: "",
     notes: "",
+    order_type: "Pickup" as "Pickup" | "Delivery",
+    delivery_address: "",
   });
 
   const breakdown = computeDiscount(
@@ -265,6 +272,8 @@ const Checkout = () => {
           customer_email: parsed.data.customer_email,
           customer_phone: parsed.data.customer_phone,
           pickup_time: parsed.data.pickup_time ? new Date(parsed.data.pickup_time).toISOString() : null,
+          order_type: parsed.data.order_type,
+          delivery_address: parsed.data.order_type === "Delivery" ? parsed.data.delivery_address ?? null : null,
           notes: [parsed.data.notes, promo ? `Promo: ${promo.code} (${promo.label}) −$${safe.discount.toFixed(2)}` : null].filter(Boolean).join(" • ") || null,
           subtotal: safe.subtotal,
           tax: safe.tax,
@@ -357,11 +366,64 @@ const Checkout = () => {
 
       <section className="container py-12 md:py-16 max-w-5xl">
         <div className="grid lg:grid-cols-[1fr_400px] gap-8">
-          <form onSubmit={handleSubmit} className="space-y-8 retina-menu-card p-6 md:p-8 ring-gold-soft">
+          <form onSubmit={handleSubmit} className="space-y-8 premium-glass-card p-6 md:p-8">
             <div>
               <div className="flex items-center gap-3 mb-1">
                 <span className="h-px flex-1 bg-gradient-to-r from-gold/50 to-transparent" />
-                <h2 className="font-serif text-2xl tracking-tight whitespace-nowrap">Pickup Details</h2>
+                <h2 className="font-serif text-2xl tracking-tight whitespace-nowrap">Order Method</h2>
+                <span className="h-px flex-1 bg-gradient-to-l from-gold/50 to-transparent" />
+              </div>
+              <p className="text-xs text-muted-foreground text-center">Choose how you'd like to receive your order.</p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              {[
+                { value: "Pickup" as const, icon: Store, title: "Pickup", sub: "Ready at the smokehouse" },
+                { value: "Delivery" as const, icon: Truck, title: "Delivery", sub: "We bring it to you" },
+              ].map((opt) => {
+                const Icon = opt.icon;
+                const active = form.order_type === opt.value;
+                return (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => setForm({ ...form, order_type: opt.value })}
+                    className={[
+                      "rounded-2xl border p-4 text-left transition-all flex items-start gap-3",
+                      active
+                        ? "border-gold/70 bg-gradient-to-br from-primary/15 to-background/40 ring-gold-soft"
+                        : "border-border/60 bg-background/40 hover:border-gold/40",
+                    ].join(" ")}
+                  >
+                    <Icon className={`h-5 w-5 mt-0.5 shrink-0 ${active ? "text-gold" : "text-muted-foreground"}`} />
+                    <div>
+                      <div className={`font-stencil text-sm tracking-wider ${active ? "text-gold" : "text-foreground"}`}>{opt.title}</div>
+                      <div className="text-[11px] text-muted-foreground mt-0.5">{opt.sub}</div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+
+            {form.order_type === "Delivery" && (
+              <div className="space-y-2">
+                <Label htmlFor="address" className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-muted-foreground"><MapPin className="h-3 w-3 text-gold" />Delivery Address *</Label>
+                <Textarea
+                  id="address"
+                  required
+                  value={form.delivery_address}
+                  onChange={(e) => setForm({ ...form, delivery_address: e.target.value })}
+                  rows={2}
+                  placeholder="Street, city, ZIP, apt #, gate code…"
+                  maxLength={300}
+                />
+              </div>
+            )}
+
+            <div>
+              <div className="flex items-center gap-3 mb-1">
+                <span className="h-px flex-1 bg-gradient-to-r from-gold/50 to-transparent" />
+                <h2 className="font-serif text-2xl tracking-tight whitespace-nowrap">Your Details</h2>
                 <span className="h-px flex-1 bg-gradient-to-l from-gold/50 to-transparent" />
               </div>
               <p className="text-xs text-muted-foreground text-center">Tell us how to reach you when your order's ready.</p>
@@ -382,7 +444,10 @@ const Checkout = () => {
               <Input id="email" type="email" required value={form.customer_email} onChange={(e) => setForm({ ...form, customer_email: e.target.value })} className="h-12" />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="pickup" className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-muted-foreground"><Clock className="h-3 w-3 text-gold" />Preferred Pickup Time</Label>
+              <Label htmlFor="pickup" className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-muted-foreground">
+                <Clock className="h-3 w-3 text-gold" />
+                {form.order_type === "Delivery" ? "Preferred Delivery Time" : "Preferred Pickup Time"}
+              </Label>
               <Input id="pickup" type="datetime-local" value={form.pickup_time} onChange={(e) => setForm({ ...form, pickup_time: e.target.value })} className="h-12" />
             </div>
             <div className="space-y-2">
@@ -393,7 +458,9 @@ const Checkout = () => {
             <div className="rounded-md border border-gold/30 bg-gradient-to-r from-primary/5 via-gold/5 to-primary/5 p-4 text-sm flex gap-3">
               <Sparkles className="h-4 w-4 text-gold shrink-0 mt-0.5" />
               <div>
-                <strong className="text-gold font-stencil tracking-wider text-xs uppercase block mb-1">Pay at Pickup</strong>
+                <strong className="text-gold font-stencil tracking-wider text-xs uppercase block mb-1">
+                  {form.order_type === "Delivery" ? "Pay on Delivery" : "Pay at Pickup"}
+                </strong>
                 <span className="text-muted-foreground">We'll confirm your order by phone or email. Online card payment is coming soon.</span>
               </div>
             </div>
@@ -401,13 +468,13 @@ const Checkout = () => {
             <Button
               type="submit"
               disabled={submitting}
-              className="w-full h-14 bg-primary hover:bg-primary/90 font-stencil text-base shadow-ember tracking-widest"
+              className="w-full h-14 premium-button font-stencil text-base tracking-widest"
             >
-              {submitting ? <Loader2 className="h-5 w-5 animate-spin" /> : `Place Order — $${total.toFixed(2)}`}
+              {submitting ? <Loader2 className="h-5 w-5 animate-spin" /> : `Place ${form.order_type} Order — $${total.toFixed(2)}`}
             </Button>
           </form>
 
-          <aside className="retina-menu-card p-6 h-fit lg:sticky lg:top-24">
+          <aside className="premium-glass-card p-6 h-fit lg:sticky lg:top-24">
             <div className="flex items-center gap-3 mb-2">
               <Receipt className="h-4 w-4 text-gold" />
               <h2 className="font-serif text-2xl tracking-tight">Order Summary</h2>
@@ -477,9 +544,37 @@ const Checkout = () => {
                       <div className="text-[11px] italic text-muted-foreground/80 mt-1">Note: {i.notes}</div>
                     )}
 
-                    <div className="flex justify-between text-[11px] text-muted-foreground mt-1.5">
-                      <span>${i.price.toFixed(2)} × {i.quantity}</span>
-                      {opts.length === 0 && i.priceLabel && <span>{i.priceLabel}</span>}
+                    <div className="flex items-center justify-between mt-2">
+                      <div className="inline-flex items-center rounded-full border border-gold/30 bg-background/50 overflow-hidden">
+                        <button
+                          type="button"
+                          aria-label="Decrease quantity"
+                          onClick={() => updateQuantity(i.id, i.quantity - 1)}
+                          className="h-8 w-8 inline-flex items-center justify-center text-muted-foreground hover:text-gold hover:bg-gold/5 transition-colors"
+                        >
+                          <Minus className="h-3.5 w-3.5" />
+                        </button>
+                        <span className="px-3 font-stencil text-xs tracking-widest text-foreground min-w-[1.75rem] text-center">{i.quantity}</span>
+                        <button
+                          type="button"
+                          aria-label="Increase quantity"
+                          onClick={() => updateQuantity(i.id, i.quantity + 1)}
+                          className="h-8 w-8 inline-flex items-center justify-center text-muted-foreground hover:text-gold hover:bg-gold/5 transition-colors"
+                        >
+                          <Plus className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className="text-[11px] text-muted-foreground">${i.price.toFixed(2)} ea</span>
+                        <button
+                          type="button"
+                          aria-label="Remove item"
+                          onClick={() => removeItem(i.id)}
+                          className="text-muted-foreground/70 hover:text-destructive transition-colors"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
                     </div>
 
                     {lineDiscount > 0 && (
