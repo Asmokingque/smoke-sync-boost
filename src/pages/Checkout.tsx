@@ -432,23 +432,23 @@ const Checkout = () => {
             <div className="grid sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="name" className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-muted-foreground"><User className="h-3 w-3 text-gold" />Name *</Label>
-                <Input id="name" required value={form.customer_name} onChange={(e) => setForm({ ...form, customer_name: e.target.value })} className="h-12" />
+                <Input id="name" required value={form.customer_name} onChange={(e) => setForm({ ...form, customer_name: e.target.value })} className="luxury-input h-12" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="phone" className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-muted-foreground"><Phone className="h-3 w-3 text-gold" />Phone *</Label>
-                <Input id="phone" type="tel" required value={form.customer_phone} onChange={(e) => setForm({ ...form, customer_phone: e.target.value })} className="h-12" />
+                <Input id="phone" type="tel" required value={form.customer_phone} onChange={(e) => setForm({ ...form, customer_phone: e.target.value })} className="luxury-input h-12" />
               </div>
             </div>
             <div className="space-y-2">
               <Label htmlFor="email" className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-muted-foreground"><Mail className="h-3 w-3 text-gold" />Email *</Label>
-              <Input id="email" type="email" required value={form.customer_email} onChange={(e) => setForm({ ...form, customer_email: e.target.value })} className="h-12" />
+              <Input id="email" type="email" required value={form.customer_email} onChange={(e) => setForm({ ...form, customer_email: e.target.value })} className="luxury-input h-12" />
             </div>
             <div className="space-y-2">
               <Label htmlFor="pickup" className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-muted-foreground">
                 <Clock className="h-3 w-3 text-gold" />
                 {form.order_type === "Delivery" ? "Preferred Delivery Time" : "Preferred Pickup Time"}
               </Label>
-              <Input id="pickup" type="datetime-local" value={form.pickup_time} onChange={(e) => setForm({ ...form, pickup_time: e.target.value })} className="h-12" />
+              <Input id="pickup" type="datetime-local" value={form.pickup_time} onChange={(e) => setForm({ ...form, pickup_time: e.target.value })} className="luxury-input h-12" />
             </div>
             <div className="space-y-2">
               <Label htmlFor="notes" className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-muted-foreground"><MessageSquare className="h-3 w-3 text-gold" />Special Requests</Label>
@@ -469,7 +469,7 @@ const Checkout = () => {
               <Button
                 type="submit"
                 disabled={submitting}
-                className="h-14 premium-button font-stencil text-sm tracking-widest"
+                className="h-14 luxury-primary-btn font-stencil text-sm tracking-widest"
               >
                 {submitting ? <Loader2 className="h-5 w-5 animate-spin" /> : `Place ${form.order_type} Order`}
               </Button>
@@ -477,7 +477,7 @@ const Checkout = () => {
                 type="button"
                 disabled
                 title="Card payment coming soon"
-                className="h-14 gold-outline-button font-stencil text-sm tracking-widest cursor-not-allowed opacity-80"
+                className="h-14 luxury-secondary-btn font-stencil text-sm tracking-widest cursor-not-allowed opacity-80"
               >
                 Pay with Card · ${total.toFixed(2)}
               </Button>
