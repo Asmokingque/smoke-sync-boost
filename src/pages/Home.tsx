@@ -109,72 +109,97 @@ const Home = () => {
       </section>
 
       {/* HIGHLIGHTS */}
-      <section className="container py-20">
-        <div className="grid md:grid-cols-3 gap-6">
+      <section className="container py-28 md:py-32">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.6 }}
+          className="grid md:grid-cols-3 gap-6"
+        >
           {[
             { icon: Flame, title: "Wood-Fired", body: "Slow-smoked over hardwood for that deep, signature bark and smoke ring." },
             { icon: Clock, title: "Made Daily", body: "Cooked fresh every morning. When it's gone, it's gone — get yours early." },
             { icon: Award, title: "Catering Ready", body: "From small gatherings to large events, we bring the smokehouse to you." },
           ].map((f) => (
-            <div key={f.title} className="retina-menu-card p-8">
+            <div key={f.title} className="luxury-card p-8">
               <f.icon className="h-9 w-9 text-gold mb-4" />
-              <h3 className="font-serif text-3xl mb-2">{f.title}</h3>
-              <span className="gold-rule-short mb-4 block" />
-              <p className="text-muted-foreground leading-relaxed">{f.body}</p>
+              <h3 className="luxury-menu-title text-3xl mb-2">{f.title}</h3>
+              <span className="luxury-gold-line block mb-4" />
+              <p className="luxury-subtitle text-base">{f.body}</p>
             </div>
           ))}
-        </div>
+        </motion.div>
       </section>
 
-      {/* MENU PREVIEW */}
-      <section className="container py-20 border-y border-border bg-charcoal-light/40">
-        <div className="text-center mb-12">
-          <span className="badge-premium mb-4">The Menu</span>
-          <h2 className="font-serif text-5xl md:text-6xl mb-4">Built Around Smoke &amp; Spice</h2>
-          <span className="gold-rule-short mx-auto block mb-4" />
-          <p className="text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            Real smoke. Bold flavor. Southern comfort. Browse the full menu and build your order.
+      {/* SIGNATURE FAVORITES */}
+      <section className="container py-28 md:py-32">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-14"
+        >
+          <span className="luxury-badge mb-5 inline-flex items-center gap-2"><Award className="h-3 w-3" /> Pitmaster Picks</span>
+          <h2 className="luxury-category-title text-sm mb-4">Signature Favorites</h2>
+          <h3 className="luxury-menu-title text-5xl md:text-6xl mb-5">The Bold &amp; The Smoky</h3>
+          <span className="luxury-gold-line mx-auto block mb-5" />
+          <p className="luxury-subtitle max-w-2xl mx-auto">
+            The dishes our regulars come back for — slow-smoked, hand-built, and worth the wait.
           </p>
-        </div>
-
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-10 max-w-4xl mx-auto">
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.6, delay: 0.1 }}
+          className="grid md:grid-cols-3 gap-6"
+        >
           {[
-            { name: "Meats", emoji: "🥩" },
-            { name: "Dinners", emoji: "🍽️" },
-            { name: "Meats x Lb", emoji: "⚖️" },
-            { name: "Sides", emoji: "🌽" },
-            { name: "Desserts", emoji: "🍰" },
-          ].map((c) => (
-            <Link
-              key={c.name}
-              to="/menu"
-              className="bg-card border border-border hover:border-primary/60 rounded-lg p-6 text-center transition-all hover:-translate-y-1 hover:shadow-ember"
-            >
-              <div className="text-3xl mb-2">{c.emoji}</div>
-              <div className="font-stencil text-sm">{c.name}</div>
-            </Link>
+            { name: "Two Meat Plate", desc: "Your choice of two slow-smoked meats with two Southern sides and cornbread.", price: "$15" },
+            { name: "Smoked Brisket by the Pound", desc: "Hardwood-smoked brisket, sliced fresh and sold by the pound.", price: "$28" },
+            { name: "St. Louis Pork Ribs", desc: "Half or full slab — hand-rubbed and smoked low until tender.", price: "$22" },
+          ].map((s) => (
+            <div key={s.name} className="luxury-card p-8 flex flex-col">
+              <div className="flex items-start justify-between gap-3 mb-4">
+                <h4 className="luxury-menu-title text-2xl leading-tight">{s.name}</h4>
+                <span className="luxury-price text-sm">{s.price}</span>
+              </div>
+              <span className="luxury-divider mb-4" />
+              <p className="luxury-subtitle text-sm flex-1 mb-6">{s.desc}</p>
+              <Link to="/menu">
+                <button className="luxury-secondary-btn w-full h-11 font-stencil text-xs tracking-widest">View on Menu</button>
+              </Link>
+            </div>
           ))}
-        </div>
-
-        <div className="text-center">
-          <Button asChild size="lg" className="bg-primary hover:bg-primary/90 font-stencil h-12 px-8">
-            <Link to="/menu">View Full Menu</Link>
-          </Button>
+        </motion.div>
+        <div className="text-center mt-12">
+          <Link to="/menu">
+            <button className="luxury-primary-btn h-14 px-10 font-stencil text-sm tracking-widest">View Full Menu</button>
+          </Link>
         </div>
       </section>
 
       {/* TAGLINE / CTA */}
-      <section className="container py-28 text-center">
-        <img src={logo} alt="" className="h-28 w-28 mx-auto mb-6 opacity-90" width={112} height={112} loading="lazy" />
-        <span className="badge-premium mb-4">Catering</span>
-        <h2 className="font-serif text-5xl md:text-6xl mb-3">Got an Event?</h2>
-        <span className="gold-rule-short mx-auto block mb-5" />
-        <p className="text-muted-foreground max-w-xl mx-auto mb-8 leading-relaxed">
-          Birthdays, reunions, corporate lunches, weddings — we bring the smokehouse to you.
-        </p>
-        <Button asChild size="lg" className="bg-gradient-ember hover:opacity-90 font-stencil h-13 px-10 shadow-ember">
-          <Link to="/catering">Request Catering</Link>
-        </Button>
+      <section className="container py-32 text-center">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.6 }}
+        >
+          <img src={logo} alt="" className="h-28 w-28 mx-auto mb-6 opacity-90" width={112} height={112} loading="lazy" />
+          <span className="luxury-badge mb-5">Catering</span>
+          <h2 className="luxury-menu-title text-5xl md:text-6xl mb-4">An Event Worth Remembering</h2>
+          <span className="luxury-gold-line mx-auto block mb-6" />
+          <p className="luxury-subtitle max-w-xl mx-auto mb-10">
+            Birthdays, reunions, corporate lunches, weddings — we bring the smokehouse to you with bold flavor and full-service hospitality.
+          </p>
+          <Link to="/catering">
+            <button className="luxury-primary-btn h-14 px-12 font-stencil text-sm tracking-widest">Request Catering</button>
+          </Link>
+        </motion.div>
       </section>
     </SiteLayout>
   );
