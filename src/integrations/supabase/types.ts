@@ -128,6 +128,63 @@ export type Database = {
         }
         Relationships: []
       }
+      community_discounts: {
+        Row: {
+          allow_online_selection: boolean | null
+          created_at: string | null
+          description: string | null
+          discount_type: string
+          discount_value: number
+          eligible_groups: Json
+          ends_at: string | null
+          id: string
+          is_active: boolean | null
+          max_discount: number | null
+          min_subtotal: number | null
+          requires_id_verification: boolean | null
+          starts_at: string | null
+          terms: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          allow_online_selection?: boolean | null
+          created_at?: string | null
+          description?: string | null
+          discount_type?: string
+          discount_value: number
+          eligible_groups?: Json
+          ends_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          max_discount?: number | null
+          min_subtotal?: number | null
+          requires_id_verification?: boolean | null
+          starts_at?: string | null
+          terms?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          allow_online_selection?: boolean | null
+          created_at?: string | null
+          description?: string | null
+          discount_type?: string
+          discount_value?: number
+          eligible_groups?: Json
+          ends_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          max_discount?: number | null
+          min_subtotal?: number | null
+          requires_id_verification?: boolean | null
+          starts_at?: string | null
+          terms?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       contact_messages: {
         Row: {
           created_at: string
@@ -157,6 +214,65 @@ export type Database = {
           status?: string
         }
         Relationships: []
+      }
+      holiday_events: {
+        Row: {
+          banner_message: string | null
+          banner_title: string | null
+          business_status: string | null
+          close_time: string | null
+          created_at: string | null
+          display_order: number | null
+          holiday_date: string
+          holiday_name: string
+          holiday_type: string
+          id: string
+          is_active: boolean | null
+          open_time: string | null
+          special_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          banner_message?: string | null
+          banner_title?: string | null
+          business_status?: string | null
+          close_time?: string | null
+          created_at?: string | null
+          display_order?: number | null
+          holiday_date: string
+          holiday_name: string
+          holiday_type?: string
+          id?: string
+          is_active?: boolean | null
+          open_time?: string | null
+          special_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          banner_message?: string | null
+          banner_title?: string | null
+          business_status?: string | null
+          close_time?: string | null
+          created_at?: string | null
+          display_order?: number | null
+          holiday_date?: string
+          holiday_name?: string
+          holiday_type?: string
+          id?: string
+          is_active?: boolean | null
+          open_time?: string | null
+          special_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "holiday_events_special_id_fkey"
+            columns: ["special_id"]
+            isOneToOne: false
+            referencedRelation: "specials"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       menu_categories: {
         Row: {
@@ -344,12 +460,19 @@ export type Database = {
       }
       orders: {
         Row: {
+          community_group: string | null
           created_at: string
           customer_email: string
           customer_name: string
           customer_phone: string
           delivery_address: string | null
           delivery_fee: number
+          discount_amount: number | null
+          discount_id: string | null
+          discount_name: string | null
+          discount_status: string | null
+          discount_verified_at: string | null
+          discount_verified_by: string | null
           heroes_acknowledged: boolean
           heroes_discount_amount: number
           heroes_discount_status:
@@ -374,12 +497,19 @@ export type Database = {
           user_id: string | null
         }
         Insert: {
+          community_group?: string | null
           created_at?: string
           customer_email: string
           customer_name: string
           customer_phone: string
           delivery_address?: string | null
           delivery_fee?: number
+          discount_amount?: number | null
+          discount_id?: string | null
+          discount_name?: string | null
+          discount_status?: string | null
+          discount_verified_at?: string | null
+          discount_verified_by?: string | null
           heroes_acknowledged?: boolean
           heroes_discount_amount?: number
           heroes_discount_status?:
@@ -404,12 +534,19 @@ export type Database = {
           user_id?: string | null
         }
         Update: {
+          community_group?: string | null
           created_at?: string
           customer_email?: string
           customer_name?: string
           customer_phone?: string
           delivery_address?: string | null
           delivery_fee?: number
+          discount_amount?: number | null
+          discount_id?: string | null
+          discount_name?: string | null
+          discount_status?: string | null
+          discount_verified_at?: string | null
+          discount_verified_by?: string | null
           heroes_acknowledged?: boolean
           heroes_discount_amount?: number
           heroes_discount_status?:
@@ -532,6 +669,66 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: []
+      }
+      special_items: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          display_order: number | null
+          id: string
+          included_sides: number | null
+          is_active: boolean | null
+          item_name: string
+          menu_item_id: string | null
+          regular_price: number | null
+          selected_options: Json | null
+          special_id: string | null
+          special_price: number
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          included_sides?: number | null
+          is_active?: boolean | null
+          item_name: string
+          menu_item_id?: string | null
+          regular_price?: number | null
+          selected_options?: Json | null
+          special_id?: string | null
+          special_price: number
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          included_sides?: number | null
+          is_active?: boolean | null
+          item_name?: string
+          menu_item_id?: string | null
+          regular_price?: number | null
+          selected_options?: Json | null
+          special_id?: string | null
+          special_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "special_items_menu_item_id_fkey"
+            columns: ["menu_item_id"]
+            isOneToOne: false
+            referencedRelation: "menu_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "special_items_special_id_fkey"
+            columns: ["special_id"]
+            isOneToOne: false
+            referencedRelation: "specials"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       specials: {
         Row: {
