@@ -125,14 +125,16 @@ const Catering = () => {
         <div className="retina-menu-card ring-gold-soft p-6 md:p-8">
           {done ? (
             <div className="text-center py-8">
-              <h2 className="font-display text-3xl mb-3">Thank you!</h2>
+              <h2 className="font-serif text-4xl mb-3">Thank you!</h2>
+              <span className="gold-rule-short mx-auto block mb-4" />
               <p className="text-muted-foreground">
                 We received your catering inquiry and will reach out within 24 hours.
               </p>
             </div>
           ) : (
             <form onSubmit={submit} className="space-y-5">
-              <h2 className="font-display text-3xl tracking-wider mb-2">Request Catering</h2>
+              <h2 className="font-serif text-4xl mb-1">Request Catering</h2>
+              <span className="gold-rule-short block mb-4" />
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="cname">Name *</Label>
