@@ -487,6 +487,53 @@ const Checkout = () => {
               <Textarea id="notes" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} rows={3} placeholder="Allergies, sauce on the side, etc." className="luxury-input" />
             </div>
 
+            {heroesEnabled && heroesSettings && (
+              <div className="rounded-2xl border border-gold/30 bg-gradient-to-br from-primary/10 via-background/40 to-background/40 p-5 space-y-3">
+                <div className="flex items-start gap-3">
+                  <Heart className="h-5 w-5 text-gold shrink-0 mt-0.5" />
+                  <div className="flex-1">
+                    <div className="font-stencil text-xs tracking-[0.25em] uppercase text-gold mb-1">Community Heroes Deal</div>
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                      {Math.round(heroesPercent * 100)}% off for {heroesSettings.eligible_groups.join(", ")}.
+                    </p>
+                  </div>
+                </div>
+                <div className="grid sm:grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => { setHeroesGroup(""); setHeroesAck(false); }}
+                    className={`rounded-xl border px-3 py-2 text-left text-xs font-stencil tracking-wider transition-colors ${!heroesGroup ? "border-gold/60 bg-gold/5 text-gold" : "border-border/60 text-muted-foreground hover:border-gold/40"}`}
+                  >
+                    No, thanks
+                  </button>
+                  {heroesSettings.eligible_groups.map((g) => (
+                    <button
+                      key={g}
+                      type="button"
+                      onClick={() => setHeroesGroup(g)}
+                      className={`rounded-xl border px-3 py-2 text-left text-xs font-stencil tracking-wider transition-colors ${heroesGroup === g ? "border-gold/60 bg-gold/5 text-gold" : "border-border/60 text-muted-foreground hover:border-gold/40"}`}
+                    >
+                      {g}
+                    </button>
+                  ))}
+                </div>
+                {heroesGroup && (
+                  <>
+                    <label className="flex items-start gap-2 text-[11px] text-muted-foreground leading-relaxed cursor-pointer">
+                      <Checkbox checked={heroesAck} onCheckedChange={(v) => setHeroesAck(!!v)} className="mt-0.5" />
+                      <span>{heroesSettings.terms}</span>
+                    </label>
+                    {heroesActive && (
+                      <div className="flex items-center gap-2 text-[11px] text-emerald-400">
+                        <ShieldCheck className="h-3.5 w-3.5" />
+                        Heroes discount applied — pending verification at {form.order_type === "Delivery" ? "delivery" : "pickup"}.
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+            )}
+
             <div className="rounded-md border border-gold/30 bg-gradient-to-r from-primary/5 via-gold/5 to-primary/5 p-4 text-sm flex gap-3">
               <Sparkles className="h-4 w-4 text-gold shrink-0 mt-0.5" />
               <div>
