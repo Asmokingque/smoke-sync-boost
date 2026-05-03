@@ -92,6 +92,12 @@ const AdminOrders = () => {
                 </div>
                 <div className="flex flex-col items-end gap-2">
                   <OrderStatusBadge status={o.status} />
+                  {o.payment_status === "cod_pending" && (
+                    <span className="inline-flex items-center gap-1.5 rounded-full border border-gold/60 bg-gold/10 px-2.5 py-1 font-stencil text-[10px] tracking-widest uppercase text-gold">
+                      <span className="h-1.5 w-1.5 rounded-full bg-gold" />
+                      Cash on Delivery (COD)
+                    </span>
+                  )}
                   <div className="font-display text-2xl text-primary">${Number(o.total).toFixed(2)}</div>
                   <Select value={o.status} onValueChange={(v) => updateStatus(o.id, v)}>
                     <SelectTrigger className="w-40 h-9"><SelectValue /></SelectTrigger>
