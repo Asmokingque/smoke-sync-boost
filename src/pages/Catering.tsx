@@ -213,7 +213,7 @@ const Catering = () => {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="cfood">Food Requested</Label>
-                <Textarea id="cfood" rows={3} placeholder="Brisket, ribs, sides, etc." value={form.food_requested} onChange={(e) => setForm({ ...form, food_requested: e.target.value })} />
+                <Textarea id="cfood" rows={3} placeholder="Brisket, ribs, sides, etc." value={form.food_requested} onChange={(e) => setForm({ ...form, food_requested: e.target.value })} className="luxury-input" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="cmsg">Additional Notes</Label>
