@@ -35,6 +35,8 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/menu" element={<Menu />} />
+          <Route path="/specials" element={<Specials />} />
+          <Route path="/holiday-calendar" element={<HolidayCalendar />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/order-confirmation/:id" element={<OrderConfirmation />} />
           <Route path="/order-status" element={<OrderStatus />} />
@@ -46,6 +48,7 @@ const App = () => (
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<AdminOrders />} />
             <Route path="menu" element={<AdminMenu />} />
+            <Route path="specials" element={<AdminSpecials />} />
             <Route path="reviews" element={<AdminReviews />} />
             <Route path="catering" element={<AdminCatering />} />
             <Route path="contact" element={<AdminContact />} />
