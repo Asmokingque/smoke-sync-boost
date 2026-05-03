@@ -302,7 +302,7 @@ const OrderConfirmation = () => {
             asChild
             className="h-14 bg-primary hover:bg-primary/90 font-stencil tracking-widest shadow-ember"
           >
-            <Link to={`/order-status/${id}`}>
+            <Link to="/order-status">
               Track Your Order <ArrowRight className="h-4 w-4 ml-2" />
             </Link>
           </Button>
