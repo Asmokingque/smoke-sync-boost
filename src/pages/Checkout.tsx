@@ -740,6 +740,12 @@ const Checkout = () => {
                   <span>${discountedSub.toFixed(2)}</span>
                 </div>
               )}
+              {heroesActive && (
+                <div className="flex justify-between text-emerald-400">
+                  <span>Heroes Deal ({heroesGroup} −{Math.round(heroesPercent * 100)}%)</span>
+                  <span>−${heroesDiscount.toFixed(2)}</span>
+                </div>
+              )}
               <div className="flex justify-between text-muted-foreground"><span>Tax (7%)</span><span>${tax.toFixed(2)}</span></div>
               <div className="mt-3 pt-3 border-t border-gold/30">
                 <div className="flex justify-between items-baseline">
