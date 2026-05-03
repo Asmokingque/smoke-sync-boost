@@ -465,13 +465,26 @@ const Checkout = () => {
               </div>
             </div>
 
-            <Button
-              type="submit"
-              disabled={submitting}
-              className="w-full h-14 premium-button font-stencil text-base tracking-widest"
-            >
-              {submitting ? <Loader2 className="h-5 w-5 animate-spin" /> : `Place ${form.order_type} Order — $${total.toFixed(2)}`}
-            </Button>
+            <div className="grid sm:grid-cols-2 gap-3">
+              <Button
+                type="submit"
+                disabled={submitting}
+                className="h-14 premium-button font-stencil text-sm tracking-widest"
+              >
+                {submitting ? <Loader2 className="h-5 w-5 animate-spin" /> : `Place ${form.order_type} Order`}
+              </Button>
+              <Button
+                type="button"
+                disabled
+                title="Card payment coming soon"
+                className="h-14 gold-outline-button font-stencil text-sm tracking-widest cursor-not-allowed opacity-80"
+              >
+                Pay with Card · ${total.toFixed(2)}
+              </Button>
+            </div>
+            <p className="text-[11px] text-muted-foreground/70 text-center -mt-4">
+              Secure card checkout via Stripe — coming soon.
+            </p>
           </form>
 
           <aside className="premium-glass-card p-6 h-fit lg:sticky lg:top-24">
