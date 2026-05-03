@@ -55,7 +55,7 @@ export function Header({ onCartClick }: { onCartClick: () => void }) {
 
         <div className="flex items-center gap-2">
           <Link to="/menu" className="hidden md:inline-flex">
-            <button className="premium-button h-10 px-5 font-stencil text-xs tracking-widest inline-flex items-center gap-2">
+            <button className="luxury-primary-btn h-10 px-5 font-stencil text-xs tracking-widest inline-flex items-center gap-2">
               <Flame className="h-3.5 w-3.5" /> Order Now
             </button>
           </Link>
