@@ -130,7 +130,7 @@ const Reviews = () => {
       <section className="relative bg-gradient-smoke border-b border-gold/20 overflow-hidden">
         <div aria-hidden className="absolute left-1/2 top-0 -translate-x-1/2 h-[24rem] w-[40rem] rounded-full bg-primary/20 blur-[140px]" />
         <div className="relative container py-20 md:py-28 text-center">
-          <span className="badge-premium mb-6"><Star className="h-3 w-3" />The Experience Wall</span>
+          <span className="luxury-badge mb-6"><Star className="h-3 w-3" />The Experience Wall</span>
           <h1 className="font-serif text-6xl md:text-7xl mb-2 leading-[0.95] tracking-tight">
             The Smokehouse <span className="italic text-gradient-ember">Experience</span>
           </h1>
@@ -162,7 +162,7 @@ const Reviews = () => {
           )}
         </div>
 
-        <aside className="retina-menu-card ring-gold-soft p-6 h-fit lg:sticky lg:top-24">
+        <aside className="luxury-card ring-gold-soft p-6 h-fit lg:sticky lg:top-24">
           <h2 className="font-serif text-3xl mb-1">Leave a Review</h2>
           <span className="gold-rule-short block mb-5" />
           {!user ? (
