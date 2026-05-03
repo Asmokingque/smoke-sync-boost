@@ -197,38 +197,38 @@ const Menu = () => {
   return (
     <SiteLayout>
       {/* Hero with smoke + ember backdrop */}
-      <section className="relative bg-gradient-smoke border-b border-gold/20 overflow-hidden">
+      <section className="relative border-b border-gold/20 overflow-hidden">
         <SmokeBackground density="md" />
         <div aria-hidden className="absolute left-1/2 top-0 -translate-x-1/2 h-[28rem] w-[42rem] rounded-full bg-primary/20 blur-[140px]" />
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="relative container py-20 md:py-28 text-center"
+          className="relative container py-28 md:py-36 text-center"
         >
-          <span className="badge-premium mb-6">
+          <span className="luxury-eyebrow mb-6 inline-flex items-center gap-2">
             <Flame className="h-3 w-3" />Order Online · Pickup &amp; Delivery
           </span>
-          <h1 className="font-serif text-6xl md:text-8xl mb-2 leading-[0.95] tracking-tight">
+          <h1 className="luxury-hero-title text-6xl md:text-8xl mb-2">
             Anderson's Smoking Que
             <br />
             <span className="italic text-gradient-ember">Menu</span>
           </h1>
-          <div className="flex items-center justify-center gap-4 mt-6 mb-6">
-            <span className="gold-rule-short" />
+          <div className="flex items-center justify-center gap-4 mt-8 mb-6">
+            <span className="luxury-gold-line" />
             <p className="font-stencil text-xs md:text-sm text-gold tracking-[0.32em]">Real Smoke · Bold Flavor · Southern Comfort</p>
-            <span className="gold-rule-short" />
+            <span className="luxury-gold-line" />
           </div>
-          <p className="text-muted-foreground max-w-xl mx-auto mb-10 text-base md:text-lg leading-relaxed">
+          <p className="luxury-subtitle max-w-xl mx-auto mb-10">
             Hand-crafted plates and meats by the pound, built around generations of Southern smokehouse recipes.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-3">
-            <ShimmerButton onClick={() => document.getElementById("menu-start")?.scrollIntoView({ behavior: "smooth" })}>
+            <button onClick={() => document.getElementById("menu-start")?.scrollIntoView({ behavior: "smooth" })} className="luxury-primary-btn h-14 px-8 font-stencil text-sm tracking-widest inline-flex items-center gap-2">
               <Plus className="h-5 w-5" /> Start Order
-            </ShimmerButton>
-            <Button asChild variant="outline" className="font-stencil h-14 px-8 border-gold text-gold hover:bg-gold/10 hover:text-gold text-sm">
-              <Link to="/catering">Request Catering</Link>
-            </Button>
+            </button>
+            <Link to="/catering">
+              <button className="luxury-secondary-btn h-14 px-8 font-stencil text-sm tracking-widest">Request Catering</button>
+            </Link>
           </div>
         </motion.div>
       </section>
