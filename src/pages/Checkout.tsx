@@ -192,8 +192,13 @@ const Checkout = () => {
   const discountAmount = breakdown.discountAmount;
   const discountedSub = breakdown.discountedSub;
   const discountRate = promo?.type === "percent" ? Math.min(Math.max(promo.value, 0), 1) : 0;
-  const tax = Math.max(0, discountedSub * TAX_RATE);
-  const total = Math.max(0, discountedSub + tax);
+  const heroesEnabled = !!heroesSettings?.enabled;
+  const heroesPercent = Math.min(Math.max(Number(heroesSettings?.discount_percent ?? 0), 0), 100) / 100;
+  const heroesActive = heroesEnabled && !!heroesGroup && heroesAck && heroesPercent > 0;
+  const heroesDiscount = heroesActive ? Math.round(discountedSub * heroesPercent * 100) / 100 : 0;
+  const subAfterAll = Math.max(0, discountedSub - heroesDiscount);
+  const tax = Math.max(0, subAfterAll * TAX_RATE);
+  const total = Math.max(0, subAfterAll + tax);
 
   // Dev-time invariant assertion (non-production safety net).
   if (import.meta.env.DEV) {
