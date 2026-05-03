@@ -7,6 +7,7 @@ import { Plus, Loader2, Settings2, LayoutGrid, List, Star, Flame } from "lucide-
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
 import { OptionsPickerDialog } from "@/components/menu/OptionsPickerDialog";
+import { CateringCallout } from "@/components/menu/CateringCallout";
 
 type Category = { id: string; name: string; slug: string; display_order: number; description: string | null };
 type Item = {
@@ -131,7 +132,7 @@ const Menu = () => {
         onClick={() => handleAdd(item)}
         className={`${compact ? "" : "w-full"} h-11 bg-primary hover:bg-primary/90 font-stencil text-sm`}
       >
-        {item.requires_options ? <><Settings2 className="h-4 w-4" />Customize</> : <><Plus className="h-4 w-4" />Add to Order</>}
+        {item.requires_options ? <><Settings2 className="h-4 w-4" />Customize</> : <><Plus className="h-4 w-4" />Order Online</>}
       </Button>
     );
   };
@@ -256,33 +257,42 @@ const Menu = () => {
                     Pitmaster picks — the bold, smoky favorites our regulars come back for.
                   </p>
                 </div>
-                {view === "card" ? (
-                  <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {featured.map((item) => <CardItem key={item.id} item={item} />)}
+                {/* Horizontal carousel */}
+                <div className="-mx-4 sm:mx-0 px-4 sm:px-0 overflow-x-auto pb-3 snap-x snap-mandatory scroll-smooth">
+                  <div className="flex gap-4 min-w-max">
+                    {featured.map((item) => (
+                      <div
+                        key={item.id}
+                        className="snap-start w-[280px] sm:w-[320px] shrink-0"
+                      >
+                        <CardItem item={item} />
+                      </div>
+                    ))}
                   </div>
-                ) : (
-                  <div>{featured.map((item) => <ListItem key={item.id} item={item} />)}</div>
-                )}
+                </div>
               </div>
             )}
 
-            {categories.map((cat) => (
-              <div key={cat.id} id={`cat-${cat.slug}`} className="scroll-mt-32">
-                <div className="text-center mb-8">
-                  <div className="menu-divider mb-4" />
-                  <h2 className="font-display text-4xl md:text-5xl text-primary tracking-widest">{cat.name.toUpperCase()}</h2>
-                  <div className="menu-divider mt-4" />
-                  {cat.description && (
-                    <p className="text-sm text-muted-foreground mt-3 max-w-xl mx-auto">{cat.description}</p>
+            {categories.map((cat, idx) => (
+              <div key={cat.id}>
+                {idx > 0 && idx % 2 === 0 && <CateringCallout />}
+                <div id={`cat-${cat.slug}`} className="scroll-mt-32">
+                  <div className="text-center mb-8">
+                    <div className="menu-divider mb-4" />
+                    <h2 className="font-display text-4xl md:text-5xl text-primary tracking-widest">{cat.name.toUpperCase()}</h2>
+                    <div className="menu-divider mt-4" />
+                    {cat.description && (
+                      <p className="text-sm text-muted-foreground mt-3 max-w-xl mx-auto">{cat.description}</p>
+                    )}
+                </div>
+                  {view === "card" ? (
+                    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {grouped[cat.id]?.map((item) => <CardItem key={item.id} item={item} />)}
+                    </div>
+                  ) : (
+                    <div>{grouped[cat.id]?.map((item) => <ListItem key={item.id} item={item} />)}</div>
                   )}
                 </div>
-                {view === "card" ? (
-                  <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {grouped[cat.id]?.map((item) => <CardItem key={item.id} item={item} />)}
-                  </div>
-                ) : (
-                  <div>{grouped[cat.id]?.map((item) => <ListItem key={item.id} item={item} />)}</div>
-                )}
               </div>
             ))}
           </>
