@@ -24,14 +24,14 @@ export function Header({ onCartClick }: { onCartClick: () => void }) {
   const location = useLocation();
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border/60 bg-background/85 backdrop-blur-lg">
+    <header className="sticky top-0 z-40 border-b border-gold/25 bg-background/70 backdrop-blur-xl supports-[backdrop-filter]:bg-background/55">
       <TopAlertBar />
       <div className="container flex h-16 items-center justify-between gap-4 md:h-20">
         <Link to="/" className="flex items-center gap-3" aria-label="Anderson's Smoking Que home">
           <img src={logo} alt="Anderson's Smoking Que logo" className="h-12 w-12 md:h-14 md:w-14 object-contain" width={56} height={56} />
           <div className="hidden sm:block leading-none">
-            <div className="font-display text-xl md:text-2xl tracking-wider">Anderson's</div>
-            <div className="font-stencil text-[10px] md:text-xs text-primary">Smoking Que</div>
+            <div className="font-serif text-2xl md:text-3xl tracking-tight">Anderson's</div>
+            <div className="font-stencil text-[10px] md:text-xs text-gold tracking-[0.32em] mt-0.5">Smoking Que</div>
           </div>
         </Link>
 
