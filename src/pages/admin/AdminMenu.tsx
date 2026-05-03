@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Pencil, X, Check, Plus, Trash2, Upload, Image as ImageIcon } from "lucide-react";
+import { Loader2, Pencil, X, Check, Plus, Trash2, Upload, Image as ImageIcon, ArrowUp, ArrowDown, FolderPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
