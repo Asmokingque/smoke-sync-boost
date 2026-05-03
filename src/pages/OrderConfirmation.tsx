@@ -107,7 +107,7 @@ const OrderConfirmation = () => {
             </span>
           </div>
 
-          <span className="badge-premium mb-5 inline-flex">
+          <span className="luxury-badge mb-5 inline-flex">
             <Sparkles className="h-3 w-3" />
             Order Confirmed
           </span>
@@ -158,7 +158,7 @@ const OrderConfirmation = () => {
         {order && (
           <div className="grid md:grid-cols-2 gap-6 mb-8">
             {/* Pickup / Delivery details */}
-            <div className="premium-glass-card p-6">
+            <div className="luxury-card p-6">
               {(() => {
                 const isDelivery = order.order_type === "Delivery";
                 const Icon = isDelivery ? Truck : Store;
@@ -204,7 +204,7 @@ const OrderConfirmation = () => {
             </div>
 
             {/* Contact details */}
-            <div className="retina-menu-card p-6">
+            <div className="luxury-card p-6">
               <div className="flex items-center gap-2 mb-3">
                 <User className="h-4 w-4 text-gold" />
                 <h3 className="font-serif text-xl tracking-tight">Contact</h3>
@@ -245,7 +245,7 @@ const OrderConfirmation = () => {
         )}
 
         {order && (
-          <div className="retina-menu-card p-6 md:p-8">
+          <div className="luxury-card p-6 md:p-8">
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
                 <Receipt className="h-4 w-4 text-gold" />

@@ -25,7 +25,7 @@ export function Header({ onCartClick }: { onCartClick: () => void }) {
   const location = useLocation();
 
   return (
-    <header className="sticky top-0 z-40 border-b border-gold/25 bg-background/70 backdrop-blur-xl supports-[backdrop-filter]:bg-background/55">
+    <header className="luxury-nav sticky top-0 z-40">
       <TopAlertBar />
       <div className="container flex h-16 items-center justify-between gap-4 md:h-20">
         <Link to="/" className="flex items-center gap-3" aria-label="Anderson's Smoking Que home">
@@ -55,7 +55,7 @@ export function Header({ onCartClick }: { onCartClick: () => void }) {
 
         <div className="flex items-center gap-2">
           <Link to="/menu" className="hidden md:inline-flex">
-            <button className="premium-button h-10 px-5 font-stencil text-xs tracking-widest inline-flex items-center gap-2">
+            <button className="luxury-primary-btn h-10 px-5 font-stencil text-xs tracking-widest inline-flex items-center gap-2">
               <Flame className="h-3.5 w-3.5" /> Order Now
             </button>
           </Link>

@@ -66,19 +66,19 @@ const Catering = () => {
 
   return (
     <SiteLayout>
-      <section className="relative bg-gradient-smoke border-b border-gold/20 overflow-hidden">
+      <section className="relative border-b border-gold/20 overflow-hidden">
         <div aria-hidden className="absolute left-1/2 top-0 -translate-x-1/2 h-[24rem] w-[40rem] rounded-full bg-primary/20 blur-[140px]" />
-        <div className="relative container py-20 md:py-28 text-center">
-          <span className="badge-premium mb-6"><Sparkles className="h-3 w-3" />Catering</span>
-          <h1 className="font-serif text-6xl md:text-7xl mb-2 leading-[0.95] tracking-tight">
+        <div className="relative container py-28 md:py-36 text-center">
+          <span className="luxury-eyebrow mb-6 inline-flex items-center gap-2"><Sparkles className="h-3 w-3" />Catering</span>
+          <h1 className="luxury-hero-title text-6xl md:text-7xl mb-2">
             Catering by Anderson's <span className="italic text-gradient-ember">Smoking Que</span>
           </h1>
-          <div className="flex items-center justify-center gap-4 mt-6 mb-5">
-            <span className="gold-rule-short" />
+          <div className="flex items-center justify-center gap-4 mt-8 mb-6">
+            <span className="luxury-gold-line" />
             <p className="font-stencil text-xs md:text-sm text-gold tracking-[0.32em]">Smoked Low · Served Bold</p>
-            <span className="gold-rule-short" />
+            <span className="luxury-gold-line" />
           </div>
-          <p className="text-muted-foreground max-w-xl mx-auto leading-relaxed">
+          <p className="luxury-subtitle max-w-xl mx-auto">
             Bring bold smokehouse flavor to your next gathering — from family reunions to corporate galas.
           </p>
         </div>
@@ -97,7 +97,7 @@ const Catering = () => {
             { icon: PartyPopper, title: "Private Celebrations", body: "Weddings, anniversaries, milestones." },
             { icon: Flame, title: "Custom BBQ Packages", body: "Tell us the meats — we build the menu." },
           ].map((f) => (
-            <div key={f.title} className="retina-menu-card p-6 text-center">
+            <div key={f.title} className="luxury-card p-6 text-center">
               <f.icon className="h-8 w-8 text-gold mx-auto mb-3" />
               <h3 className="font-serif text-xl mb-2">{f.title}</h3>
               <span className="gold-rule-short mx-auto block mb-3" />
@@ -120,7 +120,7 @@ const Catering = () => {
             { n: "03", title: "Confirm date and details", body: "We finalize timing, service style, and delivery." },
             { n: "04", title: "We handle the flavor", body: "Anderson's brings bold smokehouse hospitality to you." },
           ].map((s) => (
-            <li key={s.n} className="premium-glass-card p-6">
+            <li key={s.n} className="luxury-card p-6">
               <div className="font-serif text-4xl text-gold/80 mb-2">{s.n}</div>
               <h3 className="font-serif text-xl mb-2 leading-tight">{s.title}</h3>
               <span className="gold-rule-short block mb-3" />
@@ -136,7 +136,7 @@ const Catering = () => {
           { icon: Calendar, title: "Flexible Dates", body: "Book ahead — popular dates fill up fast." },
           { icon: Mail, title: "Custom Menus", body: "Mix and match meats, sides, and desserts." },
         ].map((f) => (
-          <div key={f.title} className="retina-menu-card p-6 text-center">
+          <div key={f.title} className="luxury-card p-6 text-center">
             <f.icon className="h-7 w-7 text-gold mx-auto mb-3" />
             <h3 className="font-serif text-2xl mb-1">{f.title}</h3>
             <p className="text-sm text-muted-foreground leading-relaxed">{f.body}</p>
@@ -145,7 +145,7 @@ const Catering = () => {
       </section>
 
       <section className="container pb-24 pt-8 max-w-2xl">
-        <div className="retina-menu-card ring-gold-soft p-6 md:p-8">
+        <div className="luxury-card ring-gold-soft p-6 md:p-8">
           {done ? (
             <div className="text-center py-8">
               <h2 className="font-serif text-4xl mb-3">Thank you!</h2>
@@ -161,16 +161,16 @@ const Catering = () => {
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="cname">Name *</Label>
-                  <Input id="cname" required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="h-12" />
+                  <Input id="cname" required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="luxury-input h-12" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="cphone">Phone *</Label>
-                  <Input id="cphone" type="tel" required value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="h-12" />
+                  <Input id="cphone" type="tel" required value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="luxury-input h-12" />
                 </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="cemail">Email *</Label>
-                <Input id="cemail" type="email" required value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="h-12" />
+                <Input id="cemail" type="email" required value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="luxury-input h-12" />
               </div>
               <div className="space-y-2">
                 <Label className="block mb-1">Service Type *</Label>
@@ -194,32 +194,32 @@ const Catering = () => {
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="cdate">Event Date</Label>
-                  <Input id="cdate" type="date" value={form.event_date} onChange={(e) => setForm({ ...form, event_date: e.target.value })} className="h-12" />
+                  <Input id="cdate" type="date" value={form.event_date} onChange={(e) => setForm({ ...form, event_date: e.target.value })} className="luxury-input h-12" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="ctime">Event Time</Label>
-                  <Input id="ctime" placeholder="e.g. 5:00 PM" value={form.event_time} onChange={(e) => setForm({ ...form, event_time: e.target.value })} className="h-12" />
+                  <Input id="ctime" placeholder="e.g. 5:00 PM" value={form.event_time} onChange={(e) => setForm({ ...form, event_time: e.target.value })} className="luxury-input h-12" />
                 </div>
               </div>
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="cloc">Event Location</Label>
-                  <Input id="cloc" placeholder="Address or venue" value={form.event_location} onChange={(e) => setForm({ ...form, event_location: e.target.value })} className="h-12" />
+                  <Input id="cloc" placeholder="Address or venue" value={form.event_location} onChange={(e) => setForm({ ...form, event_location: e.target.value })} className="luxury-input h-12" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="cguests">Guest Count</Label>
-                  <Input id="cguests" type="number" min="1" value={form.guest_count} onChange={(e) => setForm({ ...form, guest_count: e.target.value })} className="h-12" />
+                  <Input id="cguests" type="number" min="1" value={form.guest_count} onChange={(e) => setForm({ ...form, guest_count: e.target.value })} className="luxury-input h-12" />
                 </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="cfood">Food Requested</Label>
-                <Textarea id="cfood" rows={3} placeholder="Brisket, ribs, sides, etc." value={form.food_requested} onChange={(e) => setForm({ ...form, food_requested: e.target.value })} />
+                <Textarea id="cfood" rows={3} placeholder="Brisket, ribs, sides, etc." value={form.food_requested} onChange={(e) => setForm({ ...form, food_requested: e.target.value })} className="luxury-input" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="cmsg">Additional Notes</Label>
-                <Textarea id="cmsg" rows={3} value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} placeholder="Anything else we should know" />
+                <Textarea id="cmsg" rows={3} value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} placeholder="Anything else we should know" className="luxury-input" />
               </div>
-              <Button type="submit" disabled={submitting} className="w-full h-12 bg-primary hover:bg-primary/90 font-stencil">
+              <Button type="submit" disabled={submitting} className="luxury-primary-btn w-full h-12 font-stencil text-sm tracking-widest">
                 {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Send Inquiry"}
               </Button>
             </form>
