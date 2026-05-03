@@ -21,8 +21,8 @@ const Home = () => {
         </div>
         <SmokeBackground density="lg" />
 
-        <div className="relative container py-28 md:py-40 lg:py-48">
-          <div className="grid lg:grid-cols-[1.4fr_1fr] gap-12 items-center">
+        <div className="relative container py-36 md:py-52 lg:py-64 min-h-[88vh] flex items-center">
+          <div className="grid lg:grid-cols-[1.4fr_1fr] gap-12 items-center w-full">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
@@ -32,27 +32,27 @@ const Home = () => {
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.1, duration: 0.4 }}
-                className="badge-premium mb-6"
+                className="luxury-eyebrow mb-6 inline-flex items-center gap-2"
               >
                 <Flame className="h-3 w-3" />
                 <span>Premium Southern Smokehouse</span>
               </motion.div>
 
-              <h1 className="font-serif text-6xl sm:text-7xl md:text-8xl lg:text-[6.5rem] leading-[0.95] mb-2 tracking-tight">
+              <h1 className="luxury-hero-title text-6xl sm:text-7xl md:text-8xl lg:text-[7.5rem] mb-2">
                 Anderson's
                 <br />
                 <span className="italic text-gradient-ember">Smoking Que</span>
               </h1>
 
-              <div className="flex items-center gap-4 mt-6 mb-5">
-                <span className="gold-rule-short" />
+              <div className="flex items-center gap-4 mt-8 mb-6">
+                <span className="luxury-gold-line" />
                 <p className="font-stencil text-sm md:text-base text-gold tracking-[0.32em]">
                   Smoked Low. Served Bold.
                 </p>
-                <span className="gold-rule-short" />
+                <span className="luxury-gold-line" />
               </div>
 
-              <p className="font-sans text-lg md:text-xl text-foreground/80 max-w-xl mb-10 leading-relaxed">
+              <p className="luxury-subtitle max-w-xl mb-12">
                 Slow-smoked meats, Southern dinners, handcrafted sides, and catering prepared with bold flavor, patience, and hometown pride.
               </p>
 
@@ -63,16 +63,20 @@ const Home = () => {
                 className="flex flex-wrap gap-3"
               >
                 <Link to="/menu">
-                  <ShimmerButton>
+                  <button className="luxury-primary-btn h-14 px-8 font-stencil text-sm tracking-widest inline-flex items-center gap-2">
                     <Plus className="h-5 w-5" /> Start Order
-                  </ShimmerButton>
+                  </button>
                 </Link>
-                <Button asChild size="lg" variant="outline" className="h-14 px-8 font-stencil text-sm border-gold text-gold hover:bg-gold/10 hover:text-gold backdrop-blur bg-background/30">
-                  <Link to="/menu">View Menu <ChevronRight className="h-5 w-5" /></Link>
-                </Button>
-                <Button asChild size="lg" variant="outline" className="h-14 px-8 font-stencil text-sm border-bone/30 backdrop-blur bg-background/30 text-foreground/90 hover:bg-background/50">
-                  <Link to="/catering">Request Catering</Link>
-                </Button>
+                <Link to="/menu">
+                  <button className="luxury-secondary-btn h-14 px-8 font-stencil text-sm tracking-widest inline-flex items-center gap-2">
+                    View Menu <ChevronRight className="h-5 w-5" />
+                  </button>
+                </Link>
+                <Link to="/catering">
+                  <button className="luxury-secondary-btn h-14 px-8 font-stencil text-sm tracking-widest">
+                    Request Catering
+                  </button>
+                </Link>
               </motion.div>
             </motion.div>
 
@@ -83,18 +87,18 @@ const Home = () => {
               transition={{ delay: 0.4, duration: 0.7 }}
               className="hidden lg:block"
             >
-              <div className="premium-glass-card p-8">
+              <div className="luxury-card p-8">
                 <div className="flex items-center justify-between mb-5">
-                  <span className="badge-premium"><Award className="h-3 w-3" /> Signature Favorite</span>
-                  <span className="price-pill-premium font-serif text-xl">$15</span>
+                  <span className="luxury-badge inline-flex items-center gap-1"><Award className="h-3 w-3" /> Signature Favorite</span>
+                  <span className="luxury-price font-serif text-xl">$15</span>
                 </div>
-                <h3 className="font-serif text-3xl mb-3 leading-tight tracking-tight">Two or Three Meat Plate</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed mb-6">
+                <h3 className="luxury-menu-title text-3xl mb-3 leading-tight">Two or Three Meat Plate</h3>
+                <p className="luxury-subtitle text-sm mb-6">
                   Your choice of slow-smoked meats with classic Southern sides and house cornbread.
                 </p>
-                <div className="gold-divider-rich mb-6" />
+                <div className="luxury-divider mb-6" />
                 <Link to="/menu" className="block">
-                  <button className="premium-button w-full h-12 font-stencil text-sm tracking-widest inline-flex items-center justify-center gap-2">
+                  <button className="luxury-primary-btn w-full h-12 font-stencil text-sm tracking-widest inline-flex items-center justify-center gap-2">
                     <Plus className="h-4 w-4" /> Add to Order
                   </button>
                 </Link>
