@@ -283,18 +283,26 @@ const Menu = () => {
           <>
             {featured.length > 0 && !search && (
               <div id="cat-featured" className="scroll-mt-32">
-                <div className="text-center mb-10">
-                  <span className="badge-premium mb-4"><Flame className="h-3 w-3" />Pitmaster Picks</span>
-                  <h2 className="font-serif text-5xl md:text-6xl mb-3 leading-tight">Featured Favorites</h2>
-                  <span className="gold-rule-short mx-auto block mb-4" />
-                  <p className="text-sm text-muted-foreground max-w-xl mx-auto leading-relaxed">
+                <motion.div
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-100px" }}
+                  transition={{ duration: 0.6 }}
+                  className="text-center mb-12"
+                >
+                  <span className="luxury-badge mb-4 inline-flex items-center gap-2"><Flame className="h-3 w-3" />Pitmaster Picks</span>
+                  <h2 className="luxury-category-title text-sm mb-4">Signature Favorites</h2>
+                  <h3 className="luxury-menu-title text-5xl md:text-6xl mb-4">Featured Favorites</h3>
+                  <span className="luxury-gold-line mx-auto block mb-4" />
+                  <p className="luxury-subtitle max-w-xl mx-auto">
                     The bold, smoky favorites our regulars come back for.
                   </p>
-                </div>
+                </motion.div>
                 <FeaturedMenuCarousel
                   items={featured}
                   renderItem={(item, i) => <CardItem item={item as Item} index={i} />}
                 />
+                <div className="luxury-divider mt-16" />
               </div>
             )}
 
@@ -311,20 +319,28 @@ const Menu = () => {
               <div key={cat.id}>
                 {idx > 0 && idx % 2 === 0 && <CateringCallout />}
                 <div id={`cat-${cat.slug}`} className="scroll-mt-32">
-                  <div className="text-center mb-10">
-                    <h2 className="font-serif text-5xl md:text-6xl mb-3 leading-tight">{cat.name}</h2>
-                    <span className="gold-rule-short mx-auto block mb-4" />
+                  <motion.div
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-100px" }}
+                    transition={{ duration: 0.6 }}
+                    className="text-center mb-12"
+                  >
+                    <h2 className="luxury-category-title text-sm md:text-base mb-4">{cat.name}</h2>
+                    <h3 className="luxury-menu-title text-5xl md:text-6xl mb-4">{cat.name}</h3>
+                    <span className="luxury-gold-line mx-auto block mb-4" />
                     {cat.description && (
-                      <p className="text-sm text-muted-foreground max-w-xl mx-auto leading-relaxed">{cat.description}</p>
+                      <p className="luxury-subtitle max-w-xl mx-auto">{cat.description}</p>
                     )}
-                  </div>
+                  </motion.div>
                   {view === "card" ? (
-                    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                       {grouped[cat.id]?.map((item, i) => <CardItem key={item.id} item={item} index={i} />)}
                     </div>
                   ) : (
                     <div>{grouped[cat.id]?.map((item) => <ListItem key={item.id} item={item} />)}</div>
                   )}
+                  {idx < visibleCategories.length - 1 && <div className="luxury-divider mt-16" />}
                 </div>
               </div>
             ))}
