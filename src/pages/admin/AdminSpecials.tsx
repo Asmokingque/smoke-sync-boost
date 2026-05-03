@@ -578,7 +578,7 @@ const AdminSpecials = () => {
                   <Select value={editing.holiday_key ?? ""} onValueChange={(v) => setEditing({ ...editing, holiday_key: v || null })}>
                     <SelectTrigger className="luxury-input h-11"><SelectValue placeholder="Select holiday" /></SelectTrigger>
                     <SelectContent>
-                      {FEDERAL_HOLIDAYS.map((h) => <SelectItem key={h.key} value={h.key}>{h.name} · {h.date}</SelectItem>)}
+                      {holidays.map((h) => <SelectItem key={h.id} value={h.id}>{h.holiday_name} · {h.holiday_date}</SelectItem>)}
                     </SelectContent>
                   </Select>
                 </div>
