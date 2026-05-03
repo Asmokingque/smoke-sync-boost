@@ -542,9 +542,37 @@ const Checkout = () => {
                       <div className="text-[11px] italic text-muted-foreground/80 mt-1">Note: {i.notes}</div>
                     )}
 
-                    <div className="flex justify-between text-[11px] text-muted-foreground mt-1.5">
-                      <span>${i.price.toFixed(2)} × {i.quantity}</span>
-                      {opts.length === 0 && i.priceLabel && <span>{i.priceLabel}</span>}
+                    <div className="flex items-center justify-between mt-2">
+                      <div className="inline-flex items-center rounded-full border border-gold/30 bg-background/50 overflow-hidden">
+                        <button
+                          type="button"
+                          aria-label="Decrease quantity"
+                          onClick={() => updateQuantity(i.id, i.quantity - 1)}
+                          className="h-8 w-8 inline-flex items-center justify-center text-muted-foreground hover:text-gold hover:bg-gold/5 transition-colors"
+                        >
+                          <Minus className="h-3.5 w-3.5" />
+                        </button>
+                        <span className="px-3 font-stencil text-xs tracking-widest text-foreground min-w-[1.75rem] text-center">{i.quantity}</span>
+                        <button
+                          type="button"
+                          aria-label="Increase quantity"
+                          onClick={() => updateQuantity(i.id, i.quantity + 1)}
+                          className="h-8 w-8 inline-flex items-center justify-center text-muted-foreground hover:text-gold hover:bg-gold/5 transition-colors"
+                        >
+                          <Plus className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className="text-[11px] text-muted-foreground">${i.price.toFixed(2)} ea</span>
+                        <button
+                          type="button"
+                          aria-label="Remove item"
+                          onClick={() => removeItem(i.id)}
+                          className="text-muted-foreground/70 hover:text-destructive transition-colors"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
                     </div>
 
                     {lineDiscount > 0 && (
