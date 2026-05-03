@@ -37,13 +37,13 @@ export function RetinaMenuCard({
       transition={{ duration: 0.4, delay: Math.min(index * 0.04, 0.3) }}
       whileHover={{ y: -4 }}
       className={cn(
-        "group premium-glass-card flex flex-col",
+        "group luxury-card flex flex-col",
         !item.is_available && "opacity-60",
         className,
       )}
     >
       {/* Shine sweep */}
-      <span aria-hidden className="retina-shine rounded-[28px]" />
+      <span aria-hidden className="retina-shine rounded-[32px]" />
 
       {item.image_url ? (
         <div className="aspect-[4/3] overflow-hidden relative">
@@ -53,33 +53,33 @@ export function RetinaMenuCard({
             loading="lazy"
             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-charcoal/60 via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-charcoal/70 via-transparent to-transparent" />
           {!item.is_available && (
-            <Badge className="absolute top-3 right-3 bg-primary text-primary-foreground font-stencil text-[10px]">Sold Out</Badge>
+            <span className="luxury-badge absolute top-3 right-3">Sold Out</span>
           )}
           {item.is_featured && item.is_available && (
-            <Badge className="absolute top-3 left-3 bg-background/70 backdrop-blur border border-primary/40 text-primary font-stencil text-[10px]">
-              <Star className="h-3 w-3 mr-1 fill-primary" /> Favorite
-            </Badge>
+            <span className="luxury-badge absolute top-3 left-3 inline-flex items-center gap-1">
+              <Star className="h-3 w-3 fill-current" /> Favorite
+            </span>
           )}
         </div>
       ) : (
         <div className="aspect-[4/3] bg-gradient-to-br from-charcoal-light to-charcoal flex items-center justify-center relative">
           <Flame className="h-12 w-12 text-primary/30" />
           {!item.is_available && (
-            <Badge className="absolute top-3 right-3 bg-primary text-primary-foreground font-stencil text-[10px]">Sold Out</Badge>
+            <span className="luxury-badge absolute top-3 right-3">Sold Out</span>
           )}
         </div>
       )}
 
-      <div className="p-6 flex flex-col gap-4 flex-1">
+      <div className="p-7 flex flex-col gap-4 flex-1">
         <div className="flex items-start justify-between gap-3">
-          <h3 className="font-serif text-2xl leading-tight text-foreground tracking-tight">{item.name}</h3>
+          <h3 className="luxury-menu-title text-2xl leading-tight">{item.name}</h3>
           <PricePill item={item} />
         </div>
-        <span aria-hidden className="gold-divider-rich" />
+        <span aria-hidden className="luxury-divider" />
         {item.description && (
-          <p className="text-sm text-muted-foreground leading-relaxed">{item.description}</p>
+          <p className="luxury-subtitle text-sm">{item.description}</p>
         )}
         <div className="mt-auto pt-2">
           <AddButtons item={item} onAdd={onAdd} onAddAlt={onAddAlt} />
