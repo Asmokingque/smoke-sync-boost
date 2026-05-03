@@ -160,45 +160,12 @@ const Menu = () => {
   };
 
   const CardItem = ({ item, index = 0 }: { item: Item; index?: number }) => (
-    <motion.article
-      initial={{ opacity: 0, y: 16 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-50px" }}
-      transition={{ duration: 0.4, delay: Math.min(index * 0.04, 0.3) }}
-      whileHover={{ y: -4 }}
-      className={`group relative bg-gradient-card border border-border rounded-xl overflow-hidden flex flex-col hover:border-primary/60 hover:shadow-ember transition-all backdrop-blur-sm ${!item.is_available ? "opacity-60" : ""}`}
-    >
-      {/* crimson accent line */}
-      <span aria-hidden className="absolute left-0 top-0 h-full w-[3px] bg-gradient-to-b from-primary via-primary/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-      {item.image_url ? (
-        <div className="aspect-[4/3] overflow-hidden bg-charcoal relative">
-          <img src={item.image_url} alt={item.name} loading="lazy" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-          {!item.is_available && (
-            <Badge className="absolute top-2 right-2 bg-primary text-primary-foreground font-stencil text-[10px]">Sold Out</Badge>
-          )}
-          {item.is_featured && item.is_available && (
-            <Badge className="absolute top-2 left-2 bg-background/80 backdrop-blur border border-primary/40 text-primary font-stencil text-[10px]">
-              <Star className="h-3 w-3 mr-1 fill-primary" /> Favorite
-            </Badge>
-          )}
-        </div>
-      ) : (
-        <div className="aspect-[4/3] bg-gradient-to-br from-charcoal-light to-charcoal flex items-center justify-center relative">
-          <Flame className="h-12 w-12 text-primary/30" />
-          {!item.is_available && (
-            <Badge className="absolute top-2 right-2 bg-primary text-primary-foreground font-stencil text-[10px]">Sold Out</Badge>
-          )}
-        </div>
-      )}
-      <div className="p-5 flex flex-col gap-3 flex-1">
-        <div className="flex items-start justify-between gap-3">
-          <h3 className="font-stencil text-base leading-tight">{item.name}</h3>
-          <PriceTag item={item} />
-        </div>
-        {item.description && <p className="text-xs text-muted-foreground leading-relaxed">{item.description}</p>}
-        <div className="mt-auto pt-2"><AddButtons item={item} /></div>
-      </div>
-    </motion.article>
+    <RetinaMenuCard
+      item={item}
+      index={index}
+      onAdd={() => handleAdd(item, false)}
+      onAddAlt={item.price_alt ? () => handleAdd(item, true) : undefined}
+    />
   );
 
   const ListItem = ({ item }: { item: Item }) => (
