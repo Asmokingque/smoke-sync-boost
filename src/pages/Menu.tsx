@@ -42,6 +42,7 @@ const Menu = () => {
   const [loading, setLoading] = useState(true);
   const [activeSlug, setActiveSlug] = useState<string>("featured");
   const [view, setView] = useState<ViewMode>("card");
+  const [search, setSearch] = useState("");
   const addItem = useCart((s) => s.addItem);
 
   useEffect(() => {
