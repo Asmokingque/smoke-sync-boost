@@ -29,7 +29,16 @@ export function FloatingCartButton({ onClick }: { onClick: () => void }) {
               transition={{ type: "spring", stiffness: 500, damping: 18 }}
               className="absolute -top-3.5 -right-3.5 min-w-[1.5rem] h-6 px-1.5 rounded-full bg-gradient-ember text-primary-foreground text-xs font-stencil font-bold flex items-center justify-center border-2 border-background shadow-ember ring-1 ring-primary/60"
             >
-              {itemCount}
+              {/* Pulse ring on add */}
+              <motion.span
+                key={`pulse-${itemCount}`}
+                aria-hidden
+                initial={{ scale: 1, opacity: 0.7 }}
+                animate={{ scale: 2.2, opacity: 0 }}
+                transition={{ duration: 0.7, ease: "easeOut" }}
+                className="absolute inset-0 rounded-full bg-primary/60"
+              />
+              <span className="relative">{itemCount}</span>
             </motion.span>
           </span>
           <span className="text-sm">View Order</span>
