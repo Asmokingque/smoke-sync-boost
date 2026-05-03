@@ -21,7 +21,7 @@ export function CategoryJumpBar({
   className?: string;
 }) {
   return (
-    <div className={cn("sticky top-16 md:top-20 z-30 retina-glass border-b border-border/60", className)}>
+    <div className={cn("sticky top-16 md:top-20 z-30 retina-glass border-b border-gold/25", className)}>
       <div className="container py-3 flex items-center gap-3">
         <div className="flex-1 overflow-x-auto">
           <div className="flex gap-2 min-w-max">
@@ -79,10 +79,10 @@ function PillButton({
     <button
       onClick={onClick}
       className={cn(
-        "font-stencil text-sm px-4 py-2 rounded-full whitespace-nowrap transition-all border",
+        "font-stencil text-xs px-4 py-2 rounded-full whitespace-nowrap transition-all border",
         active
-          ? "bg-primary text-primary-foreground border-primary shadow-ember"
-          : "bg-secondary/60 text-foreground/80 border-border hover:border-primary/40 hover:text-foreground",
+          ? "bg-primary text-primary-foreground border-gold/60 shadow-ember"
+          : "bg-secondary/40 text-foreground/75 border-border/60 hover:border-gold/40 hover:text-foreground",
       )}
     >
       {children}
