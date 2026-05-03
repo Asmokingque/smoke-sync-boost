@@ -197,29 +197,36 @@ const Menu = () => {
   return (
     <SiteLayout>
       {/* Hero with smoke + ember backdrop */}
-      <section className="relative bg-gradient-smoke border-b border-border overflow-hidden">
+      <section className="relative bg-gradient-smoke border-b border-gold/20 overflow-hidden">
         <SmokeBackground density="md" />
+        <div aria-hidden className="absolute left-1/2 top-0 -translate-x-1/2 h-[28rem] w-[42rem] rounded-full bg-primary/20 blur-[140px]" />
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="relative container py-16 md:py-24 text-center"
+          className="relative container py-20 md:py-28 text-center"
         >
-          <div className="inline-flex items-center gap-2 rounded-full bg-primary/15 px-4 py-1.5 mb-5 border border-primary/30">
-            <Flame className="h-3.5 w-3.5 text-primary" />
-            <span className="font-stencil text-xs text-primary tracking-widest">Order Online · Pickup & Delivery</span>
-          </div>
-          <h1 className="font-display text-5xl md:text-7xl mb-4 tracking-wider">
-            THE <span className="text-gradient-ember">SMOKEHOUSE</span> MENU
+          <span className="badge-premium mb-6">
+            <Flame className="h-3 w-3" />Order Online · Pickup &amp; Delivery
+          </span>
+          <h1 className="font-serif text-6xl md:text-8xl mb-2 leading-[0.95] tracking-tight">
+            Anderson's Smoking Que
+            <br />
+            <span className="italic text-gradient-ember">Menu</span>
           </h1>
-          <p className="text-muted-foreground max-w-xl mx-auto mb-8 text-base md:text-lg">
-            Smoked Low. Served Bold. Built around generations of southern recipes.
+          <div className="flex items-center justify-center gap-4 mt-6 mb-6">
+            <span className="gold-rule-short" />
+            <p className="font-stencil text-xs md:text-sm text-gold tracking-[0.32em]">Real Smoke · Bold Flavor · Southern Comfort</p>
+            <span className="gold-rule-short" />
+          </div>
+          <p className="text-muted-foreground max-w-xl mx-auto mb-10 text-base md:text-lg leading-relaxed">
+            Hand-crafted plates and meats by the pound, built around generations of Southern smokehouse recipes.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-3">
             <ShimmerButton onClick={() => document.getElementById("menu-start")?.scrollIntoView({ behavior: "smooth" })}>
               <Plus className="h-5 w-5" /> Start Order
             </ShimmerButton>
-            <Button asChild variant="outline" className="font-stencil h-14 px-8 border-bone/40 text-base hover:bg-secondary/60">
+            <Button asChild variant="outline" className="font-stencil h-14 px-8 border-gold text-gold hover:bg-gold/10 hover:text-gold text-sm">
               <Link to="/catering">Request Catering</Link>
             </Button>
           </div>
