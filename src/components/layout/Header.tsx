@@ -36,10 +36,10 @@ export function Header({ onCartClick }: { onCartClick: () => void }) {
           </div>
         </Link>
 
-        <nav className="hidden lg:flex items-center gap-8">
-          {navItems.map((n) => (
+        <nav className="hidden lg:flex items-center gap-7">
+          {navItems.map((n, idx) => (
             <NavLink
-              key={n.to}
+              key={`${n.to}-${idx}`}
               to={n.to}
               end={n.to === "/"}
               className={({ isActive }) =>
