@@ -2,7 +2,7 @@ import { useState, ReactNode } from "react";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
 import { CartDrawer } from "@/components/cart/CartDrawer";
-import { FloatingCartButton } from "@/components/menu/FloatingCartButton";
+import { FloatingCartButton } from "@/components/retina/FloatingCartButton";
 
 export function SiteLayout({ children }: { children: ReactNode }) {
   const [cartOpen, setCartOpen] = useState(false);

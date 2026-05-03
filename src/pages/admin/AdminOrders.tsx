@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
+import { OrderStatusBadge } from "@/components/retina/OrderStatusBadge";
 
 const STATUSES = ["pending", "confirmed", "preparing", "ready", "completed", "cancelled"] as const;
 
@@ -63,6 +63,7 @@ const AdminOrders = () => {
                   </div>
                 </div>
                 <div className="flex flex-col items-end gap-2">
+                  <OrderStatusBadge status={o.status} />
                   <div className="font-display text-2xl text-primary">${Number(o.total).toFixed(2)}</div>
                   <Select value={o.status} onValueChange={(v) => updateStatus(o.id, v)}>
                     <SelectTrigger className="w-40 h-9"><SelectValue /></SelectTrigger>

@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
 
-export function FeaturedCarousel<T>({
+export function FeaturedMenuCarousel<T>({
   items,
   renderItem,
 }: {

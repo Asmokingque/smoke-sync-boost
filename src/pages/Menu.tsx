@@ -3,18 +3,20 @@ import { supabase } from "@/integrations/supabase/client";
 import { SiteLayout } from "@/components/layout/SiteLayout";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/store/cart";
-import { Plus, Settings2, LayoutGrid, List, Star, Flame, Search, X } from "lucide-react";
+import { Plus, Settings2, Flame, Search, X } from "lucide-react";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
 import { OptionsPickerDialog } from "@/components/menu/OptionsPickerDialog";
 import { CateringCallout } from "@/components/menu/CateringCallout";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
 import { SmokeBackground } from "@/components/ui/SmokeBackground";
 import { ShimmerButton } from "@/components/ui/ShimmerButton";
-import { FeaturedCarousel } from "@/components/menu/FeaturedCarousel";
+import { FeaturedMenuCarousel } from "@/components/retina/FeaturedMenuCarousel";
+import { RetinaMenuCard } from "@/components/retina/RetinaMenuCard";
+import { CategoryJumpBar } from "@/components/retina/CategoryJumpBar";
+import { SmokeDivider } from "@/components/retina/SmokeDivider";
 
 type Category = { id: string; name: string; slug: string; display_order: number; description: string | null };
 type Item = {
@@ -158,45 +160,12 @@ const Menu = () => {
   };
 
   const CardItem = ({ item, index = 0 }: { item: Item; index?: number }) => (
-    <motion.article
-      initial={{ opacity: 0, y: 16 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-50px" }}
-      transition={{ duration: 0.4, delay: Math.min(index * 0.04, 0.3) }}
-      whileHover={{ y: -4 }}
-      className={`group relative bg-gradient-card border border-border rounded-xl overflow-hidden flex flex-col hover:border-primary/60 hover:shadow-ember transition-all backdrop-blur-sm ${!item.is_available ? "opacity-60" : ""}`}
-    >
-      {/* crimson accent line */}
-      <span aria-hidden className="absolute left-0 top-0 h-full w-[3px] bg-gradient-to-b from-primary via-primary/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-      {item.image_url ? (
-        <div className="aspect-[4/3] overflow-hidden bg-charcoal relative">
-          <img src={item.image_url} alt={item.name} loading="lazy" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-          {!item.is_available && (
-            <Badge className="absolute top-2 right-2 bg-primary text-primary-foreground font-stencil text-[10px]">Sold Out</Badge>
-          )}
-          {item.is_featured && item.is_available && (
-            <Badge className="absolute top-2 left-2 bg-background/80 backdrop-blur border border-primary/40 text-primary font-stencil text-[10px]">
-              <Star className="h-3 w-3 mr-1 fill-primary" /> Favorite
-            </Badge>
-          )}
-        </div>
-      ) : (
-        <div className="aspect-[4/3] bg-gradient-to-br from-charcoal-light to-charcoal flex items-center justify-center relative">
-          <Flame className="h-12 w-12 text-primary/30" />
-          {!item.is_available && (
-            <Badge className="absolute top-2 right-2 bg-primary text-primary-foreground font-stencil text-[10px]">Sold Out</Badge>
-          )}
-        </div>
-      )}
-      <div className="p-5 flex flex-col gap-3 flex-1">
-        <div className="flex items-start justify-between gap-3">
-          <h3 className="font-stencil text-base leading-tight">{item.name}</h3>
-          <PriceTag item={item} />
-        </div>
-        {item.description && <p className="text-xs text-muted-foreground leading-relaxed">{item.description}</p>}
-        <div className="mt-auto pt-2"><AddButtons item={item} /></div>
-      </div>
-    </motion.article>
+    <RetinaMenuCard
+      item={item}
+      index={index}
+      onAdd={() => handleAdd(item, false)}
+      onAddAlt={item.price_alt ? () => handleAdd(item, true) : undefined}
+    />
   );
 
   const ListItem = ({ item }: { item: Item }) => (
@@ -257,53 +226,17 @@ const Menu = () => {
         </motion.div>
       </section>
 
-      {/* Sticky jump nav + search + view toggle */}
-      <div className="sticky top-16 md:top-20 z-30 bg-background/90 backdrop-blur-md border-b border-border" id="menu-start">
-        <div className="container py-3 space-y-3">
-          <div className="flex items-center gap-3">
-            <div className="flex-1 overflow-x-auto">
-              <div className="flex gap-2 min-w-max">
-                {featured.length > 0 && (
-                  <button
-                    onClick={() => jumpTo("featured")}
-                    className={`font-stencil text-sm px-4 py-2 rounded-md whitespace-nowrap transition-all ${
-                      activeSlug === "featured" ? "bg-primary text-primary-foreground shadow-ember" : "bg-secondary text-foreground/80 hover:bg-secondary/70"
-                    }`}
-                  >
-                    <Star className="h-3.5 w-3.5 inline mr-1.5 -mt-0.5" />Featured
-                  </button>
-                )}
-                {categories.map((c) => (
-                  <button
-                    key={c.id}
-                    onClick={() => jumpTo(c.slug)}
-                    className={`font-stencil text-sm px-4 py-2 rounded-md whitespace-nowrap transition-all ${
-                      activeSlug === c.slug ? "bg-primary text-primary-foreground shadow-ember" : "bg-secondary text-foreground/80 hover:bg-secondary/70"
-                    }`}
-                  >
-                    {c.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div className="hidden sm:flex items-center gap-1 bg-secondary rounded-md p-1 shrink-0">
-              <button
-                onClick={() => setView("card")}
-                aria-label="Card view"
-                className={`p-2 rounded transition-colors ${view === "card" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
-              >
-                <LayoutGrid className="h-4 w-4" />
-              </button>
-              <button
-                onClick={() => setView("list")}
-                aria-label="List view"
-                className={`p-2 rounded transition-colors ${view === "list" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
-              >
-                <List className="h-4 w-4" />
-              </button>
-            </div>
-          </div>
-
+      {/* Sticky jump nav + view toggle */}
+      <div id="menu-start">
+        <CategoryJumpBar
+          categories={categories.map((c) => ({ slug: c.slug, name: c.name }))}
+          activeSlug={activeSlug}
+          onJump={jumpTo}
+          showFeatured={featured.length > 0}
+          view={view}
+          onViewChange={setView}
+        />
+        <div className="container py-3">
           <div className="relative max-w-md">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
@@ -344,16 +277,16 @@ const Menu = () => {
             {featured.length > 0 && !search && (
               <div id="cat-featured" className="scroll-mt-32">
                 <div className="text-center mb-8">
-                  <div className="menu-divider mb-4" />
-                  <h2 className="font-display text-4xl md:text-5xl text-primary tracking-widest flex items-center justify-center gap-3">
+                  <SmokeDivider className="mb-4" />
+                  <h2 className="font-display text-4xl md:text-5xl retina-heading flex items-center justify-center gap-3">
                     <Flame className="h-8 w-8" /> FEATURED FAVORITES
                   </h2>
-                  <div className="menu-divider mt-4" />
+                  <SmokeDivider className="mt-4" />
                   <p className="text-sm text-muted-foreground mt-3 max-w-xl mx-auto">
                     Pitmaster picks — the bold, smoky favorites our regulars come back for.
                   </p>
                 </div>
-                <FeaturedCarousel
+                <FeaturedMenuCarousel
                   items={featured}
                   renderItem={(item, i) => <CardItem item={item as Item} index={i} />}
                 />
@@ -374,9 +307,9 @@ const Menu = () => {
                 {idx > 0 && idx % 2 === 0 && <CateringCallout />}
                 <div id={`cat-${cat.slug}`} className="scroll-mt-32">
                   <div className="text-center mb-8">
-                    <div className="menu-divider mb-4" />
-                    <h2 className="font-display text-4xl md:text-5xl text-primary tracking-widest">{cat.name.toUpperCase()}</h2>
-                    <div className="menu-divider mt-4" />
+                    <SmokeDivider className="mb-4" />
+                    <h2 className="font-display text-4xl md:text-5xl retina-heading">{cat.name.toUpperCase()}</h2>
+                    <SmokeDivider className="mt-4" />
                     {cat.description && (
                       <p className="text-sm text-muted-foreground mt-3 max-w-xl mx-auto">{cat.description}</p>
                     )}
