@@ -1,7 +1,10 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Flame, Clock, Award, ChevronRight } from "lucide-react";
+import { Flame, Clock, Award, ChevronRight, Plus } from "lucide-react";
+import { motion } from "framer-motion";
 import { SiteLayout } from "@/components/layout/SiteLayout";
+import { SmokeBackground } from "@/components/ui/SmokeBackground";
+import { ShimmerButton } from "@/components/ui/ShimmerButton";
 import hero from "@/assets/hero-bbq.jpg";
 import logo from "@/assets/logo.png";
 
@@ -11,17 +14,28 @@ const Home = () => {
       {/* HERO */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0">
-          <img src={hero} alt="" width={1920} height={1080} className="h-full w-full object-cover opacity-50" />
-          <div className="absolute inset-0 bg-gradient-to-b from-charcoal/40 via-charcoal/70 to-background" />
+          <img src={hero} alt="" width={1920} height={1080} className="h-full w-full object-cover opacity-40" />
+          <div className="absolute inset-0 bg-gradient-to-b from-charcoal/50 via-charcoal/75 to-background" />
         </div>
+        <SmokeBackground density="lg" />
 
         <div className="relative container py-24 md:py-36 lg:py-44">
-          <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 rounded-full bg-primary/15 px-4 py-1.5 mb-6 border border-primary/30">
-              <Flame className="h-3.5 w-3.5 text-primary" />
-              <span className="font-stencil text-xs text-primary">Hardwood Smoked Daily</span>
-            </div>
-            <h1 className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl leading-[0.9] mb-6 animate-fade-in-up">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
+            className="max-w-3xl"
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.1, duration: 0.4 }}
+              className="inline-flex items-center gap-2 rounded-full bg-primary/15 px-4 py-1.5 mb-6 border border-primary/30 backdrop-blur"
+            >
+              <Flame className="h-3.5 w-3.5 text-primary animate-pulse" />
+              <span className="font-stencil text-xs text-primary tracking-widest">Hardwood Smoked Daily</span>
+            </motion.div>
+            <h1 className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl leading-[0.9] mb-6">
               SMOKED LOW.<br />
               <span className="text-gradient-ember">SERVED BOLD.</span>
             </h1>
@@ -29,17 +43,25 @@ const Home = () => {
               Authentic southern BBQ from <strong className="text-foreground">Anderson's Smoking Que</strong> — 
               ribs, brisket, pulled pork, and hand-made sides built around generations of recipes.
             </p>
-            <div className="flex flex-wrap gap-3">
-              <Button asChild size="lg" className="h-14 px-8 bg-primary hover:bg-primary/90 font-stencil text-base shadow-ember">
-                <Link to="/menu">
-                  Order Now <ChevronRight className="h-5 w-5" />
-                </Link>
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3, duration: 0.5 }}
+              className="flex flex-wrap gap-3"
+            >
+              <Link to="/menu">
+                <ShimmerButton>
+                  <Plus className="h-5 w-5" /> Start Order
+                </ShimmerButton>
+              </Link>
+              <Button asChild size="lg" variant="outline" className="h-14 px-8 font-stencil text-base border-bone/40 backdrop-blur bg-background/30">
+                <Link to="/menu">View Menu <ChevronRight className="h-5 w-5" /></Link>
               </Button>
-              <Button asChild size="lg" variant="outline" className="h-14 px-8 font-stencil text-base border-bone/40">
-                <Link to="/catering">Catering Inquiries</Link>
+              <Button asChild size="lg" variant="outline" className="h-14 px-8 font-stencil text-base border-bone/40 backdrop-blur bg-background/30">
+                <Link to="/catering">Request Catering</Link>
               </Button>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </div>
       </section>
 

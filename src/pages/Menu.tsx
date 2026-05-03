@@ -3,11 +3,18 @@ import { supabase } from "@/integrations/supabase/client";
 import { SiteLayout } from "@/components/layout/SiteLayout";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/store/cart";
-import { Plus, Loader2, Settings2, LayoutGrid, List, Star, Flame } from "lucide-react";
+import { Plus, Settings2, LayoutGrid, List, Star, Flame, Search, X } from "lucide-react";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
 import { OptionsPickerDialog } from "@/components/menu/OptionsPickerDialog";
 import { CateringCallout } from "@/components/menu/CateringCallout";
+import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Badge } from "@/components/ui/badge";
+import { motion } from "framer-motion";
+import { SmokeBackground } from "@/components/ui/SmokeBackground";
+import { ShimmerButton } from "@/components/ui/ShimmerButton";
+import { FeaturedCarousel } from "@/components/menu/FeaturedCarousel";
 
 type Category = { id: string; name: string; slug: string; display_order: number; description: string | null };
 type Item = {
@@ -35,6 +42,7 @@ const Menu = () => {
   const [loading, setLoading] = useState(true);
   const [activeSlug, setActiveSlug] = useState<string>("featured");
   const [view, setView] = useState<ViewMode>("card");
+  const [search, setSearch] = useState("");
   const addItem = useCart((s) => s.addItem);
 
   useEffect(() => {
@@ -51,12 +59,24 @@ const Menu = () => {
 
   const featured = useMemo(() => items.filter((i) => i.is_featured && i.is_available), [items]);
 
+  const matchesSearch = (i: Item) => {
+    if (!search.trim()) return true;
+    const q = search.toLowerCase();
+    return i.name.toLowerCase().includes(q) || (i.description ?? "").toLowerCase().includes(q);
+  };
+
   const grouped = useMemo(() => {
     const map: Record<string, Item[]> = {};
     for (const c of categories) map[c.id] = [];
-    for (const i of items) if (map[i.category_id]) map[i.category_id].push(i);
+    for (const i of items) if (map[i.category_id] && matchesSearch(i)) map[i.category_id].push(i);
     return map;
-  }, [categories, items]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [categories, items, search]);
+
+  const visibleCategories = useMemo(
+    () => categories.filter((c) => (grouped[c.id] ?? []).length > 0),
+    [categories, grouped],
+  );
 
   const handleAdd = (item: Item, useAltPrice = false) => {
     if (!item.is_available) return;
@@ -137,13 +157,34 @@ const Menu = () => {
     );
   };
 
-  const CardItem = ({ item }: { item: Item }) => (
-    <article className={`bg-gradient-card border border-border rounded-lg overflow-hidden flex flex-col hover:border-primary/60 transition-colors ${!item.is_available ? "opacity-60" : ""}`}>
-      {item.image_url && (
+  const CardItem = ({ item, index = 0 }: { item: Item; index?: number }) => (
+    <motion.article
+      initial={{ opacity: 0, y: 16 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ duration: 0.4, delay: Math.min(index * 0.04, 0.3) }}
+      whileHover={{ y: -4 }}
+      className={`group relative bg-gradient-card border border-border rounded-xl overflow-hidden flex flex-col hover:border-primary/60 hover:shadow-ember transition-all backdrop-blur-sm ${!item.is_available ? "opacity-60" : ""}`}
+    >
+      {/* crimson accent line */}
+      <span aria-hidden className="absolute left-0 top-0 h-full w-[3px] bg-gradient-to-b from-primary via-primary/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+      {item.image_url ? (
         <div className="aspect-[4/3] overflow-hidden bg-charcoal relative">
-          <img src={item.image_url} alt={item.name} loading="lazy" className="w-full h-full object-cover transition-transform duration-500 hover:scale-105" />
+          <img src={item.image_url} alt={item.name} loading="lazy" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
           {!item.is_available && (
-            <div className="absolute top-2 right-2 bg-primary text-primary-foreground font-stencil text-[10px] px-2 py-1 rounded">Sold Out</div>
+            <Badge className="absolute top-2 right-2 bg-primary text-primary-foreground font-stencil text-[10px]">Sold Out</Badge>
+          )}
+          {item.is_featured && item.is_available && (
+            <Badge className="absolute top-2 left-2 bg-background/80 backdrop-blur border border-primary/40 text-primary font-stencil text-[10px]">
+              <Star className="h-3 w-3 mr-1 fill-primary" /> Favorite
+            </Badge>
+          )}
+        </div>
+      ) : (
+        <div className="aspect-[4/3] bg-gradient-to-br from-charcoal-light to-charcoal flex items-center justify-center relative">
+          <Flame className="h-12 w-12 text-primary/30" />
+          {!item.is_available && (
+            <Badge className="absolute top-2 right-2 bg-primary text-primary-foreground font-stencil text-[10px]">Sold Out</Badge>
           )}
         </div>
       )}
@@ -152,18 +193,26 @@ const Menu = () => {
           <h3 className="font-stencil text-base leading-tight">{item.name}</h3>
           <PriceTag item={item} />
         </div>
-        {item.description && <p className="text-xs text-muted-foreground">{item.description}</p>}
+        {item.description && <p className="text-xs text-muted-foreground leading-relaxed">{item.description}</p>}
         <div className="mt-auto pt-2"><AddButtons item={item} /></div>
       </div>
-    </article>
+    </motion.article>
   );
 
   const ListItem = ({ item }: { item: Item }) => (
-    <article className={`flex items-center gap-4 py-4 border-b border-border/60 ${!item.is_available ? "opacity-60" : ""}`}>
+    <motion.article
+      initial={{ opacity: 0, x: -10 }}
+      whileInView={{ opacity: 1, x: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.3 }}
+      className={`flex items-center gap-4 py-4 border-b border-border/60 ${!item.is_available ? "opacity-60" : ""}`}
+    >
       {item.image_url ? (
         <img src={item.image_url} alt={item.name} loading="lazy" className="h-20 w-20 rounded-md object-cover bg-charcoal shrink-0" />
       ) : (
-        <div className="h-20 w-20 rounded-md bg-charcoal-light shrink-0" />
+        <div className="h-20 w-20 rounded-md bg-gradient-to-br from-charcoal-light to-charcoal shrink-0 flex items-center justify-center">
+          <Flame className="h-6 w-6 text-primary/40" />
+        </div>
       )}
       <div className="flex-1 min-w-0">
         <div className="flex items-baseline justify-between gap-3">
@@ -173,79 +222,126 @@ const Menu = () => {
         {item.description && <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{item.description}</p>}
       </div>
       <div className="shrink-0"><AddButtons item={item} compact /></div>
-    </article>
+    </motion.article>
   );
 
   return (
     <SiteLayout>
-      {/* Hero */}
-      <section className="bg-gradient-smoke border-b border-border">
-        <div className="container py-12 md:py-16 text-center">
-          <div className="font-stencil text-sm text-primary mb-2">Order Online</div>
-          <h1 className="font-display text-5xl md:text-6xl mb-3">Anderson's Smoking Que Menu</h1>
-          <p className="text-muted-foreground max-w-xl mx-auto mb-6">
-            Real Smoke. Bold Flavor. Southern Comfort.
+      {/* Hero with smoke + ember backdrop */}
+      <section className="relative bg-gradient-smoke border-b border-border overflow-hidden">
+        <SmokeBackground density="md" />
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="relative container py-16 md:py-24 text-center"
+        >
+          <div className="inline-flex items-center gap-2 rounded-full bg-primary/15 px-4 py-1.5 mb-5 border border-primary/30">
+            <Flame className="h-3.5 w-3.5 text-primary" />
+            <span className="font-stencil text-xs text-primary tracking-widest">Order Online · Pickup & Delivery</span>
+          </div>
+          <h1 className="font-display text-5xl md:text-7xl mb-4 tracking-wider">
+            THE <span className="text-gradient-ember">SMOKEHOUSE</span> MENU
+          </h1>
+          <p className="text-muted-foreground max-w-xl mx-auto mb-8 text-base md:text-lg">
+            Smoked Low. Served Bold. Built around generations of southern recipes.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-3">
-            <Button asChild className="bg-primary hover:bg-primary/90 font-stencil h-11 px-6"><Link to="/menu">Start Order</Link></Button>
-            <Button asChild variant="outline" className="font-stencil h-11 px-6 border-bone/40"><Link to="/catering">Order Catering</Link></Button>
+            <ShimmerButton onClick={() => document.getElementById("menu-start")?.scrollIntoView({ behavior: "smooth" })}>
+              <Plus className="h-5 w-5" /> Start Order
+            </ShimmerButton>
+            <Button asChild variant="outline" className="font-stencil h-14 px-8 border-bone/40 text-base hover:bg-secondary/60">
+              <Link to="/catering">Request Catering</Link>
+            </Button>
           </div>
-        </div>
+        </motion.div>
       </section>
 
-      {/* Sticky jump nav + view toggle */}
-      <div className="sticky top-16 md:top-20 z-30 bg-background/95 backdrop-blur border-b border-border">
-        <div className="container py-3 flex items-center gap-3">
-          <div className="flex-1 overflow-x-auto">
-            <div className="flex gap-2 min-w-max">
-              {featured.length > 0 && (
-                <button
-                  onClick={() => jumpTo("featured")}
-                  className={`font-stencil text-sm px-4 py-2 rounded-md whitespace-nowrap transition-colors ${
-                    activeSlug === "featured" ? "bg-primary text-primary-foreground" : "bg-secondary text-foreground/80 hover:bg-secondary/70"
-                  }`}
-                >
-                  <Star className="h-3.5 w-3.5 inline mr-1.5 -mt-0.5" />Featured
-                </button>
-              )}
-              {categories.map((c) => (
-                <button
-                  key={c.id}
-                  onClick={() => jumpTo(c.slug)}
-                  className={`font-stencil text-sm px-4 py-2 rounded-md whitespace-nowrap transition-colors ${
-                    activeSlug === c.slug ? "bg-primary text-primary-foreground" : "bg-secondary text-foreground/80 hover:bg-secondary/70"
-                  }`}
-                >
-                  {c.name}
-                </button>
-              ))}
+      {/* Sticky jump nav + search + view toggle */}
+      <div className="sticky top-16 md:top-20 z-30 bg-background/90 backdrop-blur-md border-b border-border" id="menu-start">
+        <div className="container py-3 space-y-3">
+          <div className="flex items-center gap-3">
+            <div className="flex-1 overflow-x-auto">
+              <div className="flex gap-2 min-w-max">
+                {featured.length > 0 && (
+                  <button
+                    onClick={() => jumpTo("featured")}
+                    className={`font-stencil text-sm px-4 py-2 rounded-md whitespace-nowrap transition-all ${
+                      activeSlug === "featured" ? "bg-primary text-primary-foreground shadow-ember" : "bg-secondary text-foreground/80 hover:bg-secondary/70"
+                    }`}
+                  >
+                    <Star className="h-3.5 w-3.5 inline mr-1.5 -mt-0.5" />Featured
+                  </button>
+                )}
+                {categories.map((c) => (
+                  <button
+                    key={c.id}
+                    onClick={() => jumpTo(c.slug)}
+                    className={`font-stencil text-sm px-4 py-2 rounded-md whitespace-nowrap transition-all ${
+                      activeSlug === c.slug ? "bg-primary text-primary-foreground shadow-ember" : "bg-secondary text-foreground/80 hover:bg-secondary/70"
+                    }`}
+                  >
+                    {c.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="hidden sm:flex items-center gap-1 bg-secondary rounded-md p-1 shrink-0">
+              <button
+                onClick={() => setView("card")}
+                aria-label="Card view"
+                className={`p-2 rounded transition-colors ${view === "card" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+              >
+                <LayoutGrid className="h-4 w-4" />
+              </button>
+              <button
+                onClick={() => setView("list")}
+                aria-label="List view"
+                className={`p-2 rounded transition-colors ${view === "list" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+              >
+                <List className="h-4 w-4" />
+              </button>
             </div>
           </div>
-          <div className="hidden sm:flex items-center gap-1 bg-secondary rounded-md p-1 shrink-0">
-            <button
-              onClick={() => setView("card")}
-              aria-label="Card view"
-              className={`p-2 rounded ${view === "card" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
-            >
-              <LayoutGrid className="h-4 w-4" />
-            </button>
-            <button
-              onClick={() => setView("list")}
-              aria-label="List view"
-              className={`p-2 rounded ${view === "list" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
-            >
-              <List className="h-4 w-4" />
-            </button>
+
+          <div className="relative max-w-md">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search the menu…"
+              className="h-10 pl-9 pr-9 bg-card/50 border-border focus-visible:ring-primary"
+            />
+            {search && (
+              <button
+                onClick={() => setSearch("")}
+                aria-label="Clear search"
+                className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-foreground"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
           </div>
         </div>
       </div>
 
       <section className="container py-10 space-y-16">
         {loading ? (
-          <div className="flex items-center justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="bg-gradient-card border border-border rounded-xl overflow-hidden">
+                <Skeleton className="aspect-[4/3] w-full rounded-none" />
+                <div className="p-5 space-y-3">
+                  <Skeleton className="h-5 w-3/4" />
+                  <Skeleton className="h-3 w-full" />
+                  <Skeleton className="h-11 w-full mt-2" />
+                </div>
+              </div>
+            ))}
+          </div>
         ) : (
           <>
-            {featured.length > 0 && (
+            {featured.length > 0 && !search && (
               <div id="cat-featured" className="scroll-mt-32">
                 <div className="text-center mb-8">
                   <div className="menu-divider mb-4" />
@@ -257,23 +353,23 @@ const Menu = () => {
                     Pitmaster picks — the bold, smoky favorites our regulars come back for.
                   </p>
                 </div>
-                {/* Horizontal carousel */}
-                <div className="-mx-4 sm:mx-0 px-4 sm:px-0 overflow-x-auto pb-3 snap-x snap-mandatory scroll-smooth">
-                  <div className="flex gap-4 min-w-max">
-                    {featured.map((item) => (
-                      <div
-                        key={item.id}
-                        className="snap-start w-[280px] sm:w-[320px] shrink-0"
-                      >
-                        <CardItem item={item} />
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                <FeaturedCarousel
+                  items={featured}
+                  renderItem={(item, i) => <CardItem item={item as Item} index={i} />}
+                />
               </div>
             )}
 
-            {categories.map((cat, idx) => (
+            {visibleCategories.length === 0 && search && (
+              <div className="text-center py-20">
+                <p className="font-stencil text-muted-foreground">No items match "{search}"</p>
+                <Button onClick={() => setSearch("")} variant="outline" className="mt-4 font-stencil">
+                  Clear search
+                </Button>
+              </div>
+            )}
+
+            {visibleCategories.map((cat, idx) => (
               <div key={cat.id}>
                 {idx > 0 && idx % 2 === 0 && <CateringCallout />}
                 <div id={`cat-${cat.slug}`} className="scroll-mt-32">
@@ -284,10 +380,10 @@ const Menu = () => {
                     {cat.description && (
                       <p className="text-sm text-muted-foreground mt-3 max-w-xl mx-auto">{cat.description}</p>
                     )}
-                </div>
+                  </div>
                   {view === "card" ? (
                     <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {grouped[cat.id]?.map((item) => <CardItem key={item.id} item={item} />)}
+                      {grouped[cat.id]?.map((item, i) => <CardItem key={item.id} item={item} index={i} />)}
                     </div>
                   ) : (
                     <div>{grouped[cat.id]?.map((item) => <ListItem key={item.id} item={item} />)}</div>
