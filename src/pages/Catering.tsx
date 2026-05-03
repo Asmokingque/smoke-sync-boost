@@ -219,7 +219,7 @@ const Catering = () => {
                 <Label htmlFor="cmsg">Additional Notes</Label>
                 <Textarea id="cmsg" rows={3} value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} placeholder="Anything else we should know" className="luxury-input" />
               </div>
-              <Button type="submit" disabled={submitting} className="w-full h-12 bg-primary hover:bg-primary/90 font-stencil">
+              <Button type="submit" disabled={submitting} className="luxury-primary-btn w-full h-12 font-stencil text-sm tracking-widest">
                 {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Send Inquiry"}
               </Button>
             </form>
