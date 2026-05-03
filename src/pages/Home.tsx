@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { SiteLayout } from "@/components/layout/SiteLayout";
 import { SmokeBackground } from "@/components/ui/SmokeBackground";
 import { useSpecials } from "@/hooks/useSpecials";
+import { useHolidayEvents } from "@/hooks/useHolidayEvents";
 import { isVisibleNow } from "@/lib/specials";
 import { SpecialCard } from "@/components/specials/SpecialCard";
 import hero from "@/assets/hero-bbq.jpg";
@@ -11,8 +12,10 @@ import logo from "@/assets/logo.png";
 
 const Home = () => {
   const { specials } = useSpecials({ activeOnly: true });
+  const { events: upcomingHolidays } = useHolidayEvents({ upcomingOnly: true });
   const todaysSpecial = specials.find((s) => s.type === "daily" && isVisibleNow(s));
   const lunchSpecials = specials.filter((s) => s.type === "lunch" && isVisibleNow(s)).slice(0, 3);
+  const nextHolidays = upcomingHolidays.slice(0, 3);
   return (
     <SiteLayout>
       {/* HERO */}
