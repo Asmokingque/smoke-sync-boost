@@ -7,12 +7,19 @@ import { FloatingCartButton } from "@/components/retina/FloatingCartButton";
 export function SiteLayout({ children }: { children: ReactNode }) {
   const [cartOpen, setCartOpen] = useState(false);
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="luxury-page-bg min-h-screen flex flex-col">
       <Header onCartClick={() => setCartOpen(true)} />
       <main className="flex-1">{children}</main>
       <Footer />
       <CartDrawer open={cartOpen} onOpenChange={setCartOpen} />
       <FloatingCartButton onClick={() => setCartOpen(true)} />
+      {/* Mobile sticky Order Now CTA */}
+      <a
+        href="/menu"
+        className="md:hidden fixed bottom-4 left-4 right-20 z-40 luxury-primary-btn h-12 inline-flex items-center justify-center font-stencil text-xs tracking-widest"
+      >
+        Order Now
+      </a>
     </div>
   );
 }
