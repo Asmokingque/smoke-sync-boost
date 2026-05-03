@@ -366,11 +366,64 @@ const Checkout = () => {
 
       <section className="container py-12 md:py-16 max-w-5xl">
         <div className="grid lg:grid-cols-[1fr_400px] gap-8">
-          <form onSubmit={handleSubmit} className="space-y-8 retina-menu-card p-6 md:p-8 ring-gold-soft">
+          <form onSubmit={handleSubmit} className="space-y-8 premium-glass-card p-6 md:p-8">
             <div>
               <div className="flex items-center gap-3 mb-1">
                 <span className="h-px flex-1 bg-gradient-to-r from-gold/50 to-transparent" />
-                <h2 className="font-serif text-2xl tracking-tight whitespace-nowrap">Pickup Details</h2>
+                <h2 className="font-serif text-2xl tracking-tight whitespace-nowrap">Order Method</h2>
+                <span className="h-px flex-1 bg-gradient-to-l from-gold/50 to-transparent" />
+              </div>
+              <p className="text-xs text-muted-foreground text-center">Choose how you'd like to receive your order.</p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              {[
+                { value: "Pickup" as const, icon: Store, title: "Pickup", sub: "Ready at the smokehouse" },
+                { value: "Delivery" as const, icon: Truck, title: "Delivery", sub: "We bring it to you" },
+              ].map((opt) => {
+                const Icon = opt.icon;
+                const active = form.order_type === opt.value;
+                return (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => setForm({ ...form, order_type: opt.value })}
+                    className={[
+                      "rounded-2xl border p-4 text-left transition-all flex items-start gap-3",
+                      active
+                        ? "border-gold/70 bg-gradient-to-br from-primary/15 to-background/40 ring-gold-soft"
+                        : "border-border/60 bg-background/40 hover:border-gold/40",
+                    ].join(" ")}
+                  >
+                    <Icon className={`h-5 w-5 mt-0.5 shrink-0 ${active ? "text-gold" : "text-muted-foreground"}`} />
+                    <div>
+                      <div className={`font-stencil text-sm tracking-wider ${active ? "text-gold" : "text-foreground"}`}>{opt.title}</div>
+                      <div className="text-[11px] text-muted-foreground mt-0.5">{opt.sub}</div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+
+            {form.order_type === "Delivery" && (
+              <div className="space-y-2">
+                <Label htmlFor="address" className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-muted-foreground"><MapPin className="h-3 w-3 text-gold" />Delivery Address *</Label>
+                <Textarea
+                  id="address"
+                  required
+                  value={form.delivery_address}
+                  onChange={(e) => setForm({ ...form, delivery_address: e.target.value })}
+                  rows={2}
+                  placeholder="Street, city, ZIP, apt #, gate code…"
+                  maxLength={300}
+                />
+              </div>
+            )}
+
+            <div>
+              <div className="flex items-center gap-3 mb-1">
+                <span className="h-px flex-1 bg-gradient-to-r from-gold/50 to-transparent" />
+                <h2 className="font-serif text-2xl tracking-tight whitespace-nowrap">Your Details</h2>
                 <span className="h-px flex-1 bg-gradient-to-l from-gold/50 to-transparent" />
               </div>
               <p className="text-xs text-muted-foreground text-center">Tell us how to reach you when your order's ready.</p>
@@ -391,7 +444,10 @@ const Checkout = () => {
               <Input id="email" type="email" required value={form.customer_email} onChange={(e) => setForm({ ...form, customer_email: e.target.value })} className="h-12" />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="pickup" className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-muted-foreground"><Clock className="h-3 w-3 text-gold" />Preferred Pickup Time</Label>
+              <Label htmlFor="pickup" className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-muted-foreground">
+                <Clock className="h-3 w-3 text-gold" />
+                {form.order_type === "Delivery" ? "Preferred Delivery Time" : "Preferred Pickup Time"}
+              </Label>
               <Input id="pickup" type="datetime-local" value={form.pickup_time} onChange={(e) => setForm({ ...form, pickup_time: e.target.value })} className="h-12" />
             </div>
             <div className="space-y-2">
