@@ -31,6 +31,13 @@ const AdminOrders = () => {
     fetchOrders();
   };
 
+  const updatePayment = async (id: string, payment_status: "paid" | "failed") => {
+    const { error } = await supabase.from("orders").update({ payment_status }).eq("id", id);
+    if (error) return toast.error(error.message);
+    toast.success(payment_status === "paid" ? "Marked as paid" : "Marked as failed");
+    fetchOrders();
+  };
+
   const updateHeroes = async (
     o: any,
     patch: { status?: "verified" | "removed" | "pending_verification"; amount?: number }
@@ -93,9 +100,39 @@ const AdminOrders = () => {
                 <div className="flex flex-col items-end gap-2">
                   <OrderStatusBadge status={o.status} />
                   {o.payment_status === "cod_pending" && (
-                    <span className="inline-flex items-center gap-1.5 rounded-full border border-gold/60 bg-gold/10 px-2.5 py-1 font-stencil text-[10px] tracking-widest uppercase text-gold">
-                      <span className="h-1.5 w-1.5 rounded-full bg-gold" />
-                      Cash on Delivery (COD)
+                    <div className="flex flex-col items-end gap-1.5">
+                      <span className="inline-flex items-center gap-1.5 rounded-full border border-gold/60 bg-gold/10 px-2.5 py-1 font-stencil text-[10px] tracking-widest uppercase text-gold">
+                        <span className="h-1.5 w-1.5 rounded-full bg-gold" />
+                        Cash on Delivery (COD)
+                      </span>
+                      <div className="flex gap-1.5">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="h-7 px-2.5 text-[10px] font-stencil tracking-widest border-emerald-500/60 text-emerald-400 hover:bg-emerald-500/10"
+                          onClick={() => updatePayment(o.id, "paid")}
+                        >
+                          <ShieldCheck className="h-3 w-3 mr-1" /> Mark Paid
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="h-7 px-2.5 text-[10px] font-stencil tracking-widest border-destructive/60 text-destructive hover:bg-destructive/10"
+                          onClick={() => updatePayment(o.id, "failed")}
+                        >
+                          <XIcon className="h-3 w-3 mr-1" /> Mark Failed
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                  {o.payment_status === "paid" && (
+                    <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/60 bg-emerald-500/10 px-2.5 py-1 font-stencil text-[10px] tracking-widest uppercase text-emerald-400">
+                      <ShieldCheck className="h-3 w-3" /> Paid
+                    </span>
+                  )}
+                  {o.payment_status === "failed" && (
+                    <span className="inline-flex items-center gap-1.5 rounded-full border border-destructive/60 bg-destructive/10 px-2.5 py-1 font-stencil text-[10px] tracking-widest uppercase text-destructive">
+                      <XIcon className="h-3 w-3" /> Payment Failed
                     </span>
                   )}
                   <div className="font-display text-2xl text-primary">${Number(o.total).toFixed(2)}</div>
