@@ -59,12 +59,24 @@ const Menu = () => {
 
   const featured = useMemo(() => items.filter((i) => i.is_featured && i.is_available), [items]);
 
+  const matchesSearch = (i: Item) => {
+    if (!search.trim()) return true;
+    const q = search.toLowerCase();
+    return i.name.toLowerCase().includes(q) || (i.description ?? "").toLowerCase().includes(q);
+  };
+
   const grouped = useMemo(() => {
     const map: Record<string, Item[]> = {};
     for (const c of categories) map[c.id] = [];
-    for (const i of items) if (map[i.category_id]) map[i.category_id].push(i);
+    for (const i of items) if (map[i.category_id] && matchesSearch(i)) map[i.category_id].push(i);
     return map;
-  }, [categories, items]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [categories, items, search]);
+
+  const visibleCategories = useMemo(
+    () => categories.filter((c) => (grouped[c.id] ?? []).length > 0),
+    [categories, grouped],
+  );
 
   const handleAdd = (item: Item, useAltPrice = false) => {
     if (!item.is_available) return;
