@@ -180,6 +180,46 @@ const Home = () => {
         )}
       </section>
 
+      {/* UPCOMING HOLIDAYS */}
+      {nextHolidays.length > 0 && (
+        <section className="container py-20">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.5 }}
+            className="text-center mb-10"
+          >
+            <span className="luxury-badge mb-4 inline-flex items-center gap-2"><CalendarDays className="h-3 w-3" /> On the Calendar</span>
+            <h2 className="luxury-menu-title text-4xl md:text-5xl mb-3">Upcoming Holidays</h2>
+            <span className="luxury-gold-line mx-auto block mb-3" />
+            <p className="luxury-subtitle max-w-xl mx-auto">Plan ahead — our holiday hours and BBQ specials.</p>
+          </motion.div>
+          <div className="grid sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
+            {nextHolidays.map((h) => (
+              <Link key={h.id} to="/holiday-calendar" className="luxury-card p-6 flex flex-col items-start gap-3 hover:-translate-y-1 transition-transform">
+                <div className="flex items-baseline gap-3">
+                  <span className="font-stencil text-[10px] text-gold tracking-widest uppercase">
+                    {new Date(h.holiday_date + "T00:00:00").toLocaleDateString(undefined, { month: "short" })}
+                  </span>
+                  <span className="luxury-menu-title text-3xl leading-none">
+                    {new Date(h.holiday_date + "T00:00:00").getDate()}
+                  </span>
+                </div>
+                <div className="luxury-menu-title text-xl">{h.holiday_name}</div>
+                <span className="luxury-badge inline-flex">{h.business_status ?? "Open"}</span>
+                {h.banner_message && (
+                  <p className="luxury-subtitle text-xs">{h.banner_message}</p>
+                )}
+              </Link>
+            ))}
+          </div>
+          <div className="text-center mt-8">
+            <Link to="/holiday-calendar"><button className="luxury-secondary-btn h-12 px-8 font-stencil text-xs tracking-widest">Full Holiday Calendar</button></Link>
+          </div>
+        </section>
+      )}
+
       {/* HIGHLIGHTS */}
       <section className="container py-28 md:py-32">
         <motion.div
