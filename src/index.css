@@ -224,4 +224,71 @@
     transform: translateX(-120%);
     transition: transform 1100ms ease;
   }
+
+  /* Drop-in BBQ utility classes (mapped to brand HSL tokens) */
+  .retina-menu-card {
+    position: relative;
+    overflow: hidden;
+    border-radius: 24px;
+    border: 1px solid hsl(var(--bbq-bone) / 0.16);
+    background: linear-gradient(145deg, hsl(var(--bbq-smoke-dark) / 0.94), hsl(var(--bbq-charcoal) / 0.98));
+    box-shadow: 0 24px 80px hsl(0 0% 0% / 0.38);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    transition: transform 220ms ease, border-color 220ms ease, box-shadow 220ms ease;
+  }
+  .retina-menu-card::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 4px;
+    background: linear-gradient(90deg, hsl(var(--bbq-deep-red)), hsl(var(--bbq-crimson)), hsl(var(--bbq-ember)));
+  }
+  .retina-menu-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at top right, hsl(var(--bbq-white) / 0.08), transparent 18rem);
+    pointer-events: none;
+  }
+  .retina-menu-card:hover {
+    transform: translateY(-4px);
+    border-color: hsl(var(--bbq-bone) / 0.32);
+    box-shadow: 0 32px 100px hsl(0 0% 0% / 0.48);
+  }
+
+  .bbq-section-title {
+    color: hsl(var(--bbq-crimson));
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    font-weight: 900;
+    text-shadow: 0 2px 0 hsl(0 0% 0% / 0.5);
+  }
+
+  .bbq-divider {
+    height: 2px;
+    background: linear-gradient(90deg, transparent, hsl(var(--bbq-white) / 0.9), transparent);
+  }
+
+  .bbq-price-pill {
+    border-radius: 999px;
+    background: hsl(var(--bbq-crimson) / 0.22);
+    border: 1px solid hsl(var(--bbq-ember) / 0.6);
+    color: hsl(var(--bbq-white));
+    padding: 0.35rem 0.75rem;
+    font-weight: 800;
+  }
+
+  .bbq-primary-button {
+    background: linear-gradient(135deg, hsl(var(--bbq-crimson)), hsl(var(--bbq-deep-red)));
+    color: hsl(var(--bbq-white));
+    border: 1px solid hsl(var(--bbq-bone) / 0.18);
+    box-shadow: 0 12px 36px hsl(var(--bbq-crimson) / 0.32);
+    transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease;
+  }
+  .bbq-primary-button:hover {
+    background: linear-gradient(135deg, hsl(var(--bbq-ember)), hsl(var(--bbq-crimson)));
+    transform: translateY(-1px);
+    box-shadow: 0 16px 48px hsl(var(--bbq-ember) / 0.42);
+  }
 }
