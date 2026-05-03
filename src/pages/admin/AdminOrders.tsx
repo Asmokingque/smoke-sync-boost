@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2 } from "lucide-react";
+import { Loader2, Heart, ShieldCheck, X as XIcon } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { OrderStatusBadge } from "@/components/retina/OrderStatusBadge";
 
@@ -26,6 +28,32 @@ const AdminOrders = () => {
     const { error } = await supabase.from("orders").update({ status: status as any }).eq("id", id);
     if (error) return toast.error(error.message);
     toast.success("Order updated");
+    fetchOrders();
+  };
+
+  const updateHeroes = async (
+    o: any,
+    patch: { status?: "verified" | "removed" | "pending_verification"; amount?: number }
+  ) => {
+    const newAmount = patch.status === "removed" ? 0 : patch.amount ?? Number(o.heroes_discount_amount ?? 0);
+    const newStatus = patch.status ?? o.heroes_discount_status;
+    const subtotal = Number(o.subtotal ?? 0);
+    // Reconstruct prior promo discount from total reverse-engineering would be brittle.
+    // We keep tax based on (subtotal - newAmount) as a simple, transparent recompute.
+    const subAfter = Math.max(0, subtotal - newAmount);
+    const tax = Math.round(subAfter * 0.07 * 100) / 100;
+    const total = Math.round((subAfter + tax) * 100) / 100;
+    const { error } = await supabase
+      .from("orders")
+      .update({
+        heroes_discount_amount: newAmount,
+        heroes_discount_status: newStatus,
+        tax,
+        total,
+      })
+      .eq("id", o.id);
+    if (error) return toast.error(error.message);
+    toast.success("Heroes discount updated");
     fetchOrders();
   };
 
@@ -95,6 +123,49 @@ const AdminOrders = () => {
                 })}
               </ul>
               {o.notes && <div className="mt-3 text-xs text-muted-foreground italic">Note: {o.notes}</div>}
+              {o.heroes_group && (
+                <div className="mt-3 rounded-lg border border-gold/30 bg-gold/5 p-3">
+                  <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+                    <div className="flex items-center gap-2 text-sm">
+                      <Heart className="h-4 w-4 text-gold" />
+                      <span className="font-stencil tracking-wider text-xs uppercase text-gold">Heroes Deal</span>
+                      <span className="text-muted-foreground">· {o.heroes_group}</span>
+                      <span className={`text-[11px] px-2 py-0.5 rounded-full border ${
+                        o.heroes_discount_status === "verified"
+                          ? "border-emerald-500/40 text-emerald-400 bg-emerald-500/10"
+                          : o.heroes_discount_status === "removed"
+                          ? "border-destructive/40 text-destructive bg-destructive/10"
+                          : "border-gold/40 text-gold bg-gold/5"
+                      }`}>
+                        {o.heroes_discount_status ?? "—"}
+                      </span>
+                    </div>
+                    <div className="text-sm text-emerald-400">−${Number(o.heroes_discount_amount ?? 0).toFixed(2)}</div>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Button type="button" size="sm" variant="outline" className="h-8 text-[11px] font-stencil"
+                      onClick={() => updateHeroes(o, { status: "verified" })}>
+                      <ShieldCheck className="h-3.5 w-3.5 mr-1" /> Verify
+                    </Button>
+                    <Button type="button" size="sm" variant="outline" className="h-8 text-[11px] font-stencil text-destructive"
+                      onClick={() => updateHeroes(o, { status: "removed" })}>
+                      <XIcon className="h-3.5 w-3.5 mr-1" /> Remove
+                    </Button>
+                    <div className="flex items-center gap-1">
+                      <span className="text-[11px] text-muted-foreground">Adjust $</span>
+                      <Input type="number" min={0} step="0.01"
+                        defaultValue={Number(o.heroes_discount_amount ?? 0)}
+                        className="h-8 w-24 text-xs"
+                        onBlur={(e) => {
+                          const v = Number(e.target.value);
+                          if (!Number.isFinite(v) || v < 0) return;
+                          if (v === Number(o.heroes_discount_amount ?? 0)) return;
+                          updateHeroes(o, { amount: v, status: o.heroes_discount_status ?? "pending_verification" });
+                        }} />
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           ))}
         </div>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { z } from "zod";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -9,7 +9,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Loader2, ShoppingBag, Tag, X, Bug, Download, Check, ShoppingCart, User, Receipt, Sparkles, Clock, Phone, Mail, MessageSquare, MapPin, Store, Truck, Plus, Minus, Trash2 } from "lucide-react";
+import { Loader2, ShoppingBag, Tag, X, Bug, Download, Check, ShoppingCart, User, Receipt, Sparkles, Clock, Phone, Mail, MessageSquare, MapPin, Store, Truck, Plus, Minus, Trash2, Heart, ShieldCheck } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
 import { computeDiscount, buildSafeOrderTotals, type Promo } from "@/lib/promo";
@@ -35,6 +36,8 @@ const PROMOS: Promo[] = [
   { code: "PITMASTER5", label: "$5 off order", type: "fixed", value: 5 },
 ];
 
+type HeroesSettings = { enabled: boolean; discount_percent: number; eligible_groups: string[]; terms: string };
+
 const Checkout = () => {
   const { items, subtotal, clear, updateQuantity, removeItem } = useCart();
   const { user } = useAuth();
@@ -44,6 +47,15 @@ const Checkout = () => {
   const [submitting, setSubmitting] = useState(false);
   const [promoInput, setPromoInput] = useState("");
   const [promo, setPromo] = useState<Promo | null>(null);
+  const [heroesSettings, setHeroesSettings] = useState<HeroesSettings | null>(null);
+  const [heroesGroup, setHeroesGroup] = useState<string>("");
+  const [heroesAck, setHeroesAck] = useState(false);
+
+  useEffect(() => {
+    supabase.from("business_settings").select("setting_value").eq("setting_key", "community_heroes").maybeSingle().then(({ data }) => {
+      if (data?.setting_value) setHeroesSettings(data.setting_value as any);
+    });
+  }, []);
   const toggleDebug = () => {
     const next = new URLSearchParams(searchParams);
     if (debugEnabled) next.delete("debug");
@@ -180,8 +192,13 @@ const Checkout = () => {
   const discountAmount = breakdown.discountAmount;
   const discountedSub = breakdown.discountedSub;
   const discountRate = promo?.type === "percent" ? Math.min(Math.max(promo.value, 0), 1) : 0;
-  const tax = Math.max(0, discountedSub * TAX_RATE);
-  const total = Math.max(0, discountedSub + tax);
+  const heroesEnabled = !!heroesSettings?.enabled;
+  const heroesPercent = Math.min(Math.max(Number(heroesSettings?.discount_percent ?? 0), 0), 100) / 100;
+  const heroesActive = heroesEnabled && !!heroesGroup && heroesAck && heroesPercent > 0;
+  const heroesDiscount = heroesActive ? Math.round(discountedSub * heroesPercent * 100) / 100 : 0;
+  const subAfterAll = Math.max(0, discountedSub - heroesDiscount);
+  const tax = Math.max(0, subAfterAll * TAX_RATE);
+  const total = Math.max(0, subAfterAll + tax);
 
   // Dev-time invariant assertion (non-production safety net).
   if (import.meta.env.DEV) {
@@ -262,8 +279,18 @@ const Checkout = () => {
     }
     const safe = guard.totals;
 
+    // Recompute heroes discount + final tax/total server-side-style from sanitized values
+    const safeHeroesPercent = heroesActive ? heroesPercent : 0;
+    const safeHeroesDiscount = Math.round(safe.discountedSubtotal * safeHeroesPercent * 100) / 100;
+    const safeSubAfterAll = Math.max(0, safe.discountedSubtotal - safeHeroesDiscount);
+    const safeTax = Math.round(safeSubAfterAll * TAX_RATE * 100) / 100;
+    const safeTotal = Math.round((safeSubAfterAll + safeTax) * 100) / 100;
+
     setSubmitting(true);
     try {
+      const heroesNote = heroesActive
+        ? `Heroes Deal: ${heroesGroup} ${(heroesPercent * 100).toFixed(0)}% −$${safeHeroesDiscount.toFixed(2)} (pending verification)`
+        : null;
       const { data: order, error: orderErr } = await supabase
         .from("orders")
         .insert({
@@ -274,12 +301,16 @@ const Checkout = () => {
           pickup_time: parsed.data.pickup_time ? new Date(parsed.data.pickup_time).toISOString() : null,
           order_type: parsed.data.order_type,
           delivery_address: parsed.data.order_type === "Delivery" ? parsed.data.delivery_address ?? null : null,
-          notes: [parsed.data.notes, promo ? `Promo: ${promo.code} (${promo.label}) −$${safe.discount.toFixed(2)}` : null].filter(Boolean).join(" • ") || null,
+          notes: [parsed.data.notes, promo ? `Promo: ${promo.code} (${promo.label}) −$${safe.discount.toFixed(2)}` : null, heroesNote].filter(Boolean).join(" • ") || null,
           subtotal: safe.subtotal,
-          tax: safe.tax,
-          total: safe.total,
+          tax: safeTax,
+          total: safeTotal,
           status: "pending",
           payment_status: "unpaid",
+          heroes_group: heroesActive ? heroesGroup : null,
+          heroes_discount_amount: safeHeroesDiscount,
+          heroes_discount_status: heroesActive ? "pending_verification" : null,
+          heroes_acknowledged: heroesActive,
         })
         .select()
         .single();
@@ -455,6 +486,53 @@ const Checkout = () => {
               <Label htmlFor="notes" className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-muted-foreground"><MessageSquare className="h-3 w-3 text-gold" />Special Requests</Label>
               <Textarea id="notes" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} rows={3} placeholder="Allergies, sauce on the side, etc." className="luxury-input" />
             </div>
+
+            {heroesEnabled && heroesSettings && (
+              <div className="rounded-2xl border border-gold/30 bg-gradient-to-br from-primary/10 via-background/40 to-background/40 p-5 space-y-3">
+                <div className="flex items-start gap-3">
+                  <Heart className="h-5 w-5 text-gold shrink-0 mt-0.5" />
+                  <div className="flex-1">
+                    <div className="font-stencil text-xs tracking-[0.25em] uppercase text-gold mb-1">Community Heroes Deal</div>
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                      {Math.round(heroesPercent * 100)}% off for {heroesSettings.eligible_groups.join(", ")}.
+                    </p>
+                  </div>
+                </div>
+                <div className="grid sm:grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => { setHeroesGroup(""); setHeroesAck(false); }}
+                    className={`rounded-xl border px-3 py-2 text-left text-xs font-stencil tracking-wider transition-colors ${!heroesGroup ? "border-gold/60 bg-gold/5 text-gold" : "border-border/60 text-muted-foreground hover:border-gold/40"}`}
+                  >
+                    No, thanks
+                  </button>
+                  {heroesSettings.eligible_groups.map((g) => (
+                    <button
+                      key={g}
+                      type="button"
+                      onClick={() => setHeroesGroup(g)}
+                      className={`rounded-xl border px-3 py-2 text-left text-xs font-stencil tracking-wider transition-colors ${heroesGroup === g ? "border-gold/60 bg-gold/5 text-gold" : "border-border/60 text-muted-foreground hover:border-gold/40"}`}
+                    >
+                      {g}
+                    </button>
+                  ))}
+                </div>
+                {heroesGroup && (
+                  <>
+                    <label className="flex items-start gap-2 text-[11px] text-muted-foreground leading-relaxed cursor-pointer">
+                      <Checkbox checked={heroesAck} onCheckedChange={(v) => setHeroesAck(!!v)} className="mt-0.5" />
+                      <span>{heroesSettings.terms}</span>
+                    </label>
+                    {heroesActive && (
+                      <div className="flex items-center gap-2 text-[11px] text-emerald-400">
+                        <ShieldCheck className="h-3.5 w-3.5" />
+                        Heroes discount applied — pending verification at {form.order_type === "Delivery" ? "delivery" : "pickup"}.
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+            )}
 
             <div className="rounded-md border border-gold/30 bg-gradient-to-r from-primary/5 via-gold/5 to-primary/5 p-4 text-sm flex gap-3">
               <Sparkles className="h-4 w-4 text-gold shrink-0 mt-0.5" />
@@ -660,6 +738,12 @@ const Checkout = () => {
                 <div className="flex justify-between text-muted-foreground">
                   <span>Subtotal after discount</span>
                   <span>${discountedSub.toFixed(2)}</span>
+                </div>
+              )}
+              {heroesActive && (
+                <div className="flex justify-between text-emerald-400">
+                  <span>Heroes Deal ({heroesGroup} −{Math.round(heroesPercent * 100)}%)</span>
+                  <span>−${heroesDiscount.toFixed(2)}</span>
                 </div>
               )}
               <div className="flex justify-between text-muted-foreground"><span>Tax (7%)</span><span>${tax.toFixed(2)}</span></div>
