@@ -212,17 +212,27 @@ const Checkout = () => {
   if (items.length === 0) {
     return (
       <SiteLayout>
-        <section className="container py-24 text-center">
-          <ShoppingBag className="h-20 w-20 mx-auto text-muted-foreground/40 mb-6" />
-          <h1 className="font-display text-4xl mb-3">Your cart is empty</h1>
-          <p className="text-muted-foreground mb-6">Browse the menu and add some items to get started.</p>
-          <Button asChild className="bg-primary hover:bg-primary/90 font-stencil h-12 px-8">
+        <section className="container py-24 text-center max-w-xl">
+          <div className="inline-flex items-center justify-center h-24 w-24 rounded-full border border-gold/30 bg-gradient-smoke mb-8 ring-gold-soft">
+            <ShoppingBag className="h-10 w-10 text-gold" />
+          </div>
+          <span className="badge-premium mb-4 inline-flex"><Sparkles className="h-3 w-3" />Empty Cart</span>
+          <h1 className="font-serif text-5xl md:text-6xl mb-3 tracking-tight">Your cart is empty</h1>
+          <span className="gold-rule-short mx-auto block mb-5" />
+          <p className="text-muted-foreground mb-8 leading-relaxed">Browse our smokehouse menu and build your order — slow-smoked, served bold.</p>
+          <Button asChild className="bg-primary hover:bg-primary/90 font-stencil h-12 px-10 shadow-ember">
             <Link to="/menu">Browse Menu</Link>
           </Button>
         </section>
       </SiteLayout>
     );
   }
+
+  const steps = [
+    { id: 1, label: "Cart", icon: ShoppingCart, done: true, active: false },
+    { id: 2, label: "Details", icon: User, done: false, active: true },
+    { id: 3, label: "Confirm", icon: Receipt, done: false, active: false },
+  ];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
