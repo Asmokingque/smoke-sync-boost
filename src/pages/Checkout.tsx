@@ -458,7 +458,9 @@ const Checkout = () => {
             <div className="rounded-md border border-gold/30 bg-gradient-to-r from-primary/5 via-gold/5 to-primary/5 p-4 text-sm flex gap-3">
               <Sparkles className="h-4 w-4 text-gold shrink-0 mt-0.5" />
               <div>
-                <strong className="text-gold font-stencil tracking-wider text-xs uppercase block mb-1">Pay at Pickup</strong>
+                <strong className="text-gold font-stencil tracking-wider text-xs uppercase block mb-1">
+                  {form.order_type === "Delivery" ? "Pay on Delivery" : "Pay at Pickup"}
+                </strong>
                 <span className="text-muted-foreground">We'll confirm your order by phone or email. Online card payment is coming soon.</span>
               </div>
             </div>
@@ -466,13 +468,13 @@ const Checkout = () => {
             <Button
               type="submit"
               disabled={submitting}
-              className="w-full h-14 bg-primary hover:bg-primary/90 font-stencil text-base shadow-ember tracking-widest"
+              className="w-full h-14 premium-button font-stencil text-base tracking-widest"
             >
-              {submitting ? <Loader2 className="h-5 w-5 animate-spin" /> : `Place Order — $${total.toFixed(2)}`}
+              {submitting ? <Loader2 className="h-5 w-5 animate-spin" /> : `Place ${form.order_type} Order — $${total.toFixed(2)}`}
             </Button>
           </form>
 
-          <aside className="retina-menu-card p-6 h-fit lg:sticky lg:top-24">
+          <aside className="premium-glass-card p-6 h-fit lg:sticky lg:top-24">
             <div className="flex items-center gap-3 mb-2">
               <Receipt className="h-4 w-4 text-gold" />
               <h2 className="font-serif text-2xl tracking-tight">Order Summary</h2>
