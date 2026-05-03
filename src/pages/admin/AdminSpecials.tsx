@@ -6,14 +6,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Loader2, Plus, Trash2, Calendar as CalendarIcon, ArrowUp, ArrowDown, Eye, EyeOff, Package } from "lucide-react";
+import { Loader2, Plus, Trash2, Calendar as CalendarIcon, ArrowUp, ArrowDown, Eye, EyeOff, Package, Heart } from "lucide-react";
 import { toast } from "sonner";
-import { FEDERAL_HOLIDAYS } from "@/lib/holidays";
 import type { Special, SpecialType } from "@/lib/specials";
 import { SPECIAL_TYPE_LABEL } from "@/lib/specials";
 
 const TYPES: SpecialType[] = ["daily", "lunch", "holiday", "featured", "catering"];
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const HOLIDAY_STATUSES = ["Open", "Closed", "Special Hours"] as const;
 
 type SpecialItem = {
   id: string;
@@ -55,12 +55,45 @@ const blankItem = (special_id: string, order: number): Partial<SpecialItem> => (
   menu_item_id: null,
 });
 
+type HolidayEvt = {
+  id: string;
+  holiday_name: string;
+  holiday_date: string;
+  holiday_type: string;
+  business_status: string | null;
+  open_time: string | null;
+  close_time: string | null;
+  banner_title: string | null;
+  banner_message: string | null;
+  special_id: string | null;
+  is_active: boolean;
+  display_order: number;
+};
+
+type CommunityDisc = {
+  id: string;
+  title: string;
+  description: string | null;
+  eligible_groups: string[];
+  discount_type: "percentage" | "fixed";
+  discount_value: number;
+  min_subtotal: number | null;
+  max_discount: number | null;
+  requires_id_verification: boolean;
+  allow_online_selection: boolean;
+  is_active: boolean;
+  terms: string | null;
+};
+
 const AdminSpecials = () => {
   const [specials, setSpecials] = useState<Special[]>([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<Partial<Special> | null>(null);
-  const [hours, setHours] = useState<any[]>([]);
-  const [heroesSettings, setHeroesSettings] = useState<{ enabled: boolean; discount_percent: number }>({ enabled: true, discount_percent: 10 });
+  const [holidays, setHolidays] = useState<HolidayEvt[]>([]);
+  const [editingHoliday, setEditingHoliday] = useState<Partial<HolidayEvt> | null>(null);
+  const [discounts, setDiscounts] = useState<CommunityDisc[]>([]);
+  const [editingDiscount, setEditingDiscount] = useState<Partial<CommunityDisc> | null>(null);
+  const [discountOrders, setDiscountOrders] = useState<any[]>([]);
 
   // Items management state (only relevant when editing an existing special)
   const [items, setItems] = useState<SpecialItem[]>([]);
@@ -70,16 +103,22 @@ const AdminSpecials = () => {
 
   const load = async () => {
     setLoading(true);
-    const [s, h, b, m] = await Promise.all([
+    const [s, he, cd, m, ord] = await Promise.all([
       supabase.from("specials").select("*").order("display_order"),
-      supabase.from("business_hours_overrides").select("*").order("override_date"),
-      supabase.from("business_settings").select("*").eq("setting_key", "community_heroes").maybeSingle(),
+      supabase.from("holiday_events").select("*").order("holiday_date"),
+      supabase.from("community_discounts").select("*").order("created_at"),
       supabase.from("menu_items").select("id,name,price").order("name"),
+      supabase.from("orders").select("id,order_number,customer_name,created_at,total,discount_name,discount_amount,discount_status,community_group").not("discount_id", "is", null).order("created_at", { ascending: false }).limit(50),
     ]);
     setSpecials((s.data ?? []) as unknown as Special[]);
-    setHours(h.data ?? []);
-    if (b.data) setHeroesSettings(b.data.setting_value as any);
+    setHolidays(((he.data ?? []) as unknown) as HolidayEvt[]);
+    const ds = ((cd.data ?? []) as any[]).map((d) => ({
+      ...d,
+      eligible_groups: Array.isArray(d.eligible_groups) ? d.eligible_groups : [],
+    })) as CommunityDisc[];
+    setDiscounts(ds);
     setMenuItems((m.data ?? []) as any);
+    setDiscountOrders((ord.data ?? []) as any[]);
     setLoading(false);
   };
 
@@ -151,27 +190,95 @@ const AdminSpecials = () => {
     load();
   };
 
-  const saveHeroes = async () => {
-    const { error } = await supabase
-      .from("business_settings")
-      .update({ setting_value: heroesSettings as any })
-      .eq("setting_key", "community_heroes");
-    if (error) return toast.error(error.message);
-    toast.success("Heroes deal updated");
-  };
+  // Holiday events CRUD
+  const blankHoliday = (): Partial<HolidayEvt> => ({
+    holiday_name: "",
+    holiday_date: new Date().toISOString().slice(0, 10),
+    holiday_type: "custom",
+    business_status: "Open",
+    is_active: true,
+    display_order: holidays.length,
+  });
 
-  const addHourOverride = async () => {
-    const date = prompt("Date (YYYY-MM-DD)?");
-    if (!date) return;
-    const status = prompt("Status: open / closed / special_hours", "closed") || "closed";
-    const label = prompt("Label (e.g., Christmas Day)?", "") || null;
-    const { error } = await supabase.from("business_hours_overrides").insert({ override_date: date, status: status as any, label });
-    if (error) return toast.error(error.message);
+  const saveHoliday = async () => {
+    if (!editingHoliday) return;
+    if (!editingHoliday.holiday_name?.trim()) return toast.error("Name required");
+    if (!editingHoliday.holiday_date) return toast.error("Date required");
+    const payload: any = { ...editingHoliday };
+    if (payload.id) {
+      const { id, ...rest } = payload;
+      const { error } = await supabase.from("holiday_events").update(rest).eq("id", id);
+      if (error) return toast.error(error.message);
+    } else {
+      const { error } = await supabase.from("holiday_events").insert(payload);
+      if (error) return toast.error(error.message);
+    }
+    toast.success("Holiday saved");
+    setEditingHoliday(null);
     load();
   };
 
-  const removeOverride = async (id: string) => {
-    await supabase.from("business_hours_overrides").delete().eq("id", id);
+  const removeHoliday = async (id: string) => {
+    if (!confirm("Delete this holiday?")) return;
+    await supabase.from("holiday_events").delete().eq("id", id);
+    load();
+  };
+
+  // Community discount CRUD
+  const blankDiscount = (): Partial<CommunityDisc> => ({
+    title: "Community Heroes Deal",
+    description: "",
+    eligible_groups: ["Law Enforcement", "Firefighter", "Teacher", "Veteran"],
+    discount_type: "percentage",
+    discount_value: 10,
+    min_subtotal: 0,
+    max_discount: null,
+    requires_id_verification: true,
+    allow_online_selection: true,
+    is_active: true,
+    terms: "Valid ID may be required at pickup or delivery. Discount may be adjusted if eligibility cannot be verified.",
+  });
+
+  const saveDiscount = async () => {
+    if (!editingDiscount) return;
+    if (!editingDiscount.title?.trim()) return toast.error("Title required");
+    const payload: any = {
+      ...editingDiscount,
+      eligible_groups: editingDiscount.eligible_groups ?? [],
+      discount_value: Number(editingDiscount.discount_value ?? 0),
+      min_subtotal: editingDiscount.min_subtotal == null ? 0 : Number(editingDiscount.min_subtotal),
+      max_discount: editingDiscount.max_discount == null || (editingDiscount.max_discount as any) === "" ? null : Number(editingDiscount.max_discount),
+    };
+    if (payload.id) {
+      const { id, ...rest } = payload;
+      const { error } = await supabase.from("community_discounts").update(rest).eq("id", id);
+      if (error) return toast.error(error.message);
+    } else {
+      const { error } = await supabase.from("community_discounts").insert(payload);
+      if (error) return toast.error(error.message);
+    }
+    toast.success("Discount saved");
+    setEditingDiscount(null);
+    load();
+  };
+
+  const removeDiscount = async (id: string) => {
+    if (!confirm("Delete this discount?")) return;
+    await supabase.from("community_discounts").delete().eq("id", id);
+    load();
+  };
+
+  const toggleDiscountActive = async (d: CommunityDisc) => {
+    await supabase.from("community_discounts").update({ is_active: !d.is_active }).eq("id", d.id);
+    load();
+  };
+
+  const verifyDiscountOrder = async (orderId: string, status: "Verified" | "Removed") => {
+    const patch: any = { discount_status: status };
+    if (status === "Removed") patch.discount_amount = 0;
+    const { error } = await supabase.from("orders").update(patch).eq("id", orderId);
+    if (error) return toast.error(error.message);
+    toast.success(`Marked ${status}`);
     load();
   };
 
@@ -299,27 +406,33 @@ const AdminSpecials = () => {
             )}
           </section>
 
-          {/* Holiday hours overrides */}
+          {/* Holiday Events */}
           <section>
             <div className="flex items-center justify-between mb-3">
-              <h2 className="font-display text-2xl">Holiday Hours &amp; Closures</h2>
-              <Button onClick={addHourOverride} variant="outline" size="sm"><Plus className="h-4 w-4" /> Add Date</Button>
+              <h2 className="font-display text-2xl">Holiday Calendar</h2>
+              <Button onClick={() => setEditingHoliday(blankHoliday())} variant="outline" size="sm"><Plus className="h-4 w-4" /> Add Holiday</Button>
             </div>
-            <p className="text-xs text-muted-foreground mb-3">Federal holidays auto-populate the calendar. Add date overrides here to mark closures or special hours.</p>
-            {hours.length === 0 ? (
-              <p className="text-muted-foreground text-sm">No overrides yet.</p>
+            <p className="text-xs text-muted-foreground mb-3">Federal + custom holidays. Mark business open/closed/special hours and link a holiday special.</p>
+            {holidays.length === 0 ? (
+              <p className="text-muted-foreground text-sm">No holidays yet.</p>
             ) : (
               <ul className="space-y-2">
-                {hours.map((h) => {
-                  const fed = FEDERAL_HOLIDAYS.find((f) => f.date === h.override_date);
+                {holidays.map((h) => {
+                  const linked = specials.find((s) => s.id === h.special_id);
                   return (
-                    <li key={h.id} className="luxury-card p-4 flex items-center gap-3">
+                    <li key={h.id} className="luxury-card p-4 flex flex-wrap items-center gap-3">
                       <CalendarIcon className="h-4 w-4 text-gold" />
-                      <div className="flex-1 text-sm">
-                        <div className="font-stencil text-xs uppercase tracking-wider">{h.override_date}</div>
-                        <div>{h.label ?? fed?.name ?? "—"} · <span className="text-muted-foreground">{h.status}</span></div>
+                      <div className="flex-1 min-w-[200px] text-sm">
+                        <div className="font-stencil text-xs uppercase tracking-wider text-gold">{h.holiday_date}</div>
+                        <div className="font-display text-lg">{h.holiday_name}</div>
+                        <div className="text-xs text-muted-foreground">
+                          {h.business_status ?? "Open"}
+                          {linked && <> · Linked: {linked.title}</>}
+                          {!h.is_active && " · Hidden"}
+                        </div>
                       </div>
-                      <Button size="sm" variant="ghost" onClick={() => removeOverride(h.id)}><Trash2 className="h-4 w-4" /></Button>
+                      <Button size="sm" variant="outline" onClick={() => setEditingHoliday(h)}>Edit</Button>
+                      <Button size="sm" variant="ghost" onClick={() => removeHoliday(h.id)}><Trash2 className="h-4 w-4" /></Button>
                     </li>
                   );
                 })}
@@ -327,20 +440,64 @@ const AdminSpecials = () => {
             )}
           </section>
 
-          {/* Community Heroes */}
-          <section className="luxury-card p-6 max-w-xl">
-            <h2 className="font-display text-2xl mb-4">Community Heroes Deal</h2>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <Label>Enabled</Label>
-                <Switch checked={heroesSettings.enabled} onCheckedChange={(v) => setHeroesSettings({ ...heroesSettings, enabled: v })} />
-              </div>
-              <div className="space-y-2">
-                <Label>Discount Percent</Label>
-                <Input type="number" min={0} max={100} value={heroesSettings.discount_percent} onChange={(e) => setHeroesSettings({ ...heroesSettings, discount_percent: Number(e.target.value) })} className="luxury-input h-11" />
-              </div>
-              <Button onClick={saveHeroes} className="luxury-primary-btn h-11 px-6 font-stencil text-xs">Save</Button>
+          {/* Community Discounts */}
+          <section>
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="font-display text-2xl flex items-center gap-2"><Heart className="h-5 w-5 text-gold" /> Community Heroes Deals</h2>
+              <Button onClick={() => setEditingDiscount(blankDiscount())} variant="outline" size="sm"><Plus className="h-4 w-4" /> Add Deal</Button>
             </div>
+            {discounts.length === 0 ? (
+              <p className="text-muted-foreground text-sm">No community discounts yet.</p>
+            ) : (
+              <ul className="space-y-2">
+                {discounts.map((d) => (
+                  <li key={d.id} className="luxury-card p-4 flex flex-wrap items-center gap-3">
+                    <div className="flex-1 min-w-[200px]">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="font-display text-lg">{d.title}</span>
+                        {!d.is_active && <span className="luxury-badge">Disabled</span>}
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        {d.discount_type === "percentage" ? `${d.discount_value}% off` : `$${d.discount_value} off`}
+                        {d.max_discount ? ` · max $${d.max_discount}` : ""}
+                        {d.min_subtotal ? ` · min $${d.min_subtotal}` : ""}
+                        {" · "}{d.eligible_groups.join(", ")}
+                      </div>
+                    </div>
+                    <Button size="sm" variant="outline" onClick={() => toggleDiscountActive(d)}>
+                      {d.is_active ? <><EyeOff className="h-3.5 w-3.5 mr-1" />Disable</> : <><Eye className="h-3.5 w-3.5 mr-1" />Enable</>}
+                    </Button>
+                    <Button size="sm" variant="outline" onClick={() => setEditingDiscount(d)}>Edit</Button>
+                    <Button size="sm" variant="ghost" onClick={() => removeDiscount(d.id)}><Trash2 className="h-4 w-4" /></Button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+
+          {/* Discount orders */}
+          <section>
+            <h2 className="font-display text-2xl mb-3">Recent Orders Using a Discount</h2>
+            {discountOrders.length === 0 ? (
+              <p className="text-muted-foreground text-sm">No orders with discounts yet.</p>
+            ) : (
+              <ul className="space-y-2">
+                {discountOrders.map((o) => (
+                  <li key={o.id} className="luxury-card p-4 flex flex-wrap items-center gap-3">
+                    <div className="flex-1 min-w-[220px] text-sm">
+                      <div className="font-stencil text-xs text-muted-foreground">#{o.order_number ?? o.id.slice(0, 8).toUpperCase()} · {new Date(o.created_at).toLocaleString()}</div>
+                      <div className="font-display text-lg">{o.customer_name}</div>
+                      <div className="text-xs text-muted-foreground">
+                        {o.discount_name} · {o.community_group} · −${Number(o.discount_amount ?? 0).toFixed(2)} · Total ${Number(o.total).toFixed(2)}
+                      </div>
+                    </div>
+                    <span className={`luxury-badge ${o.discount_status === "Verified" ? "" : ""}`}>{o.discount_status ?? "—"}</span>
+                    <Button size="sm" variant="outline" onClick={() => verifyDiscountOrder(o.id, "Verified")}>Verify</Button>
+                    <Button size="sm" variant="outline" className="text-destructive" onClick={() => verifyDiscountOrder(o.id, "Removed")}>Remove</Button>
+                  </li>
+                ))}
+              </ul>
+            )}
           </section>
         </>
       )}
@@ -421,7 +578,7 @@ const AdminSpecials = () => {
                   <Select value={editing.holiday_key ?? ""} onValueChange={(v) => setEditing({ ...editing, holiday_key: v || null })}>
                     <SelectTrigger className="luxury-input h-11"><SelectValue placeholder="Select holiday" /></SelectTrigger>
                     <SelectContent>
-                      {FEDERAL_HOLIDAYS.map((h) => <SelectItem key={h.key} value={h.key}>{h.name} · {h.date}</SelectItem>)}
+                      {holidays.map((h) => <SelectItem key={h.id} value={h.id}>{h.holiday_name} · {h.holiday_date}</SelectItem>)}
                     </SelectContent>
                   </Select>
                 </div>
@@ -543,6 +700,95 @@ const AdminSpecials = () => {
             <div className="flex justify-end gap-2 mt-6">
               <Button variant="ghost" onClick={() => { setEditing(null); setEditingItem(null); }}>Close</Button>
               <Button onClick={saveSpecial} className="luxury-primary-btn h-10 px-6 font-stencil text-xs">Save Special</Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Holiday editor */}
+      {editingHoliday && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur p-4 overflow-auto" onClick={() => setEditingHoliday(null)}>
+          <div onClick={(e) => e.stopPropagation()} className="luxury-card max-w-xl w-full p-6 my-8 space-y-3">
+            <h3 className="font-display text-2xl mb-2">{editingHoliday.id ? "Edit Holiday" : "New Holiday"}</h3>
+            <div className="space-y-2"><Label>Name *</Label><Input value={editingHoliday.holiday_name ?? ""} onChange={(e) => setEditingHoliday({ ...editingHoliday, holiday_name: e.target.value })} className="luxury-input h-11" /></div>
+            <div className="grid sm:grid-cols-2 gap-3">
+              <div className="space-y-2"><Label>Date *</Label><Input type="date" value={editingHoliday.holiday_date ?? ""} onChange={(e) => setEditingHoliday({ ...editingHoliday, holiday_date: e.target.value })} className="luxury-input h-11" /></div>
+              <div className="space-y-2"><Label>Type</Label>
+                <Select value={editingHoliday.holiday_type ?? "custom"} onValueChange={(v) => setEditingHoliday({ ...editingHoliday, holiday_type: v })}>
+                  <SelectTrigger className="luxury-input h-11"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="federal">Federal</SelectItem>
+                    <SelectItem value="local">Local</SelectItem>
+                    <SelectItem value="custom">Custom</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="space-y-2"><Label>Business Status</Label>
+              <Select value={editingHoliday.business_status ?? "Open"} onValueChange={(v) => setEditingHoliday({ ...editingHoliday, business_status: v })}>
+                <SelectTrigger className="luxury-input h-11"><SelectValue /></SelectTrigger>
+                <SelectContent>{HOLIDAY_STATUSES.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
+              </Select>
+            </div>
+            {editingHoliday.business_status === "Special Hours" && (
+              <div className="grid sm:grid-cols-2 gap-3">
+                <div className="space-y-2"><Label>Open</Label><Input type="time" value={editingHoliday.open_time ?? ""} onChange={(e) => setEditingHoliday({ ...editingHoliday, open_time: e.target.value || null })} className="luxury-input h-11" /></div>
+                <div className="space-y-2"><Label>Close</Label><Input type="time" value={editingHoliday.close_time ?? ""} onChange={(e) => setEditingHoliday({ ...editingHoliday, close_time: e.target.value || null })} className="luxury-input h-11" /></div>
+              </div>
+            )}
+            <div className="space-y-2"><Label>Banner Title</Label><Input value={editingHoliday.banner_title ?? ""} onChange={(e) => setEditingHoliday({ ...editingHoliday, banner_title: e.target.value })} className="luxury-input h-11" /></div>
+            <div className="space-y-2"><Label>Banner Message</Label><Textarea rows={2} value={editingHoliday.banner_message ?? ""} onChange={(e) => setEditingHoliday({ ...editingHoliday, banner_message: e.target.value })} className="luxury-input" /></div>
+            <div className="space-y-2"><Label>Linked Special</Label>
+              <Select value={editingHoliday.special_id ?? "__none"} onValueChange={(v) => setEditingHoliday({ ...editingHoliday, special_id: v === "__none" ? null : v })}>
+                <SelectTrigger className="luxury-input h-11"><SelectValue placeholder="None" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__none">None</SelectItem>
+                  {specials.filter((s) => s.type === "holiday").map((s) => <SelectItem key={s.id} value={s.id}>{s.title}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+            <label className="flex items-center gap-2 text-sm"><Switch checked={editingHoliday.is_active ?? true} onCheckedChange={(v) => setEditingHoliday({ ...editingHoliday, is_active: v })} />Active</label>
+            <div className="flex justify-end gap-2 pt-2">
+              <Button variant="ghost" onClick={() => setEditingHoliday(null)}>Cancel</Button>
+              <Button onClick={saveHoliday} className="luxury-primary-btn h-10 px-6 font-stencil text-xs">Save</Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Community Discount editor */}
+      {editingDiscount && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur p-4 overflow-auto" onClick={() => setEditingDiscount(null)}>
+          <div onClick={(e) => e.stopPropagation()} className="luxury-card max-w-xl w-full p-6 my-8 space-y-3">
+            <h3 className="font-display text-2xl mb-2">{editingDiscount.id ? "Edit Deal" : "New Deal"}</h3>
+            <div className="space-y-2"><Label>Title *</Label><Input value={editingDiscount.title ?? ""} onChange={(e) => setEditingDiscount({ ...editingDiscount, title: e.target.value })} className="luxury-input h-11" /></div>
+            <div className="space-y-2"><Label>Description</Label><Textarea rows={2} value={editingDiscount.description ?? ""} onChange={(e) => setEditingDiscount({ ...editingDiscount, description: e.target.value })} className="luxury-input" /></div>
+            <div className="space-y-2"><Label>Eligible Groups (comma-separated)</Label>
+              <Input value={(editingDiscount.eligible_groups ?? []).join(", ")} onChange={(e) => setEditingDiscount({ ...editingDiscount, eligible_groups: e.target.value.split(",").map((s) => s.trim()).filter(Boolean) })} className="luxury-input h-11" />
+            </div>
+            <div className="grid sm:grid-cols-3 gap-3">
+              <div className="space-y-2"><Label>Type</Label>
+                <Select value={editingDiscount.discount_type ?? "percentage"} onValueChange={(v) => setEditingDiscount({ ...editingDiscount, discount_type: v as any })}>
+                  <SelectTrigger className="luxury-input h-11"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="percentage">Percentage</SelectItem>
+                    <SelectItem value="fixed">Fixed $</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2"><Label>Value *</Label><Input type="number" step="0.01" value={editingDiscount.discount_value ?? 0} onChange={(e) => setEditingDiscount({ ...editingDiscount, discount_value: Number(e.target.value) })} className="luxury-input h-11" /></div>
+              <div className="space-y-2"><Label>Max $</Label><Input type="number" step="0.01" value={editingDiscount.max_discount ?? ""} onChange={(e) => setEditingDiscount({ ...editingDiscount, max_discount: e.target.value === "" ? null : Number(e.target.value) })} className="luxury-input h-11" /></div>
+            </div>
+            <div className="space-y-2"><Label>Min Subtotal $</Label><Input type="number" step="0.01" value={editingDiscount.min_subtotal ?? 0} onChange={(e) => setEditingDiscount({ ...editingDiscount, min_subtotal: Number(e.target.value) })} className="luxury-input h-11" /></div>
+            <div className="space-y-2"><Label>Terms</Label><Textarea rows={2} value={editingDiscount.terms ?? ""} onChange={(e) => setEditingDiscount({ ...editingDiscount, terms: e.target.value })} className="luxury-input" /></div>
+            <div className="flex items-center gap-6 flex-wrap">
+              <label className="flex items-center gap-2 text-sm"><Switch checked={editingDiscount.is_active ?? true} onCheckedChange={(v) => setEditingDiscount({ ...editingDiscount, is_active: v })} />Active</label>
+              <label className="flex items-center gap-2 text-sm"><Switch checked={editingDiscount.allow_online_selection ?? true} onCheckedChange={(v) => setEditingDiscount({ ...editingDiscount, allow_online_selection: v })} />Allow online selection</label>
+              <label className="flex items-center gap-2 text-sm"><Switch checked={editingDiscount.requires_id_verification ?? true} onCheckedChange={(v) => setEditingDiscount({ ...editingDiscount, requires_id_verification: v })} />Requires ID</label>
+            </div>
+            <div className="flex justify-end gap-2 pt-2">
+              <Button variant="ghost" onClick={() => setEditingDiscount(null)}>Cancel</Button>
+              <Button onClick={saveDiscount} className="luxury-primary-btn h-10 px-6 font-stencil text-xs">Save</Button>
             </div>
           </div>
         </div>

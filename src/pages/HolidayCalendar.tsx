@@ -1,52 +1,53 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { SiteLayout } from "@/components/layout/SiteLayout";
-import { supabase } from "@/integrations/supabase/client";
-import { FEDERAL_HOLIDAYS, type Holiday } from "@/lib/holidays";
 import { useSpecials } from "@/hooks/useSpecials";
+import { useHolidayEvents, type HolidayEvent } from "@/hooks/useHolidayEvents";
 import { SpecialCard } from "@/components/specials/SpecialCard";
-import { CalendarDays, Loader2, Clock, Store, X } from "lucide-react";
+import { CalendarDays, Loader2, Clock, Store, X, ChevronLeft, ChevronRight, List, Calendar as CalendarIcon } from "lucide-react";
 import { motion } from "framer-motion";
 
-type HoursOverride = {
-  id: string;
-  override_date: string;
-  status: "open" | "closed" | "special_hours";
-  open_time: string | null;
-  close_time: string | null;
-  holiday_key: string | null;
-  label: string | null;
-  note: string | null;
-};
+const MONTH_NAMES = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const WEEK_LABELS = ["S","M","T","W","T","F","S"];
 
 const HolidayCalendar = () => {
-  const [overrides, setOverrides] = useState<HoursOverride[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [activeHoliday, setActiveHoliday] = useState<Holiday | null>(null);
+  const { events, loading } = useHolidayEvents();
   const { specials } = useSpecials({ activeOnly: true });
-
-  useEffect(() => {
-    (async () => {
-      const { data } = await supabase.from("business_hours_overrides").select("*").order("override_date");
-      setOverrides((data ?? []) as HoursOverride[]);
-      setLoading(false);
-    })();
-  }, []);
+  const [active, setActive] = useState<HolidayEvent | null>(null);
+  const [view, setView] = useState<"list" | "month">("list");
+  const [cursor, setCursor] = useState(() => {
+    const d = new Date();
+    return new Date(d.getFullYear(), d.getMonth(), 1);
+  });
 
   const today = new Date().toISOString().slice(0, 10);
-
   const upcoming = useMemo(
-    () => FEDERAL_HOLIDAYS.filter((h) => h.date >= today).slice(0, 8),
-    [today],
+    () => events.filter((e) => e.holiday_date >= today).slice(0, 12),
+    [events, today],
   );
-
-  const overrideMap = useMemo(() => {
-    const m: Record<string, HoursOverride> = {};
-    for (const o of overrides) m[o.override_date] = o;
+  const eventsByDate = useMemo(() => {
+    const m: Record<string, HolidayEvent> = {};
+    for (const e of events) m[e.holiday_date] = e;
     return m;
-  }, [overrides]);
+  }, [events]);
 
-  const specialFor = (key: string) => specials.find((s) => s.holiday_key === key);
-  const overrideFor = (date: string) => overrideMap[date];
+  const specialFor = (id: string | null) => (id ? specials.find((s) => s.id === id) : undefined);
+
+  // Build month grid
+  const monthGrid = useMemo(() => {
+    const year = cursor.getFullYear();
+    const month = cursor.getMonth();
+    const first = new Date(year, month, 1);
+    const startWeekday = first.getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const cells: { date: string | null; day: number | null }[] = [];
+    for (let i = 0; i < startWeekday; i++) cells.push({ date: null, day: null });
+    for (let d = 1; d <= daysInMonth; d++) {
+      const iso = `${year}-${String(month + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+      cells.push({ date: iso, day: d });
+    }
+    while (cells.length % 7 !== 0) cells.push({ date: null, day: null });
+    return cells;
+  }, [cursor]);
 
   return (
     <SiteLayout>
@@ -74,88 +75,133 @@ const HolidayCalendar = () => {
       </section>
 
       <section className="container py-14">
+        <div className="flex justify-end mb-6">
+          <div className="inline-flex items-center rounded-full border border-gold/30 bg-background/40 p-1">
+            <button
+              onClick={() => setView("list")}
+              className={`h-9 px-4 rounded-full font-stencil text-[10px] tracking-widest inline-flex items-center gap-2 ${view === "list" ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}
+            >
+              <List className="h-3.5 w-3.5" /> List
+            </button>
+            <button
+              onClick={() => setView("month")}
+              className={`h-9 px-4 rounded-full font-stencil text-[10px] tracking-widest inline-flex items-center gap-2 ${view === "month" ? "bg-primary text-primary-foreground" : "text-muted-foreground"}`}
+            >
+              <CalendarIcon className="h-3.5 w-3.5" /> Month
+            </button>
+          </div>
+        </div>
+
         {loading ? (
           <div className="flex justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>
+        ) : view === "list" ? (
+          <div className="space-y-4 max-w-3xl mx-auto">
+            <h2 className="luxury-menu-title text-3xl mb-2">Upcoming Holidays</h2>
+            <span className="luxury-gold-line block mb-4" />
+            {upcoming.length === 0 ? (
+              <p className="luxury-subtitle">No upcoming holidays posted.</p>
+            ) : upcoming.map((h) => (
+              <button
+                key={h.id}
+                onClick={() => setActive(h)}
+                className="luxury-card w-full p-5 text-left flex items-center gap-4"
+              >
+                <div className="w-16 shrink-0 text-center">
+                  <div className="font-stencil text-[10px] text-gold tracking-widest uppercase">
+                    {new Date(h.holiday_date + "T00:00:00").toLocaleDateString(undefined, { month: "short" })}
+                  </div>
+                  <div className="luxury-menu-title text-3xl leading-none">
+                    {new Date(h.holiday_date + "T00:00:00").getDate()}
+                  </div>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="luxury-menu-title text-xl truncate">{h.holiday_name}</div>
+                  {h.banner_title && (
+                    <div className="text-xs text-muted-foreground font-stencil tracking-wider mt-1 truncate">{h.banner_title}</div>
+                  )}
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    <StatusBadge status={h.business_status} />
+                    {h.special_id && <span className="luxury-badge">Special Available</span>}
+                  </div>
+                </div>
+              </button>
+            ))}
+          </div>
         ) : (
-          <div className="grid lg:grid-cols-[1.4fr_1fr] gap-8">
-            <div className="space-y-4">
-              <h2 className="luxury-menu-title text-3xl mb-2">Upcoming Holidays</h2>
-              <span className="luxury-gold-line block mb-4" />
-              {upcoming.map((h) => {
-                const ov = overrideFor(h.date);
-                const sp = specialFor(h.key);
+          <div className="max-w-4xl mx-auto luxury-card p-5 md:p-8">
+            <div className="flex items-center justify-between mb-5">
+              <button
+                onClick={() => setCursor(new Date(cursor.getFullYear(), cursor.getMonth() - 1, 1))}
+                className="h-9 w-9 rounded-full border border-gold/30 inline-flex items-center justify-center text-gold hover:bg-gold/5"
+                aria-label="Previous month"
+              ><ChevronLeft className="h-4 w-4" /></button>
+              <div className="luxury-menu-title text-2xl md:text-3xl">{MONTH_NAMES[cursor.getMonth()]} {cursor.getFullYear()}</div>
+              <button
+                onClick={() => setCursor(new Date(cursor.getFullYear(), cursor.getMonth() + 1, 1))}
+                className="h-9 w-9 rounded-full border border-gold/30 inline-flex items-center justify-center text-gold hover:bg-gold/5"
+                aria-label="Next month"
+              ><ChevronRight className="h-4 w-4" /></button>
+            </div>
+            <div className="grid grid-cols-7 gap-1 mb-2">
+              {WEEK_LABELS.map((w, i) => (
+                <div key={i} className="text-center font-stencil text-[10px] tracking-widest text-gold">{w}</div>
+              ))}
+            </div>
+            <div className="grid grid-cols-7 gap-1">
+              {monthGrid.map((c, i) => {
+                const ev = c.date ? eventsByDate[c.date] : null;
+                const isToday = c.date === today;
                 return (
                   <button
-                    key={h.key}
-                    onClick={() => setActiveHoliday(h)}
-                    className="luxury-card w-full p-5 text-left flex items-center gap-4"
+                    key={i}
+                    disabled={!ev}
+                    onClick={() => ev && setActive(ev)}
+                    className={`aspect-square rounded-lg text-left p-1.5 sm:p-2 border transition-colors ${
+                      !c.date ? "border-transparent" :
+                      ev ? "border-gold/40 bg-primary/10 hover:bg-primary/20" :
+                      "border-border/40 bg-background/40"
+                    } ${isToday ? "ring-1 ring-gold" : ""}`}
                   >
-                    <div className="w-16 shrink-0 text-center">
-                      <div className="font-stencil text-[10px] text-gold tracking-widest uppercase">
-                        {new Date(h.date + "T00:00:00").toLocaleDateString(undefined, { month: "short" })}
-                      </div>
-                      <div className="luxury-menu-title text-3xl leading-none">
-                        {new Date(h.date + "T00:00:00").getDate()}
-                      </div>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="luxury-menu-title text-xl truncate">{h.name}</div>
-                      <div className="text-xs text-muted-foreground font-stencil tracking-wider mt-1">{h.category}</div>
-                      <div className="flex flex-wrap gap-2 mt-2">
-                        <StatusBadge ov={ov} />
-                        {sp && <span className="luxury-badge">Special Available</span>}
-                      </div>
-                    </div>
+                    {c.day && (
+                      <>
+                        <div className={`font-stencil text-[11px] ${ev ? "text-gold" : "text-muted-foreground"}`}>{c.day}</div>
+                        {ev && (
+                          <div className="text-[9px] sm:text-[10px] leading-tight text-foreground/90 truncate mt-0.5">
+                            {ev.holiday_name}
+                          </div>
+                        )}
+                      </>
+                    )}
                   </button>
                 );
               })}
             </div>
-
-            <aside className="lg:sticky lg:top-24 h-fit luxury-card p-6 md:p-8">
-              <h3 className="luxury-menu-title text-2xl mb-2">Closures &amp; Special Hours</h3>
-              <span className="luxury-gold-line block mb-4" />
-              {overrides.length === 0 ? (
-                <p className="text-sm text-muted-foreground">No upcoming closures or special hours posted.</p>
-              ) : (
-                <ul className="space-y-3 text-sm">
-                  {overrides
-                    .filter((o) => o.override_date >= today)
-                    .map((o) => (
-                    <li key={o.id} className="flex items-start gap-3 border-b border-border/40 pb-3 last:border-0">
-                      <CalendarDays className="h-4 w-4 text-gold mt-0.5" />
-                      <div className="flex-1">
-                        <div className="font-stencil text-xs uppercase tracking-wider text-foreground">
-                          {new Date(o.override_date + "T00:00:00").toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" })}
-                        </div>
-                        <div className="text-foreground/80">{o.label ?? "Holiday hours"}</div>
-                        <StatusBadge ov={o} />
-                        {o.note && <div className="text-xs text-muted-foreground mt-1">{o.note}</div>}
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </aside>
           </div>
         )}
       </section>
 
-      {/* Holiday detail modal */}
-      {activeHoliday && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm p-4" onClick={() => setActiveHoliday(null)}>
-          <div onClick={(e) => e.stopPropagation()} className="luxury-card max-w-lg w-full p-7 relative">
-            <button className="absolute top-4 right-4 text-muted-foreground hover:text-foreground" onClick={() => setActiveHoliday(null)} aria-label="Close">
+      {active && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm p-4" onClick={() => setActive(null)}>
+          <div onClick={(e) => e.stopPropagation()} className="luxury-card max-w-lg w-full p-7 relative max-h-[90vh] overflow-auto">
+            <button className="absolute top-4 right-4 text-muted-foreground hover:text-foreground" onClick={() => setActive(null)} aria-label="Close">
               <X className="h-5 w-5" />
             </button>
-            <span className="luxury-eyebrow inline-flex">{activeHoliday.category}</span>
-            <h3 className="luxury-menu-title text-3xl mt-3 mb-2">{activeHoliday.name}</h3>
+            <span className="luxury-eyebrow inline-flex">{active.holiday_type}</span>
+            <h3 className="luxury-menu-title text-3xl mt-3 mb-2">{active.holiday_name}</h3>
             <div className="text-sm text-muted-foreground font-stencil tracking-wider">
-              {new Date(activeHoliday.date + "T00:00:00").toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric", year: "numeric" })}
+              {new Date(active.holiday_date + "T00:00:00").toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric", year: "numeric" })}
             </div>
             <span className="luxury-gold-line block my-4" />
-            <StatusDetail ov={overrideFor(activeHoliday.date)} />
+            <StatusBadge status={active.business_status} />
+            {active.business_status === "Special Hours" && active.open_time && active.close_time && (
+              <div className="text-sm text-foreground/80 mt-2">
+                {active.open_time.slice(0, 5)} – {active.close_time.slice(0, 5)}
+              </div>
+            )}
+            {active.banner_title && <div className="luxury-menu-title text-lg mt-4">{active.banner_title}</div>}
+            {active.banner_message && <p className="luxury-subtitle text-sm mt-1">{active.banner_message}</p>}
             {(() => {
-              const sp = specialFor(activeHoliday.key);
+              const sp = specialFor(active.special_id);
               return sp ? (
                 <div className="mt-5">
                   <SpecialCard special={sp} />
@@ -169,26 +215,10 @@ const HolidayCalendar = () => {
   );
 };
 
-function StatusBadge({ ov }: { ov?: HoursOverride }) {
-  if (!ov) return <span className="luxury-badge inline-flex items-center gap-1"><Store className="h-3 w-3" /> Open</span>;
-  if (ov.status === "closed") return <span className="luxury-badge inline-flex items-center gap-1" style={{ color: "hsl(var(--bbq-ember))", borderColor: "hsl(var(--bbq-ember) / 0.6)" }}>Closed</span>;
-  if (ov.status === "special_hours") return <span className="luxury-badge inline-flex items-center gap-1"><Clock className="h-3 w-3" /> Special Hours</span>;
+function StatusBadge({ status }: { status: string | null | undefined }) {
+  if (status === "Closed") return <span className="luxury-badge inline-flex items-center gap-1" style={{ color: "hsl(var(--bbq-ember))", borderColor: "hsl(var(--bbq-ember) / 0.6)" }}>Closed</span>;
+  if (status === "Special Hours") return <span className="luxury-badge inline-flex items-center gap-1"><Clock className="h-3 w-3" /> Special Hours</span>;
   return <span className="luxury-badge inline-flex items-center gap-1"><Store className="h-3 w-3" /> Open</span>;
-}
-
-function StatusDetail({ ov }: { ov?: HoursOverride }) {
-  if (!ov) return <p className="text-sm text-muted-foreground">Regular business hours.</p>;
-  return (
-    <div className="text-sm space-y-2">
-      <StatusBadge ov={ov} />
-      {ov.status === "special_hours" && ov.open_time && ov.close_time && (
-        <div className="text-foreground/80">
-          {ov.open_time.slice(0, 5)} – {ov.close_time.slice(0, 5)}
-        </div>
-      )}
-      {ov.note && <div className="text-muted-foreground">{ov.note}</div>}
-    </div>
-  );
 }
 
 export default HolidayCalendar;

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { z } from "zod";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -14,6 +14,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
 import { computeDiscount, buildSafeOrderTotals, type Promo } from "@/lib/promo";
+import { useCommunityDiscount, computeCommunityDiscountAmount } from "@/hooks/useCommunityDiscount";
 
 const schema = z.object({
   customer_name: z.string().trim().min(1, "Name is required").max(100),
@@ -36,7 +37,7 @@ const PROMOS: Promo[] = [
   { code: "PITMASTER5", label: "$5 off order", type: "fixed", value: 5 },
 ];
 
-type HeroesSettings = { enabled: boolean; discount_percent: number; eligible_groups: string[]; terms: string };
+
 
 const Checkout = () => {
   const { items, subtotal, clear, updateQuantity, removeItem } = useCart();
@@ -47,15 +48,9 @@ const Checkout = () => {
   const [submitting, setSubmitting] = useState(false);
   const [promoInput, setPromoInput] = useState("");
   const [promo, setPromo] = useState<Promo | null>(null);
-  const [heroesSettings, setHeroesSettings] = useState<HeroesSettings | null>(null);
+  const { discount: communityDiscount } = useCommunityDiscount();
   const [heroesGroup, setHeroesGroup] = useState<string>("");
   const [heroesAck, setHeroesAck] = useState(false);
-
-  useEffect(() => {
-    supabase.from("business_settings").select("setting_value").eq("setting_key", "community_heroes").maybeSingle().then(({ data }) => {
-      if (data?.setting_value) setHeroesSettings(data.setting_value as any);
-    });
-  }, []);
   const toggleDebug = () => {
     const next = new URLSearchParams(searchParams);
     if (debugEnabled) next.delete("debug");
@@ -192,13 +187,15 @@ const Checkout = () => {
   const discountAmount = breakdown.discountAmount;
   const discountedSub = breakdown.discountedSub;
   const discountRate = promo?.type === "percent" ? Math.min(Math.max(promo.value, 0), 1) : 0;
-  const heroesEnabled = !!heroesSettings?.enabled;
-  const heroesPercent = Math.min(Math.max(Number(heroesSettings?.discount_percent ?? 0), 0), 100) / 100;
-  const heroesActive = heroesEnabled && !!heroesGroup && heroesAck && heroesPercent > 0;
-  const heroesDiscount = heroesActive ? Math.round(discountedSub * heroesPercent * 100) / 100 : 0;
+  const heroesEnabled = !!communityDiscount?.is_active && (communityDiscount?.allow_online_selection ?? true);
+  const heroesActive = heroesEnabled && !!heroesGroup && heroesAck;
+  const heroesDiscount = heroesActive ? computeCommunityDiscountAmount(communityDiscount, discountedSub) : 0;
   const subAfterAll = Math.max(0, discountedSub - heroesDiscount);
   const tax = Math.max(0, subAfterAll * TAX_RATE);
   const total = Math.max(0, subAfterAll + tax);
+  const heroesPercent = communityDiscount?.discount_type === "percentage"
+    ? Math.min(Math.max(Number(communityDiscount.discount_value), 0), 100) / 100
+    : 0;
 
   // Dev-time invariant assertion (non-production safety net).
   if (import.meta.env.DEV) {
@@ -289,7 +286,7 @@ const Checkout = () => {
     setSubmitting(true);
     try {
       const heroesNote = heroesActive
-        ? `Heroes Deal: ${heroesGroup} ${(heroesPercent * 100).toFixed(0)}% −$${safeHeroesDiscount.toFixed(2)} (pending verification)`
+        ? `${communityDiscount?.title ?? "Heroes Deal"}: ${heroesGroup} −$${safeHeroesDiscount.toFixed(2)} (pending verification)`
         : null;
       const { data: order, error: orderErr } = await supabase
         .from("orders")
@@ -307,10 +304,17 @@ const Checkout = () => {
           total: safeTotal,
           status: "pending",
           payment_status: "unpaid",
+          // Heroes (legacy) columns
           heroes_group: heroesActive ? heroesGroup : null,
           heroes_discount_amount: safeHeroesDiscount,
           heroes_discount_status: heroesActive ? "pending_verification" : null,
           heroes_acknowledged: heroesActive,
+          // New community discount columns
+          discount_id: heroesActive ? communityDiscount?.id ?? null : null,
+          discount_name: heroesActive ? communityDiscount?.title ?? null : null,
+          discount_amount: safeHeroesDiscount,
+          discount_status: heroesActive ? "Pending Verification" : "None",
+          community_group: heroesActive ? heroesGroup : null,
         })
         .select()
         .single();
@@ -487,14 +491,14 @@ const Checkout = () => {
               <Textarea id="notes" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} rows={3} placeholder="Allergies, sauce on the side, etc." className="luxury-input" />
             </div>
 
-            {heroesEnabled && heroesSettings && (
+            {heroesEnabled && communityDiscount && (
               <div className="rounded-2xl border border-gold/30 bg-gradient-to-br from-primary/10 via-background/40 to-background/40 p-5 space-y-3">
                 <div className="flex items-start gap-3">
                   <Heart className="h-5 w-5 text-gold shrink-0 mt-0.5" />
                   <div className="flex-1">
-                    <div className="font-stencil text-xs tracking-[0.25em] uppercase text-gold mb-1">Community Heroes Deal</div>
+                    <div className="font-stencil text-xs tracking-[0.25em] uppercase text-gold mb-1">{communityDiscount.title}</div>
                     <p className="text-xs text-muted-foreground leading-relaxed">
-                      {Math.round(heroesPercent * 100)}% off for {heroesSettings.eligible_groups.join(", ")}.
+                      {communityDiscount.description ?? `Discount for ${communityDiscount.eligible_groups.join(", ")}.`}
                     </p>
                   </div>
                 </div>
@@ -506,7 +510,7 @@ const Checkout = () => {
                   >
                     No, thanks
                   </button>
-                  {heroesSettings.eligible_groups.map((g) => (
+                  {communityDiscount.eligible_groups.map((g) => (
                     <button
                       key={g}
                       type="button"
@@ -521,12 +525,12 @@ const Checkout = () => {
                   <>
                     <label className="flex items-start gap-2 text-[11px] text-muted-foreground leading-relaxed cursor-pointer">
                       <Checkbox checked={heroesAck} onCheckedChange={(v) => setHeroesAck(!!v)} className="mt-0.5" />
-                      <span>{heroesSettings.terms}</span>
+                      <span>{communityDiscount.terms ?? "Valid ID may be required at pickup or delivery. Discount may be adjusted if eligibility cannot be verified."}</span>
                     </label>
                     {heroesActive && (
                       <div className="flex items-center gap-2 text-[11px] text-emerald-400">
                         <ShieldCheck className="h-3.5 w-3.5" />
-                        Heroes discount applied — pending verification at {form.order_type === "Delivery" ? "delivery" : "pickup"}.
+                        Discount applied — pending verification at {form.order_type === "Delivery" ? "delivery" : "pickup"}.
                       </div>
                     )}
                   </>
@@ -742,7 +746,7 @@ const Checkout = () => {
               )}
               {heroesActive && (
                 <div className="flex justify-between text-emerald-400">
-                  <span>Heroes Deal ({heroesGroup} −{Math.round(heroesPercent * 100)}%)</span>
+                  <span>{communityDiscount?.title ?? "Heroes Deal"} ({heroesGroup}{heroesPercent > 0 ? ` −${Math.round(heroesPercent * 100)}%` : ""})</span>
                   <span>−${heroesDiscount.toFixed(2)}</span>
                 </div>
               )}

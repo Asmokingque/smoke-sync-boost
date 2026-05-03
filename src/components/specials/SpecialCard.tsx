@@ -1,7 +1,9 @@
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Plus, Clock, Calendar as CalendarIcon, Flame } from "lucide-react";
+import { Plus, Clock, Calendar as CalendarIcon, Flame, Package } from "lucide-react";
 import { useCart } from "@/store/cart";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 import {
   type Special,
   SPECIAL_TYPE_LABEL,
@@ -10,6 +12,19 @@ import {
   isOrderableNow,
   isVisibleNow,
 } from "@/lib/specials";
+
+type SpecialItemRow = {
+  id: string;
+  special_id: string;
+  menu_item_id: string | null;
+  item_name: string;
+  description: string | null;
+  regular_price: number | null;
+  special_price: number;
+  included_sides: number;
+  display_order: number;
+  is_active: boolean;
+};
 
 export function SpecialCard({
   special,
@@ -23,8 +38,23 @@ export function SpecialCard({
   const addItem = useCart((s) => s.addItem);
   const orderable = isOrderableNow(special);
   const showSoldOut = special.sold_out;
+  const [items, setItems] = useState<SpecialItemRow[]>([]);
 
-  const handleAdd = () => {
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const { data } = await supabase
+        .from("special_items" as any)
+        .select("*")
+        .eq("special_id", special.id)
+        .eq("is_active", true)
+        .order("display_order");
+      if (!cancelled && data) setItems(data as unknown as SpecialItemRow[]);
+    })();
+    return () => { cancelled = true; };
+  }, [special.id]);
+
+  const addSpecialToCart = () => {
     if (!orderable) return;
     addItem({
       id: `special-${special.id}`,
@@ -34,6 +64,18 @@ export function SpecialCard({
       priceLabel: SPECIAL_TYPE_LABEL[special.type],
     });
     toast.success(`${special.title} added`, { duration: 1800 });
+  };
+
+  const addSpecialItem = (it: SpecialItemRow) => {
+    if (!orderable) return;
+    addItem({
+      id: `special-item-${it.id}`,
+      menuItemId: it.menu_item_id ?? special.id,
+      name: `${special.title} — ${it.item_name}`,
+      price: Number(it.special_price),
+      priceLabel: SPECIAL_TYPE_LABEL[special.type],
+    });
+    toast.success(`${it.item_name} added`, { duration: 1600 });
   };
 
   return (
@@ -103,12 +145,45 @@ export function SpecialCard({
         )}
       </div>
 
+      {items.length > 0 && (
+        <div className="mb-5 rounded-xl border border-gold/20 bg-background/40 p-3 space-y-2">
+          <div className="flex items-center gap-2 text-[10px] font-stencil tracking-[0.25em] uppercase text-gold">
+            <Package className="h-3 w-3" /> Included Items
+          </div>
+          {items.map((it) => (
+            <div key={it.id} className="flex items-center justify-between gap-3 border-t border-border/40 pt-2 first:border-0 first:pt-0">
+              <div className="min-w-0">
+                <div className="text-sm text-foreground truncate">{it.item_name}</div>
+                {it.description && (
+                  <div className="text-[11px] text-muted-foreground truncate">{it.description}</div>
+                )}
+                <div className="text-[11px] text-gold mt-0.5">
+                  ${Number(it.special_price).toFixed(2)}
+                  {it.included_sides > 0 && (
+                    <span className="text-muted-foreground ml-2">+{it.included_sides} sides</span>
+                  )}
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => addSpecialItem(it)}
+                disabled={!orderable}
+                className="luxury-secondary-btn h-8 px-3 font-stencil text-[10px] tracking-widest inline-flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
+                aria-label={`Add ${it.item_name}`}
+              >
+                <Plus className="h-3 w-3" /> Add
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
       <button
-        onClick={handleAdd}
+        onClick={addSpecialToCart}
         disabled={!orderable}
         className="luxury-primary-btn h-12 font-stencil text-xs tracking-widest inline-flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        {showSoldOut ? "Sold Out" : !isVisibleNow(special) ? "Currently Unavailable" : !orderable ? "Outside Hours" : (<><Plus className="h-4 w-4" /> Add to Order</>)}
+        {showSoldOut ? "Sold Out" : !isVisibleNow(special) ? "Currently Unavailable" : !orderable ? "Outside Hours" : (<><Plus className="h-4 w-4" /> Add Special to Order</>)}
       </button>
     </motion.article>
   );
