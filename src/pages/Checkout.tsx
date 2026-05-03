@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { z } from "zod";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -37,7 +37,7 @@ const PROMOS: Promo[] = [
   { code: "PITMASTER5", label: "$5 off order", type: "fixed", value: 5 },
 ];
 
-type HeroesSettings = { enabled: boolean; discount_percent: number; eligible_groups: string[]; terms: string };
+
 
 const Checkout = () => {
   const { items, subtotal, clear, updateQuantity, removeItem } = useCart();
