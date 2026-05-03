@@ -13,6 +13,7 @@ const schema = z.object({
   name: z.string().trim().min(1).max(100),
   email: z.string().trim().email().max(255),
   phone: z.string().trim().min(7).max(30),
+  service_type: z.enum(["Pickup", "Delivery", "Full-Service Catering"]),
   event_date: z.string().optional(),
   event_time: z.string().trim().max(50).optional(),
   event_location: z.string().trim().max(300).optional(),
@@ -26,6 +27,7 @@ const Catering = () => {
   const [done, setDone] = useState(false);
   const [form, setForm] = useState({
     name: "", email: "", phone: "",
+    service_type: "Pickup" as "Pickup" | "Delivery" | "Full-Service Catering",
     event_date: "", event_time: "", event_location: "",
     guest_count: "", food_requested: "", message: "",
   });
@@ -45,6 +47,7 @@ const Catering = () => {
       name: parsed.data.name,
       email: parsed.data.email,
       phone: parsed.data.phone,
+      service_type: parsed.data.service_type,
       event_date: parsed.data.event_date || null,
       event_time: parsed.data.event_time || null,
       event_location: parsed.data.event_location || null,
@@ -112,6 +115,27 @@ const Catering = () => {
               <div className="space-y-2">
                 <Label htmlFor="cemail">Email *</Label>
                 <Input id="cemail" type="email" required value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="h-12" />
+              </div>
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+              <div className="space-y-2">
+                <Label className="block mb-1">Service Type *</Label>
+                <div className="grid grid-cols-3 gap-2">
+                  {(["Pickup", "Delivery", "Full-Service Catering"] as const).map((opt) => (
+                    <button
+                      key={opt}
+                      type="button"
+                      onClick={() => setForm({ ...form, service_type: opt })}
+                      className={`h-12 rounded-md border font-stencil text-xs transition-colors ${
+                        form.service_type === opt
+                          ? "border-primary bg-primary text-primary-foreground"
+                          : "border-border bg-background/40 text-foreground/80 hover:border-primary/50"
+                      }`}
+                    >
+                      {opt}
+                    </button>
+                  ))}
+                </div>
               </div>
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
