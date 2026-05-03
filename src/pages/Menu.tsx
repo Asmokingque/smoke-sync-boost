@@ -283,14 +283,12 @@ const Menu = () => {
           <>
             {featured.length > 0 && !search && (
               <div id="cat-featured" className="scroll-mt-32">
-                <div className="text-center mb-8">
-                  <SmokeDivider className="mb-4" />
-                  <h2 className="font-display text-4xl md:text-5xl retina-heading flex items-center justify-center gap-3">
-                    <Flame className="h-8 w-8" /> FEATURED FAVORITES
-                  </h2>
-                  <SmokeDivider className="mt-4" />
-                  <p className="text-sm text-muted-foreground mt-3 max-w-xl mx-auto">
-                    Pitmaster picks — the bold, smoky favorites our regulars come back for.
+                <div className="text-center mb-10">
+                  <span className="badge-premium mb-4"><Flame className="h-3 w-3" />Pitmaster Picks</span>
+                  <h2 className="font-serif text-5xl md:text-6xl mb-3 leading-tight">Featured Favorites</h2>
+                  <span className="gold-rule-short mx-auto block mb-4" />
+                  <p className="text-sm text-muted-foreground max-w-xl mx-auto leading-relaxed">
+                    The bold, smoky favorites our regulars come back for.
                   </p>
                 </div>
                 <FeaturedMenuCarousel
