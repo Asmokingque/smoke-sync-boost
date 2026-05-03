@@ -3,11 +3,18 @@ import { supabase } from "@/integrations/supabase/client";
 import { SiteLayout } from "@/components/layout/SiteLayout";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/store/cart";
-import { Plus, Loader2, Settings2, LayoutGrid, List, Star, Flame } from "lucide-react";
+import { Plus, Settings2, LayoutGrid, List, Star, Flame, Search, X } from "lucide-react";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
 import { OptionsPickerDialog } from "@/components/menu/OptionsPickerDialog";
 import { CateringCallout } from "@/components/menu/CateringCallout";
+import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Badge } from "@/components/ui/badge";
+import { motion } from "framer-motion";
+import { SmokeBackground } from "@/components/ui/SmokeBackground";
+import { ShimmerButton } from "@/components/ui/ShimmerButton";
+import { FeaturedCarousel } from "@/components/menu/FeaturedCarousel";
 
 type Category = { id: string; name: string; slug: string; display_order: number; description: string | null };
 type Item = {
