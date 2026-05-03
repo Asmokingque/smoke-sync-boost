@@ -554,9 +554,11 @@ const Checkout = () => {
                 </div>
               )}
               <div className="flex justify-between text-muted-foreground"><span>Tax (7%)</span><span>${tax.toFixed(2)}</span></div>
-              <div className="flex justify-between text-lg font-display tracking-wider pt-2">
-                <span>Total</span>
-                <span className="text-primary">${total.toFixed(2)}</span>
+              <div className="mt-3 pt-3 border-t border-gold/30">
+                <div className="flex justify-between items-baseline">
+                  <span className="font-stencil text-xs uppercase tracking-[0.25em] text-gold">Total</span>
+                  <span className="font-serif text-3xl text-gradient-ember">${total.toFixed(2)}</span>
+                </div>
               </div>
             </div>
 
