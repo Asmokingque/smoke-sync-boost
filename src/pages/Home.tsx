@@ -10,6 +10,9 @@ import hero from "@/assets/hero-bbq.jpg";
 import logo from "@/assets/logo.png";
 
 const Home = () => {
+  const { specials } = useSpecials({ activeOnly: true });
+  const todaysSpecial = specials.find((s) => s.type === "daily" && isVisibleNow(s));
+  const lunchSpecials = specials.filter((s) => s.type === "lunch" && isVisibleNow(s)).slice(0, 3);
   return (
     <SiteLayout>
       {/* HERO */}
