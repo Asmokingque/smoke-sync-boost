@@ -116,8 +116,6 @@ const Catering = () => {
                 <Label htmlFor="cemail">Email *</Label>
                 <Input id="cemail" type="email" required value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="h-12" />
               </div>
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div className="space-y-2">
               <div className="space-y-2">
                 <Label className="block mb-1">Service Type *</Label>
                 <div className="grid grid-cols-3 gap-2">
