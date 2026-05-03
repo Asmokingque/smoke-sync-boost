@@ -144,37 +144,14 @@ const Reviews = () => {
             <p className="text-center text-muted-foreground py-12">Be the first to share your experience.</p>
           ) : (
             <div className="grid sm:grid-cols-2 gap-4">
-              {reviews.map((r) => (
-                <article key={r.id} className="bg-gradient-card border border-border rounded-lg p-5">
-                  <div className="flex items-center gap-1 mb-2">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <Star key={i} className={`h-4 w-4 ${i < r.rating ? "fill-primary text-primary" : "text-muted-foreground/30"}`} />
-                    ))}
-                  </div>
-                  {r.title && <h3 className="font-stencil text-base mb-1">{r.title}</h3>}
-                  <p className="text-sm text-muted-foreground mb-3">{r.body}</p>
-                  {r.photo_url && (
-                    <img src={r.photo_url} alt="" loading="lazy" className="w-full h-40 object-cover rounded-md mb-3" />
-                  )}
-                  <div className="flex items-center justify-between gap-2">
-                    <div className="text-xs text-muted-foreground">
-                      — {r.author_name} · {new Date(r.created_at).toLocaleDateString()}
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => toggleLike(r.id)}
-                      className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-xs font-stencil transition-colors ${
-                        likedIds.has(r.id)
-                          ? "border-primary/60 bg-primary/10 text-primary"
-                          : "border-border text-muted-foreground hover:border-primary/40 hover:text-foreground"
-                      }`}
-                      aria-label={likedIds.has(r.id) ? "Unlike review" : "Like review"}
-                    >
-                      <Heart className={`h-3.5 w-3.5 ${likedIds.has(r.id) ? "fill-primary" : ""}`} />
-                      {r.likes_count}
-                    </button>
-                  </div>
-                </article>
+              {reviews.map((r, i) => (
+                <ReviewPhotoCard
+                  key={r.id}
+                  review={r}
+                  liked={likedIds.has(r.id)}
+                  onToggleLike={() => toggleLike(r.id)}
+                  index={i}
+                />
               ))}
             </div>
           )}
