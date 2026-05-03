@@ -12,7 +12,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        display: ['Bebas Neue', 'Oswald', 'sans-serif'],
+        display: ['Cormorant Garamond', 'Playfair Display', 'Georgia', 'serif'],
+        serif: ['Cormorant Garamond', 'Playfair Display', 'Georgia', 'serif'],
         stencil: ['Oswald', 'sans-serif'],
         sans: ['Inter', 'system-ui', 'sans-serif'],
       },
@@ -55,6 +56,7 @@ export default {
         ember: "hsl(var(--ember))",
         smoke: "hsl(var(--smoke))",
         bone: "hsl(var(--bone))",
+        gold: "hsl(var(--bbq-gold))",
         charcoal: {
           DEFAULT: "hsl(var(--charcoal))",
           light: "hsl(var(--charcoal-light))",
