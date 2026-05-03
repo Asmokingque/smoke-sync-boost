@@ -128,6 +128,7 @@ const Catering = () => {
             </li>
           ))}
         </ol>
+      </section>
 
       <section className="container py-8 grid md:grid-cols-3 gap-6 max-w-5xl">
         {[
