@@ -5,13 +5,15 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useCart } from "@/store/cart";
 import { useAuth } from "@/hooks/useAuth";
+import { TopAlertBar } from "./TopAlertBar";
 import logo from "@/assets/logo.png";
 
 const navItems = [
   { to: "/", label: "Home" },
   { to: "/menu", label: "Menu" },
-  { to: "/reviews", label: "Reviews" },
+  { to: "/reviews", label: "Experience Wall" },
   { to: "/catering", label: "Catering" },
+  { to: "/order-status", label: "Order Status" },
   { to: "/contact", label: "Contact" },
 ];
 
@@ -23,6 +25,7 @@ export function Header({ onCartClick }: { onCartClick: () => void }) {
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/60 bg-background/85 backdrop-blur-lg">
+      <TopAlertBar />
       <div className="container flex h-16 items-center justify-between gap-4 md:h-20">
         <Link to="/" className="flex items-center gap-3" aria-label="Anderson's Smoking Que home">
           <img src={logo} alt="Anderson's Smoking Que logo" className="h-12 w-12 md:h-14 md:w-14 object-contain" width={56} height={56} />

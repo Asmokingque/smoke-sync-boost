@@ -42,9 +42,10 @@ export function Footer() {
         <div>
           <h3 className="font-stencil text-sm text-primary mb-3">Quick Links</h3>
           <ul className="space-y-2 text-sm text-muted-foreground">
-            <li><Link to="/menu" className="hover:text-primary">Full Menu</Link></li>
-            <li><Link to="/catering" className="hover:text-primary">Catering Inquiries</Link></li>
-            <li><Link to="/reviews" className="hover:text-primary">Customer Reviews</Link></li>
+            <li><Link to="/menu" className="hover:text-primary">Order Online</Link></li>
+            <li><Link to="/catering" className="hover:text-primary">Catering</Link></li>
+            <li><Link to="/reviews" className="hover:text-primary">Experience Wall</Link></li>
+            <li><Link to="/order-status" className="hover:text-primary">Order Status</Link></li>
             <li><Link to="/contact" className="hover:text-primary">Contact Us</Link></li>
           </ul>
         </div>

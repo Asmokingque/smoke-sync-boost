@@ -44,6 +44,7 @@ type Item = {
   price_label: string | null;
   image_url: string | null;
   is_available: boolean;
+  is_featured: boolean;
   display_order: number;
   requires_options: boolean;
   allow_notes: boolean;
@@ -58,6 +59,7 @@ type FormState = {
   price_label: string;
   image_url: string;
   is_available: boolean;
+  is_featured: boolean;
   display_order: string;
   requires_options: boolean;
   allow_notes: boolean;
@@ -72,6 +74,7 @@ const emptyForm = (categoryId = ""): FormState => ({
   price_label: "",
   image_url: "",
   is_available: true,
+  is_featured: false,
   display_order: "0",
   requires_options: false,
   allow_notes: true,
@@ -121,6 +124,7 @@ const AdminMenu = () => {
       price_label: item.price_label ?? "",
       image_url: item.image_url ?? "",
       is_available: item.is_available,
+      is_featured: item.is_featured,
       display_order: String(item.display_order ?? 0),
       requires_options: item.requires_options,
       allow_notes: item.allow_notes,
@@ -160,6 +164,7 @@ const AdminMenu = () => {
       price_label: form.price_label.trim() || null,
       image_url: form.image_url.trim() || null,
       is_available: form.is_available,
+      is_featured: form.is_featured,
       display_order: Number(form.display_order) || 0,
       requires_options: form.requires_options,
       allow_notes: form.allow_notes,
@@ -431,6 +436,13 @@ const AdminMenu = () => {
                     onCheckedChange={(v) => setForm({ ...form, is_available: v })}
                   />
                   <Label>Available</Label>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Switch
+                    checked={form.is_featured}
+                    onCheckedChange={(v) => setForm({ ...form, is_featured: v })}
+                  />
+                  <Label>Featured Favorite</Label>
                 </div>
               </div>
             </div>
