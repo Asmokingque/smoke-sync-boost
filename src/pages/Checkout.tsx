@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Loader2, ShoppingBag, Tag, X, Bug, Download } from "lucide-react";
+import { Loader2, ShoppingBag, Tag, X, Bug, Download, Check, ShoppingCart, User, Receipt, Sparkles, Clock, Phone, Mail, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
 import { computeDiscount, buildSafeOrderTotals, type Promo } from "@/lib/promo";
@@ -212,17 +212,27 @@ const Checkout = () => {
   if (items.length === 0) {
     return (
       <SiteLayout>
-        <section className="container py-24 text-center">
-          <ShoppingBag className="h-20 w-20 mx-auto text-muted-foreground/40 mb-6" />
-          <h1 className="font-display text-4xl mb-3">Your cart is empty</h1>
-          <p className="text-muted-foreground mb-6">Browse the menu and add some items to get started.</p>
-          <Button asChild className="bg-primary hover:bg-primary/90 font-stencil h-12 px-8">
+        <section className="container py-24 text-center max-w-xl">
+          <div className="inline-flex items-center justify-center h-24 w-24 rounded-full border border-gold/30 bg-gradient-smoke mb-8 ring-gold-soft">
+            <ShoppingBag className="h-10 w-10 text-gold" />
+          </div>
+          <span className="badge-premium mb-4 inline-flex"><Sparkles className="h-3 w-3" />Empty Cart</span>
+          <h1 className="font-serif text-5xl md:text-6xl mb-3 tracking-tight">Your cart is empty</h1>
+          <span className="gold-rule-short mx-auto block mb-5" />
+          <p className="text-muted-foreground mb-8 leading-relaxed">Browse our smokehouse menu and build your order — slow-smoked, served bold.</p>
+          <Button asChild className="bg-primary hover:bg-primary/90 font-stencil h-12 px-10 shadow-ember">
             <Link to="/menu">Browse Menu</Link>
           </Button>
         </section>
       </SiteLayout>
     );
   }
+
+  const steps = [
+    { id: 1, label: "Cart", icon: ShoppingCart, done: true, active: false },
+    { id: 2, label: "Details", icon: User, done: false, active: true },
+    { id: 3, label: "Confirm", icon: Receipt, done: false, active: false },
+  ];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -296,51 +306,113 @@ const Checkout = () => {
 
   return (
     <SiteLayout>
-      <section className="container py-12 md:py-16 max-w-5xl">
-        <h1 className="font-display text-4xl md:text-5xl mb-2">Checkout</h1>
-        <p className="text-muted-foreground mb-10">Review your order and provide pickup details.</p>
+      {/* Premium hero with step indicator */}
+      <section className="relative bg-gradient-smoke border-b border-gold/20 overflow-hidden">
+        <div aria-hidden className="absolute left-1/2 top-0 -translate-x-1/2 h-[20rem] w-[36rem] rounded-full bg-primary/15 blur-[140px]" />
+        <div className="relative container py-14 md:py-16 max-w-5xl text-center">
+          <span className="badge-premium mb-5 inline-flex"><Sparkles className="h-3 w-3" />Secure Checkout</span>
+          <h1 className="font-serif text-5xl md:text-6xl mb-2 tracking-tight">
+            Complete Your <span className="italic text-gradient-ember">Order</span>
+          </h1>
+          <span className="gold-rule-short mx-auto block mt-5 mb-3" />
+          <p className="text-sm text-muted-foreground">Smoked low. Served bold. Pickup made simple.</p>
 
-        <div className="grid lg:grid-cols-[1fr_380px] gap-8">
-          <form onSubmit={handleSubmit} className="space-y-6 bg-gradient-card border border-border rounded-lg p-6 md:p-8">
+          <ol className="mt-10 flex items-center justify-center gap-2 sm:gap-4">
+            {steps.map((s, idx) => {
+              const Icon = s.icon;
+              const state = s.active ? "active" : s.done ? "done" : "todo";
+              return (
+                <li key={s.id} className="flex items-center gap-2 sm:gap-4">
+                  <div className="flex flex-col items-center gap-2">
+                    <div
+                      className={[
+                        "h-10 w-10 rounded-full border flex items-center justify-center transition-colors",
+                        state === "active"
+                          ? "border-gold bg-primary/20 text-gold ring-gold-soft"
+                          : state === "done"
+                          ? "border-gold/60 bg-gold/10 text-gold"
+                          : "border-border/60 bg-background/40 text-muted-foreground",
+                      ].join(" ")}
+                    >
+                      {state === "done" ? <Check className="h-4 w-4" /> : <Icon className="h-4 w-4" />}
+                    </div>
+                    <span
+                      className={[
+                        "text-[10px] uppercase tracking-[0.2em] font-stencil",
+                        state === "active" ? "text-gold" : "text-muted-foreground",
+                      ].join(" ")}
+                    >
+                      {s.label}
+                    </span>
+                  </div>
+                  {idx < steps.length - 1 && (
+                    <div className="w-8 sm:w-16 h-px bg-gradient-to-r from-gold/40 via-gold/20 to-border/40 -mt-5" />
+                  )}
+                </li>
+              );
+            })}
+          </ol>
+        </div>
+      </section>
+
+      <section className="container py-12 md:py-16 max-w-5xl">
+        <div className="grid lg:grid-cols-[1fr_400px] gap-8">
+          <form onSubmit={handleSubmit} className="space-y-8 retina-menu-card p-6 md:p-8 ring-gold-soft">
+            <div>
+              <div className="flex items-center gap-3 mb-1">
+                <span className="h-px flex-1 bg-gradient-to-r from-gold/50 to-transparent" />
+                <h2 className="font-serif text-2xl tracking-tight whitespace-nowrap">Pickup Details</h2>
+                <span className="h-px flex-1 bg-gradient-to-l from-gold/50 to-transparent" />
+              </div>
+              <p className="text-xs text-muted-foreground text-center">Tell us how to reach you when your order's ready.</p>
+            </div>
+
             <div className="grid sm:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Name *</Label>
+                <Label htmlFor="name" className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-muted-foreground"><User className="h-3 w-3 text-gold" />Name *</Label>
                 <Input id="name" required value={form.customer_name} onChange={(e) => setForm({ ...form, customer_name: e.target.value })} className="h-12" />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="phone">Phone *</Label>
+                <Label htmlFor="phone" className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-muted-foreground"><Phone className="h-3 w-3 text-gold" />Phone *</Label>
                 <Input id="phone" type="tel" required value={form.customer_phone} onChange={(e) => setForm({ ...form, customer_phone: e.target.value })} className="h-12" />
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email">Email *</Label>
+              <Label htmlFor="email" className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-muted-foreground"><Mail className="h-3 w-3 text-gold" />Email *</Label>
               <Input id="email" type="email" required value={form.customer_email} onChange={(e) => setForm({ ...form, customer_email: e.target.value })} className="h-12" />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="pickup">Preferred Pickup Time</Label>
+              <Label htmlFor="pickup" className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-muted-foreground"><Clock className="h-3 w-3 text-gold" />Preferred Pickup Time</Label>
               <Input id="pickup" type="datetime-local" value={form.pickup_time} onChange={(e) => setForm({ ...form, pickup_time: e.target.value })} className="h-12" />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="notes">Special Requests</Label>
+              <Label htmlFor="notes" className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-muted-foreground"><MessageSquare className="h-3 w-3 text-gold" />Special Requests</Label>
               <Textarea id="notes" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} rows={3} placeholder="Allergies, sauce on the side, etc." />
             </div>
 
-            <div className="rounded-md border border-primary/30 bg-primary/5 p-4 text-sm">
-              <strong className="text-primary">Pay at pickup.</strong> We'll confirm your order by phone or email. 
-              Online card payment is coming soon.
+            <div className="rounded-md border border-gold/30 bg-gradient-to-r from-primary/5 via-gold/5 to-primary/5 p-4 text-sm flex gap-3">
+              <Sparkles className="h-4 w-4 text-gold shrink-0 mt-0.5" />
+              <div>
+                <strong className="text-gold font-stencil tracking-wider text-xs uppercase block mb-1">Pay at Pickup</strong>
+                <span className="text-muted-foreground">We'll confirm your order by phone or email. Online card payment is coming soon.</span>
+              </div>
             </div>
 
             <Button
               type="submit"
               disabled={submitting}
-              className="w-full h-14 bg-primary hover:bg-primary/90 font-stencil text-base shadow-ember"
+              className="w-full h-14 bg-primary hover:bg-primary/90 font-stencil text-base shadow-ember tracking-widest"
             >
               {submitting ? <Loader2 className="h-5 w-5 animate-spin" /> : `Place Order — $${total.toFixed(2)}`}
             </Button>
           </form>
 
-          <aside className="bg-charcoal-light border border-border rounded-lg p-6 h-fit lg:sticky lg:top-24">
-            <h2 className="font-display text-2xl mb-4 tracking-wider">Order Summary</h2>
+          <aside className="retina-menu-card p-6 h-fit lg:sticky lg:top-24">
+            <div className="flex items-center gap-3 mb-2">
+              <Receipt className="h-4 w-4 text-gold" />
+              <h2 className="font-serif text-2xl tracking-tight">Order Summary</h2>
+            </div>
+            <span className="gold-rule-short block mb-5" />
             <ul className="space-y-3 mb-6 max-h-96 overflow-auto pr-2">
               {items.map((i, idx) => {
                 const opts = i.selectedOptions ?? [];
@@ -482,9 +554,11 @@ const Checkout = () => {
                 </div>
               )}
               <div className="flex justify-between text-muted-foreground"><span>Tax (7%)</span><span>${tax.toFixed(2)}</span></div>
-              <div className="flex justify-between text-lg font-display tracking-wider pt-2">
-                <span>Total</span>
-                <span className="text-primary">${total.toFixed(2)}</span>
+              <div className="mt-3 pt-3 border-t border-gold/30">
+                <div className="flex justify-between items-baseline">
+                  <span className="font-stencil text-xs uppercase tracking-[0.25em] text-gold">Total</span>
+                  <span className="font-serif text-3xl text-gradient-ember">${total.toFixed(2)}</span>
+                </div>
               </div>
             </div>
 
