@@ -55,12 +55,45 @@ const blankItem = (special_id: string, order: number): Partial<SpecialItem> => (
   menu_item_id: null,
 });
 
+type HolidayEvt = {
+  id: string;
+  holiday_name: string;
+  holiday_date: string;
+  holiday_type: string;
+  business_status: string | null;
+  open_time: string | null;
+  close_time: string | null;
+  banner_title: string | null;
+  banner_message: string | null;
+  special_id: string | null;
+  is_active: boolean;
+  display_order: number;
+};
+
+type CommunityDisc = {
+  id: string;
+  title: string;
+  description: string | null;
+  eligible_groups: string[];
+  discount_type: "percentage" | "fixed";
+  discount_value: number;
+  min_subtotal: number | null;
+  max_discount: number | null;
+  requires_id_verification: boolean;
+  allow_online_selection: boolean;
+  is_active: boolean;
+  terms: string | null;
+};
+
 const AdminSpecials = () => {
   const [specials, setSpecials] = useState<Special[]>([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<Partial<Special> | null>(null);
-  const [hours, setHours] = useState<any[]>([]);
-  const [heroesSettings, setHeroesSettings] = useState<{ enabled: boolean; discount_percent: number }>({ enabled: true, discount_percent: 10 });
+  const [holidays, setHolidays] = useState<HolidayEvt[]>([]);
+  const [editingHoliday, setEditingHoliday] = useState<Partial<HolidayEvt> | null>(null);
+  const [discounts, setDiscounts] = useState<CommunityDisc[]>([]);
+  const [editingDiscount, setEditingDiscount] = useState<Partial<CommunityDisc> | null>(null);
+  const [discountOrders, setDiscountOrders] = useState<any[]>([]);
 
   // Items management state (only relevant when editing an existing special)
   const [items, setItems] = useState<SpecialItem[]>([]);
@@ -70,16 +103,22 @@ const AdminSpecials = () => {
 
   const load = async () => {
     setLoading(true);
-    const [s, h, b, m] = await Promise.all([
+    const [s, he, cd, m, ord] = await Promise.all([
       supabase.from("specials").select("*").order("display_order"),
-      supabase.from("business_hours_overrides").select("*").order("override_date"),
-      supabase.from("business_settings").select("*").eq("setting_key", "community_heroes").maybeSingle(),
+      supabase.from("holiday_events").select("*").order("holiday_date"),
+      supabase.from("community_discounts").select("*").order("created_at"),
       supabase.from("menu_items").select("id,name,price").order("name"),
+      supabase.from("orders").select("id,order_number,customer_name,created_at,total,discount_name,discount_amount,discount_status,community_group").not("discount_id", "is", null).order("created_at", { ascending: false }).limit(50),
     ]);
     setSpecials((s.data ?? []) as unknown as Special[]);
-    setHours(h.data ?? []);
-    if (b.data) setHeroesSettings(b.data.setting_value as any);
+    setHolidays(((he.data ?? []) as unknown) as HolidayEvt[]);
+    const ds = ((cd.data ?? []) as any[]).map((d) => ({
+      ...d,
+      eligible_groups: Array.isArray(d.eligible_groups) ? d.eligible_groups : [],
+    })) as CommunityDisc[];
+    setDiscounts(ds);
     setMenuItems((m.data ?? []) as any);
+    setDiscountOrders((ord.data ?? []) as any[]);
     setLoading(false);
   };
 
