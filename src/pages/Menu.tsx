@@ -265,7 +265,7 @@ const Menu = () => {
         </div>
       </div>
 
-      <section className="container py-10 space-y-16">
+      <section className="container py-14 space-y-24">
         {loading ? (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {Array.from({ length: 6 }).map((_, i) => (
