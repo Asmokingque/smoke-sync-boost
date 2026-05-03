@@ -1,8 +1,11 @@
 import { Link } from "react-router-dom";
-import { Flame, Clock, Award, ChevronRight, Plus } from "lucide-react";
+import { Flame, Clock, Award, ChevronRight, Plus, Sparkles, CalendarDays, Heart, UtensilsCrossed } from "lucide-react";
 import { motion } from "framer-motion";
 import { SiteLayout } from "@/components/layout/SiteLayout";
 import { SmokeBackground } from "@/components/ui/SmokeBackground";
+import { useSpecials } from "@/hooks/useSpecials";
+import { isVisibleNow } from "@/lib/specials";
+import { SpecialCard } from "@/components/specials/SpecialCard";
 import hero from "@/assets/hero-bbq.jpg";
 import logo from "@/assets/logo.png";
 
