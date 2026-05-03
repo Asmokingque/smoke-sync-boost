@@ -24,9 +24,10 @@ export function FloatingCartButton({ onClick }: { onClick: () => void }) {
             <ShoppingCart className="h-5 w-5" />
             <motion.span
               key={itemCount}
-              initial={{ scale: 1.4 }}
+              initial={{ scale: 1.5 }}
               animate={{ scale: 1 }}
-              className="absolute -top-2 -right-2 h-5 w-5 rounded-full bg-background text-primary text-[10px] font-bold flex items-center justify-center border border-primary"
+              transition={{ type: "spring", stiffness: 500, damping: 18 }}
+              className="absolute -top-3.5 -right-3.5 min-w-[1.5rem] h-6 px-1.5 rounded-full bg-gradient-ember text-primary-foreground text-xs font-stencil font-bold flex items-center justify-center border-2 border-background shadow-ember ring-1 ring-primary/60"
             >
               {itemCount}
             </motion.span>
