@@ -37,7 +37,7 @@ export function RetinaMenuCard({
       transition={{ duration: 0.4, delay: Math.min(index * 0.04, 0.3) }}
       whileHover={{ y: -4 }}
       className={cn(
-        "group relative retina-card rounded-3xl overflow-hidden flex flex-col transition-all hover:shadow-ember hover:border-primary/40",
+        "group retina-menu-card flex flex-col hover:shadow-ember hover:border-primary/40",
         !item.is_available && "opacity-60",
         className,
       )}
