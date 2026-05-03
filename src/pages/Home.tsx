@@ -112,10 +112,11 @@ const Home = () => {
             { icon: Clock, title: "Made Daily", body: "Cooked fresh every morning. When it's gone, it's gone — get yours early." },
             { icon: Award, title: "Catering Ready", body: "From small gatherings to large events, we bring the smokehouse to you." },
           ].map((f) => (
-            <div key={f.title} className="bg-gradient-card border border-border rounded-lg p-8 shadow-card-soft">
-              <f.icon className="h-10 w-10 text-primary mb-4" />
-              <h3 className="font-display text-2xl mb-2 tracking-wider">{f.title}</h3>
-              <p className="text-muted-foreground">{f.body}</p>
+            <div key={f.title} className="retina-menu-card p-8">
+              <f.icon className="h-9 w-9 text-gold mb-4" />
+              <h3 className="font-serif text-3xl mb-2">{f.title}</h3>
+              <span className="gold-rule-short mb-4 block" />
+              <p className="text-muted-foreground leading-relaxed">{f.body}</p>
             </div>
           ))}
         </div>
@@ -124,10 +125,11 @@ const Home = () => {
       {/* MENU PREVIEW */}
       <section className="container py-20 border-y border-border bg-charcoal-light/40">
         <div className="text-center mb-12">
-          <div className="font-stencil text-sm text-primary mb-2">The Menu</div>
-          <h2 className="font-display text-4xl md:text-5xl mb-4">Built Around Smoke & Spice</h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
-            Five categories of southern smokehouse classics. Browse the full menu and build your order.
+          <span className="badge-premium mb-4">The Menu</span>
+          <h2 className="font-serif text-5xl md:text-6xl mb-4">Built Around Smoke &amp; Spice</h2>
+          <span className="gold-rule-short mx-auto block mb-4" />
+          <p className="text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+            Real smoke. Bold flavor. Southern comfort. Browse the full menu and build your order.
           </p>
         </div>
 
@@ -158,13 +160,15 @@ const Home = () => {
       </section>
 
       {/* TAGLINE / CTA */}
-      <section className="container py-24 text-center">
-        <img src={logo} alt="" className="h-32 w-32 mx-auto mb-6 opacity-90" width={128} height={128} loading="lazy" />
-        <h2 className="font-display text-4xl md:text-5xl mb-4">Got an Event?</h2>
-        <p className="text-muted-foreground max-w-xl mx-auto mb-6">
-          Birthdays, family reunions, corporate lunches, weddings — we cater all of it. Tell us what you need.
+      <section className="container py-28 text-center">
+        <img src={logo} alt="" className="h-28 w-28 mx-auto mb-6 opacity-90" width={112} height={112} loading="lazy" />
+        <span className="badge-premium mb-4">Catering</span>
+        <h2 className="font-serif text-5xl md:text-6xl mb-3">Got an Event?</h2>
+        <span className="gold-rule-short mx-auto block mb-5" />
+        <p className="text-muted-foreground max-w-xl mx-auto mb-8 leading-relaxed">
+          Birthdays, reunions, corporate lunches, weddings — we bring the smokehouse to you.
         </p>
-        <Button asChild size="lg" className="bg-primary hover:bg-primary/90 font-stencil h-12 px-8">
+        <Button asChild size="lg" className="bg-gradient-ember hover:opacity-90 font-stencil h-13 px-10 shadow-ember">
           <Link to="/catering">Request Catering</Link>
         </Button>
       </section>
