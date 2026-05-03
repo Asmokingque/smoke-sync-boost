@@ -704,6 +704,95 @@ const AdminSpecials = () => {
           </div>
         </div>
       )}
+
+      {/* Holiday editor */}
+      {editingHoliday && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur p-4 overflow-auto" onClick={() => setEditingHoliday(null)}>
+          <div onClick={(e) => e.stopPropagation()} className="luxury-card max-w-xl w-full p-6 my-8 space-y-3">
+            <h3 className="font-display text-2xl mb-2">{editingHoliday.id ? "Edit Holiday" : "New Holiday"}</h3>
+            <div className="space-y-2"><Label>Name *</Label><Input value={editingHoliday.holiday_name ?? ""} onChange={(e) => setEditingHoliday({ ...editingHoliday, holiday_name: e.target.value })} className="luxury-input h-11" /></div>
+            <div className="grid sm:grid-cols-2 gap-3">
+              <div className="space-y-2"><Label>Date *</Label><Input type="date" value={editingHoliday.holiday_date ?? ""} onChange={(e) => setEditingHoliday({ ...editingHoliday, holiday_date: e.target.value })} className="luxury-input h-11" /></div>
+              <div className="space-y-2"><Label>Type</Label>
+                <Select value={editingHoliday.holiday_type ?? "custom"} onValueChange={(v) => setEditingHoliday({ ...editingHoliday, holiday_type: v })}>
+                  <SelectTrigger className="luxury-input h-11"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="federal">Federal</SelectItem>
+                    <SelectItem value="local">Local</SelectItem>
+                    <SelectItem value="custom">Custom</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="space-y-2"><Label>Business Status</Label>
+              <Select value={editingHoliday.business_status ?? "Open"} onValueChange={(v) => setEditingHoliday({ ...editingHoliday, business_status: v })}>
+                <SelectTrigger className="luxury-input h-11"><SelectValue /></SelectTrigger>
+                <SelectContent>{HOLIDAY_STATUSES.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
+              </Select>
+            </div>
+            {editingHoliday.business_status === "Special Hours" && (
+              <div className="grid sm:grid-cols-2 gap-3">
+                <div className="space-y-2"><Label>Open</Label><Input type="time" value={editingHoliday.open_time ?? ""} onChange={(e) => setEditingHoliday({ ...editingHoliday, open_time: e.target.value || null })} className="luxury-input h-11" /></div>
+                <div className="space-y-2"><Label>Close</Label><Input type="time" value={editingHoliday.close_time ?? ""} onChange={(e) => setEditingHoliday({ ...editingHoliday, close_time: e.target.value || null })} className="luxury-input h-11" /></div>
+              </div>
+            )}
+            <div className="space-y-2"><Label>Banner Title</Label><Input value={editingHoliday.banner_title ?? ""} onChange={(e) => setEditingHoliday({ ...editingHoliday, banner_title: e.target.value })} className="luxury-input h-11" /></div>
+            <div className="space-y-2"><Label>Banner Message</Label><Textarea rows={2} value={editingHoliday.banner_message ?? ""} onChange={(e) => setEditingHoliday({ ...editingHoliday, banner_message: e.target.value })} className="luxury-input" /></div>
+            <div className="space-y-2"><Label>Linked Special</Label>
+              <Select value={editingHoliday.special_id ?? "__none"} onValueChange={(v) => setEditingHoliday({ ...editingHoliday, special_id: v === "__none" ? null : v })}>
+                <SelectTrigger className="luxury-input h-11"><SelectValue placeholder="None" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__none">None</SelectItem>
+                  {specials.filter((s) => s.type === "holiday").map((s) => <SelectItem key={s.id} value={s.id}>{s.title}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+            <label className="flex items-center gap-2 text-sm"><Switch checked={editingHoliday.is_active ?? true} onCheckedChange={(v) => setEditingHoliday({ ...editingHoliday, is_active: v })} />Active</label>
+            <div className="flex justify-end gap-2 pt-2">
+              <Button variant="ghost" onClick={() => setEditingHoliday(null)}>Cancel</Button>
+              <Button onClick={saveHoliday} className="luxury-primary-btn h-10 px-6 font-stencil text-xs">Save</Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Community Discount editor */}
+      {editingDiscount && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur p-4 overflow-auto" onClick={() => setEditingDiscount(null)}>
+          <div onClick={(e) => e.stopPropagation()} className="luxury-card max-w-xl w-full p-6 my-8 space-y-3">
+            <h3 className="font-display text-2xl mb-2">{editingDiscount.id ? "Edit Deal" : "New Deal"}</h3>
+            <div className="space-y-2"><Label>Title *</Label><Input value={editingDiscount.title ?? ""} onChange={(e) => setEditingDiscount({ ...editingDiscount, title: e.target.value })} className="luxury-input h-11" /></div>
+            <div className="space-y-2"><Label>Description</Label><Textarea rows={2} value={editingDiscount.description ?? ""} onChange={(e) => setEditingDiscount({ ...editingDiscount, description: e.target.value })} className="luxury-input" /></div>
+            <div className="space-y-2"><Label>Eligible Groups (comma-separated)</Label>
+              <Input value={(editingDiscount.eligible_groups ?? []).join(", ")} onChange={(e) => setEditingDiscount({ ...editingDiscount, eligible_groups: e.target.value.split(",").map((s) => s.trim()).filter(Boolean) })} className="luxury-input h-11" />
+            </div>
+            <div className="grid sm:grid-cols-3 gap-3">
+              <div className="space-y-2"><Label>Type</Label>
+                <Select value={editingDiscount.discount_type ?? "percentage"} onValueChange={(v) => setEditingDiscount({ ...editingDiscount, discount_type: v as any })}>
+                  <SelectTrigger className="luxury-input h-11"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="percentage">Percentage</SelectItem>
+                    <SelectItem value="fixed">Fixed $</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2"><Label>Value *</Label><Input type="number" step="0.01" value={editingDiscount.discount_value ?? 0} onChange={(e) => setEditingDiscount({ ...editingDiscount, discount_value: Number(e.target.value) })} className="luxury-input h-11" /></div>
+              <div className="space-y-2"><Label>Max $</Label><Input type="number" step="0.01" value={editingDiscount.max_discount ?? ""} onChange={(e) => setEditingDiscount({ ...editingDiscount, max_discount: e.target.value === "" ? null : Number(e.target.value) })} className="luxury-input h-11" /></div>
+            </div>
+            <div className="space-y-2"><Label>Min Subtotal $</Label><Input type="number" step="0.01" value={editingDiscount.min_subtotal ?? 0} onChange={(e) => setEditingDiscount({ ...editingDiscount, min_subtotal: Number(e.target.value) })} className="luxury-input h-11" /></div>
+            <div className="space-y-2"><Label>Terms</Label><Textarea rows={2} value={editingDiscount.terms ?? ""} onChange={(e) => setEditingDiscount({ ...editingDiscount, terms: e.target.value })} className="luxury-input" /></div>
+            <div className="flex items-center gap-6 flex-wrap">
+              <label className="flex items-center gap-2 text-sm"><Switch checked={editingDiscount.is_active ?? true} onCheckedChange={(v) => setEditingDiscount({ ...editingDiscount, is_active: v })} />Active</label>
+              <label className="flex items-center gap-2 text-sm"><Switch checked={editingDiscount.allow_online_selection ?? true} onCheckedChange={(v) => setEditingDiscount({ ...editingDiscount, allow_online_selection: v })} />Allow online selection</label>
+              <label className="flex items-center gap-2 text-sm"><Switch checked={editingDiscount.requires_id_verification ?? true} onCheckedChange={(v) => setEditingDiscount({ ...editingDiscount, requires_id_verification: v })} />Requires ID</label>
+            </div>
+            <div className="flex justify-end gap-2 pt-2">
+              <Button variant="ghost" onClick={() => setEditingDiscount(null)}>Cancel</Button>
+              <Button onClick={saveDiscount} className="luxury-primary-btn h-10 px-6 font-stencil text-xs">Save</Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
