@@ -161,16 +161,16 @@ const Catering = () => {
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="cname">Name *</Label>
-                  <Input id="cname" required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="h-12" />
+                  <Input id="cname" required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="luxury-input h-12" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="cphone">Phone *</Label>
-                  <Input id="cphone" type="tel" required value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="h-12" />
+                  <Input id="cphone" type="tel" required value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="luxury-input h-12" />
                 </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="cemail">Email *</Label>
-                <Input id="cemail" type="email" required value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="h-12" />
+                <Input id="cemail" type="email" required value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="luxury-input h-12" />
               </div>
               <div className="space-y-2">
                 <Label className="block mb-1">Service Type *</Label>
@@ -194,21 +194,21 @@ const Catering = () => {
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="cdate">Event Date</Label>
-                  <Input id="cdate" type="date" value={form.event_date} onChange={(e) => setForm({ ...form, event_date: e.target.value })} className="h-12" />
+                  <Input id="cdate" type="date" value={form.event_date} onChange={(e) => setForm({ ...form, event_date: e.target.value })} className="luxury-input h-12" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="ctime">Event Time</Label>
-                  <Input id="ctime" placeholder="e.g. 5:00 PM" value={form.event_time} onChange={(e) => setForm({ ...form, event_time: e.target.value })} className="h-12" />
+                  <Input id="ctime" placeholder="e.g. 5:00 PM" value={form.event_time} onChange={(e) => setForm({ ...form, event_time: e.target.value })} className="luxury-input h-12" />
                 </div>
               </div>
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="cloc">Event Location</Label>
-                  <Input id="cloc" placeholder="Address or venue" value={form.event_location} onChange={(e) => setForm({ ...form, event_location: e.target.value })} className="h-12" />
+                  <Input id="cloc" placeholder="Address or venue" value={form.event_location} onChange={(e) => setForm({ ...form, event_location: e.target.value })} className="luxury-input h-12" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="cguests">Guest Count</Label>
-                  <Input id="cguests" type="number" min="1" value={form.guest_count} onChange={(e) => setForm({ ...form, guest_count: e.target.value })} className="h-12" />
+                  <Input id="cguests" type="number" min="1" value={form.guest_count} onChange={(e) => setForm({ ...form, guest_count: e.target.value })} className="luxury-input h-12" />
                 </div>
               </div>
               <div className="space-y-2">
