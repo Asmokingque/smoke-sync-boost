@@ -453,7 +453,7 @@ const Checkout = () => {
             </div>
             <div className="space-y-2">
               <Label htmlFor="notes" className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-muted-foreground"><MessageSquare className="h-3 w-3 text-gold" />Special Requests</Label>
-              <Textarea id="notes" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} rows={3} placeholder="Allergies, sauce on the side, etc." />
+              <Textarea id="notes" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} rows={3} placeholder="Allergies, sauce on the side, etc." className="luxury-input" />
             </div>
 
             <div className="rounded-md border border-gold/30 bg-gradient-to-r from-primary/5 via-gold/5 to-primary/5 p-4 text-sm flex gap-3">
