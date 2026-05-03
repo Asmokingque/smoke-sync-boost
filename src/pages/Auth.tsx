@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, Link, Navigate } from "react-router-dom";
+import { useNavigate, Link, Navigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { SiteLayout } from "@/components/layout/SiteLayout";
 import { Button } from "@/components/ui/button";
@@ -16,12 +16,14 @@ const passwordSchema = z.string().min(8, "Password must be 8+ characters").max(7
 
 const Auth = () => {
   const navigate = useNavigate();
+  const [params] = useSearchParams();
+  const redirect = params.get("redirect") || "/account";
   const { user, loading } = useAuth();
   const [busy, setBusy] = useState(false);
   const [signinForm, setSigninForm] = useState({ email: "", password: "" });
   const [signupForm, setSignupForm] = useState({ email: "", password: "", display_name: "" });
 
-  if (!loading && user) return <Navigate to="/account" replace />;
+  if (!loading && user) return <Navigate to={redirect} replace />;
 
   const signIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,7 +34,7 @@ const Auth = () => {
     setBusy(false);
     if (error) return toast.error(error.message);
     toast.success("Welcome back!");
-    navigate("/account");
+    navigate(redirect);
   };
 
   const signUp = async (e: React.FormEvent) => {
