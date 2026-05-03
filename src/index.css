@@ -325,6 +325,9 @@
     background: hsl(var(--bbq-gold) / 0.08);
     border: 1px solid hsl(var(--bbq-gold) / 0.45);
   }
+  .premium-badge {
+    @apply badge-premium;
+  }
   .ring-gold-soft {
     box-shadow: inset 0 0 0 1px hsl(var(--bbq-gold) / 0.35);
   }
