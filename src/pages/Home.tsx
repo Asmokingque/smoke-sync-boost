@@ -1,10 +1,8 @@
 import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
 import { Flame, Clock, Award, ChevronRight, Plus } from "lucide-react";
 import { motion } from "framer-motion";
 import { SiteLayout } from "@/components/layout/SiteLayout";
 import { SmokeBackground } from "@/components/ui/SmokeBackground";
-import { ShimmerButton } from "@/components/ui/ShimmerButton";
 import hero from "@/assets/hero-bbq.jpg";
 import logo from "@/assets/logo.png";
 
