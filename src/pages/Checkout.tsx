@@ -286,7 +286,7 @@ const Checkout = () => {
     setSubmitting(true);
     try {
       const heroesNote = heroesActive
-        ? `Heroes Deal: ${heroesGroup} ${(heroesPercent * 100).toFixed(0)}% −$${safeHeroesDiscount.toFixed(2)} (pending verification)`
+        ? `${communityDiscount?.title ?? "Heroes Deal"}: ${heroesGroup} −$${safeHeroesDiscount.toFixed(2)} (pending verification)`
         : null;
       const { data: order, error: orderErr } = await supabase
         .from("orders")
@@ -304,10 +304,17 @@ const Checkout = () => {
           total: safeTotal,
           status: "pending",
           payment_status: "unpaid",
+          // Heroes (legacy) columns
           heroes_group: heroesActive ? heroesGroup : null,
           heroes_discount_amount: safeHeroesDiscount,
           heroes_discount_status: heroesActive ? "pending_verification" : null,
           heroes_acknowledged: heroesActive,
+          // New community discount columns
+          discount_id: heroesActive ? communityDiscount?.id ?? null : null,
+          discount_name: heroesActive ? communityDiscount?.title ?? null : null,
+          discount_amount: safeHeroesDiscount,
+          discount_status: heroesActive ? "Pending Verification" : "None",
+          community_group: heroesActive ? heroesGroup : null,
         })
         .select()
         .single();
