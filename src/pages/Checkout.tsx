@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Loader2, ShoppingBag, Tag, X, Bug, Download, Check, ShoppingCart, User, Receipt, Sparkles, Clock, Phone, Mail, MessageSquare } from "lucide-react";
+import { Loader2, ShoppingBag, Tag, X, Bug, Download, Check, ShoppingCart, User, Receipt, Sparkles, Clock, Phone, Mail, MessageSquare, MapPin, Store, Truck, Plus, Minus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
 import { computeDiscount, buildSafeOrderTotals, type Promo } from "@/lib/promo";
@@ -20,6 +20,11 @@ const schema = z.object({
   customer_phone: z.string().trim().min(7, "Phone is required").max(30),
   pickup_time: z.string().optional(),
   notes: z.string().max(500).optional(),
+  order_type: z.enum(["Pickup", "Delivery"]),
+  delivery_address: z.string().trim().max(300).optional(),
+}).refine((d) => d.order_type !== "Delivery" || (d.delivery_address && d.delivery_address.length >= 6), {
+  message: "Delivery address is required",
+  path: ["delivery_address"],
 });
 
 const TAX_RATE = 0.07;
@@ -31,7 +36,7 @@ const PROMOS: Promo[] = [
 ];
 
 const Checkout = () => {
-  const { items, subtotal, clear } = useCart();
+  const { items, subtotal, clear, updateQuantity, removeItem } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -163,6 +168,8 @@ const Checkout = () => {
     customer_phone: "",
     pickup_time: "",
     notes: "",
+    order_type: "Pickup" as "Pickup" | "Delivery",
+    delivery_address: "",
   });
 
   const breakdown = computeDiscount(
@@ -265,6 +272,8 @@ const Checkout = () => {
           customer_email: parsed.data.customer_email,
           customer_phone: parsed.data.customer_phone,
           pickup_time: parsed.data.pickup_time ? new Date(parsed.data.pickup_time).toISOString() : null,
+          order_type: parsed.data.order_type,
+          delivery_address: parsed.data.order_type === "Delivery" ? parsed.data.delivery_address ?? null : null,
           notes: [parsed.data.notes, promo ? `Promo: ${promo.code} (${promo.label}) −$${safe.discount.toFixed(2)}` : null].filter(Boolean).join(" • ") || null,
           subtotal: safe.subtotal,
           tax: safe.tax,
