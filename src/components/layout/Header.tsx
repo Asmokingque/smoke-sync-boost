@@ -11,9 +11,10 @@ import logo from "@/assets/logo.png";
 const navItems = [
   { to: "/", label: "Home" },
   { to: "/menu", label: "Menu" },
-  { to: "/menu", label: "Order Online" },
+  { to: "/specials", label: "Specials" },
+  { to: "/holiday-calendar", label: "Holiday Calendar" },
   { to: "/catering", label: "Catering" },
-  { to: "/reviews", label: "Experience Wall" },
+  { to: "/reviews", label: "Experience" },
   { to: "/order-status", label: "Order Status" },
   { to: "/contact", label: "Contact" },
 ];

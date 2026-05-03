@@ -1,12 +1,18 @@
 import { Link } from "react-router-dom";
-import { Flame, Clock, Award, ChevronRight, Plus } from "lucide-react";
+import { Flame, Clock, Award, ChevronRight, Plus, Sparkles, CalendarDays, Heart, UtensilsCrossed } from "lucide-react";
 import { motion } from "framer-motion";
 import { SiteLayout } from "@/components/layout/SiteLayout";
 import { SmokeBackground } from "@/components/ui/SmokeBackground";
+import { useSpecials } from "@/hooks/useSpecials";
+import { isVisibleNow } from "@/lib/specials";
+import { SpecialCard } from "@/components/specials/SpecialCard";
 import hero from "@/assets/hero-bbq.jpg";
 import logo from "@/assets/logo.png";
 
 const Home = () => {
+  const { specials } = useSpecials({ activeOnly: true });
+  const todaysSpecial = specials.find((s) => s.type === "daily" && isVisibleNow(s));
+  const lunchSpecials = specials.filter((s) => s.type === "lunch" && isVisibleNow(s)).slice(0, 3);
   return (
     <SiteLayout>
       {/* HERO */}
@@ -104,6 +110,71 @@ const Home = () => {
             </motion.div>
           </div>
         </div>
+      </section>
+
+      {/* TODAY'S SPECIAL + QUICK BUTTONS */}
+      <section className="container py-20 md:py-24">
+        <div className="grid lg:grid-cols-[1.3fr_1fr] gap-8 items-start">
+          <div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-80px" }}
+              transition={{ duration: 0.5 }}
+              className="mb-6"
+            >
+              <span className="luxury-badge mb-4 inline-flex items-center gap-2"><Flame className="h-3 w-3" /> Today Only</span>
+              <h2 className="luxury-menu-title text-4xl md:text-5xl mb-3">Today's Smokehouse Special</h2>
+              <span className="luxury-gold-line block mb-3" />
+              <p className="luxury-subtitle">Fresh from the pit. Available for a limited time.</p>
+            </motion.div>
+            {todaysSpecial ? (
+              <SpecialCard special={todaysSpecial} variant="hero" />
+            ) : (
+              <div className="luxury-card p-8 text-center">
+                <p className="luxury-subtitle mb-4">No daily special posted right now — check back soon, or browse the full menu.</p>
+                <Link to="/menu"><button className="luxury-secondary-btn h-11 px-6 font-stencil text-xs tracking-widest">View Menu</button></Link>
+              </div>
+            )}
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            {[
+              { to: "/specials", label: "Today's Special", icon: Flame },
+              { to: "/specials", label: "Lunch Specials", icon: UtensilsCrossed },
+              { to: "/holiday-calendar", label: "Holiday Calendar", icon: CalendarDays },
+              { to: "/specials", label: "Heroes Deal", icon: Heart },
+            ].map((q) => (
+              <Link key={q.label} to={q.to} className="luxury-card p-5 flex flex-col items-start gap-3 hover:-translate-y-1 transition-transform">
+                <q.icon className="h-6 w-6 text-gold" />
+                <span className="font-stencil text-xs tracking-widest text-foreground">{q.label}</span>
+              </Link>
+            ))}
+          </div>
+        </div>
+
+        {lunchSpecials.length > 0 && (
+          <div className="mt-20">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-80px" }}
+              transition={{ duration: 0.5 }}
+              className="text-center mb-10"
+            >
+              <span className="luxury-badge mb-4 inline-flex items-center gap-2"><Sparkles className="h-3 w-3" /> Mon – Fri · 11 AM – 2 PM</span>
+              <h2 className="luxury-menu-title text-4xl md:text-5xl mb-3">Lunch Specials</h2>
+              <span className="luxury-gold-line mx-auto block mb-3" />
+              <p className="luxury-subtitle max-w-xl mx-auto">Midday smokehouse favorites served fast, fresh, and bold.</p>
+            </motion.div>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {lunchSpecials.map((s, i) => <SpecialCard key={s.id} special={s} index={i} />)}
+            </div>
+            <div className="text-center mt-10">
+              <Link to="/specials"><button className="luxury-secondary-btn h-12 px-8 font-stencil text-xs tracking-widest">View All Specials</button></Link>
+            </div>
+          </div>
+        )}
       </section>
 
       {/* HIGHLIGHTS */}
