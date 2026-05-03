@@ -162,8 +162,9 @@ const Reviews = () => {
           )}
         </div>
 
-        <aside className="bg-charcoal-light border border-border rounded-lg p-6 h-fit lg:sticky lg:top-24">
-          <h2 className="font-display text-2xl mb-4 tracking-wider">Leave a Review</h2>
+        <aside className="retina-menu-card ring-gold-soft p-6 h-fit lg:sticky lg:top-24">
+          <h2 className="font-serif text-3xl mb-1">Leave a Review</h2>
+          <span className="gold-rule-short block mb-5" />
           {!user ? (
             <div>
               <p className="text-muted-foreground mb-4 text-sm">Sign in to share your experience.</p>
