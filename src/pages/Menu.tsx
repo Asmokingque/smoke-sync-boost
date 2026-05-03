@@ -250,7 +250,7 @@ const Menu = () => {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search the menu…"
-              className="h-10 pl-9 pr-9 bg-card/50 border-border focus-visible:ring-primary"
+              className="luxury-input h-11 pl-9 pr-9"
             />
             {search && (
               <button
