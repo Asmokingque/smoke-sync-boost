@@ -311,12 +311,11 @@ const Menu = () => {
               <div key={cat.id}>
                 {idx > 0 && idx % 2 === 0 && <CateringCallout />}
                 <div id={`cat-${cat.slug}`} className="scroll-mt-32">
-                  <div className="text-center mb-8">
-                    <SmokeDivider className="mb-4" />
-                    <h2 className="font-display text-4xl md:text-5xl retina-heading">{cat.name.toUpperCase()}</h2>
-                    <SmokeDivider className="mt-4" />
+                  <div className="text-center mb-10">
+                    <h2 className="font-serif text-5xl md:text-6xl mb-3 leading-tight">{cat.name}</h2>
+                    <span className="gold-rule-short mx-auto block mb-4" />
                     {cat.description && (
-                      <p className="text-sm text-muted-foreground mt-3 max-w-xl mx-auto">{cat.description}</p>
+                      <p className="text-sm text-muted-foreground max-w-xl mx-auto leading-relaxed">{cat.description}</p>
                     )}
                   </div>
                   {view === "card" ? (
