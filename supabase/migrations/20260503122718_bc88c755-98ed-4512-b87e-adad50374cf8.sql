@@ -1,0 +1,1 @@
+ALTER TABLE public.catering_inquiries ADD COLUMN IF NOT EXISTS service_type text;

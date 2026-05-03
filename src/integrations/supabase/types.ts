@@ -52,6 +52,7 @@ export type Database = {
           message: string | null
           name: string
           phone: string
+          service_type: string | null
           status: string
         }
         Insert: {
@@ -67,6 +68,7 @@ export type Database = {
           message?: string | null
           name: string
           phone: string
+          service_type?: string | null
           status?: string
         }
         Update: {
@@ -82,6 +84,7 @@ export type Database = {
           message?: string | null
           name?: string
           phone?: string
+          service_type?: string | null
           status?: string
         }
         Relationships: []
