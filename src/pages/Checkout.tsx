@@ -51,12 +51,11 @@ const Checkout = () => {
   const [heroesGroup, setHeroesGroup] = useState<string>("");
   const [heroesAck, setHeroesAck] = useState(false);
 
-  useState(() => {
+  useEffect(() => {
     supabase.from("business_settings").select("setting_value").eq("setting_key", "community_heroes").maybeSingle().then(({ data }) => {
       if (data?.setting_value) setHeroesSettings(data.setting_value as any);
     });
-    return undefined;
-  });
+  }, []);
   const toggleDebug = () => {
     const next = new URLSearchParams(searchParams);
     if (debugEnabled) next.delete("debug");
