@@ -416,6 +416,7 @@ const Checkout = () => {
                   rows={2}
                   placeholder="Street, city, ZIP, apt #, gate code…"
                   maxLength={300}
+                  className="luxury-input"
                 />
               </div>
             )}
