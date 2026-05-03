@@ -195,6 +195,43 @@ const AdminMenu = () => {
     setItems((prev) => prev.map((i) => (i.id === id ? { ...i, is_available: val } : i)));
   };
 
+  const [rowUploadingId, setRowUploadingId] = useState<string | null>(null);
+
+  const handleRowImageUpload = async (item: Item, file: File) => {
+    setRowUploadingId(item.id);
+    try {
+      const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
+      const path = `uploads/${crypto.randomUUID()}.${ext}`;
+      const { error: upErr } = await supabase.storage
+        .from("menu-images")
+        .upload(path, file, { cacheControl: "3600", upsert: false });
+      if (upErr) throw upErr;
+      const { data } = supabase.storage.from("menu-images").getPublicUrl(path);
+      const newUrl = data.publicUrl;
+      const { error: dbErr } = await supabase
+        .from("menu_items")
+        .update({ image_url: newUrl })
+        .eq("id", item.id);
+      if (dbErr) throw dbErr;
+      setItems((prev) => prev.map((i) => (i.id === item.id ? { ...i, image_url: newUrl } : i)));
+      toast.success(`Photo updated for ${item.name}`);
+    } catch (e: any) {
+      toast.error(e.message ?? "Upload failed");
+    } finally {
+      setRowUploadingId(null);
+    }
+  };
+
+  const handleRowImageClear = async (item: Item) => {
+    const { error } = await supabase
+      .from("menu_items")
+      .update({ image_url: null })
+      .eq("id", item.id);
+    if (error) return toast.error(error.message);
+    setItems((prev) => prev.map((i) => (i.id === item.id ? { ...i, image_url: null } : i)));
+    toast.success("Photo removed");
+  };
+
   return (
     <div>
       <div className="flex items-center justify-between mb-6 gap-3 flex-wrap">
@@ -233,21 +270,51 @@ const AdminMenu = () => {
                       className="bg-gradient-card border border-border rounded-md p-4 flex items-center justify-between gap-3 flex-wrap"
                     >
                       <div className="flex items-center gap-3 flex-1 min-w-0">
-                        {item.image_url ? (
-                          <img
-                            src={item.image_url}
-                            alt={item.name}
-                            className="h-12 w-12 rounded object-cover border border-border shrink-0"
-                          />
-                        ) : (
-                          <div className="h-12 w-12 rounded bg-muted flex items-center justify-center shrink-0">
-                            <ImageIcon className="h-5 w-5 text-muted-foreground" />
+                        <label
+                          className="relative h-12 w-12 rounded border border-border bg-muted overflow-hidden shrink-0 cursor-pointer group"
+                          title="Click to upload / replace photo"
+                        >
+                          {item.image_url ? (
+                            <img
+                              src={item.image_url}
+                              alt={item.name}
+                              className="h-full w-full object-cover"
+                            />
+                          ) : (
+                            <div className="h-full w-full flex items-center justify-center">
+                              <ImageIcon className="h-5 w-5 text-muted-foreground" />
+                            </div>
+                          )}
+                          <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+                            {rowUploadingId === item.id ? (
+                              <Loader2 className="h-4 w-4 animate-spin text-white" />
+                            ) : (
+                              <Upload className="h-4 w-4 text-white" />
+                            )}
                           </div>
-                        )}
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) => {
+                              const f = e.target.files?.[0];
+                              if (f) handleRowImageUpload(item, f);
+                              e.target.value = "";
+                            }}
+                          />
+                        </label>
                         <div className="flex-1 min-w-0">
                           <div className="font-stencil truncate">{item.name}</div>
                           {item.price_label && (
                             <div className="text-xs text-muted-foreground">{item.price_label}</div>
+                          )}
+                          {item.image_url && (
+                            <button
+                              onClick={() => handleRowImageClear(item)}
+                              className="text-[10px] text-muted-foreground hover:text-destructive uppercase tracking-wider mt-0.5"
+                            >
+                              Remove photo
+                            </button>
                           )}
                         </div>
                       </div>
