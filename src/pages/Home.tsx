@@ -83,20 +83,20 @@ const Home = () => {
               transition={{ delay: 0.4, duration: 0.7 }}
               className="hidden lg:block"
             >
-              <div className="retina-menu-card p-7 ring-gold-soft">
-                <div className="flex items-center justify-between mb-4">
+              <div className="premium-glass-card p-8">
+                <div className="flex items-center justify-between mb-5">
                   <span className="badge-premium"><Award className="h-3 w-3" /> Today's Featured Favorite</span>
-                  <span className="font-serif text-3xl text-primary">$15</span>
+                  <span className="price-pill-premium font-serif text-xl">$15</span>
                 </div>
-                <h3 className="font-serif text-3xl mb-2 leading-tight">Two or Three Meat Plate</h3>
+                <h3 className="font-serif text-3xl mb-3 leading-tight tracking-tight">Two or Three Meat Plate</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed mb-6">
                   Your pick of slow-smoked meats with two Southern sides and house cornbread.
                 </p>
-                <div className="gold-divider mb-5" />
+                <div className="gold-divider-rich mb-6" />
                 <Link to="/menu" className="block">
-                  <Button className="w-full h-12 font-stencil text-sm bg-gradient-ember hover:opacity-90 shadow-ember">
-                    <Plus className="h-4 w-4 mr-1" /> Add to Order
-                  </Button>
+                  <button className="premium-button w-full h-12 font-stencil text-sm tracking-widest inline-flex items-center justify-center gap-2">
+                    <Plus className="h-4 w-4" /> Add to Order
+                  </button>
                 </Link>
               </div>
             </motion.div>

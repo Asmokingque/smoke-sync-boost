@@ -37,15 +37,13 @@ export function RetinaMenuCard({
       transition={{ duration: 0.4, delay: Math.min(index * 0.04, 0.3) }}
       whileHover={{ y: -4 }}
       className={cn(
-        "group retina-menu-card flex flex-col hover:shadow-ember hover:border-primary/40",
+        "group premium-glass-card flex flex-col",
         !item.is_available && "opacity-60",
         className,
       )}
     >
-      {/* Crimson top accent line */}
-      <span aria-hidden className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-primary to-transparent opacity-70 group-hover:opacity-100 transition-opacity" />
       {/* Shine sweep */}
-      <span aria-hidden className="retina-shine rounded-3xl" />
+      <span aria-hidden className="retina-shine rounded-[28px]" />
 
       {item.image_url ? (
         <div className="aspect-[4/3] overflow-hidden relative">
@@ -74,13 +72,14 @@ export function RetinaMenuCard({
         </div>
       )}
 
-      <div className="p-5 flex flex-col gap-3 flex-1">
+      <div className="p-6 flex flex-col gap-4 flex-1">
         <div className="flex items-start justify-between gap-3">
-          <h3 className="font-stencil text-base leading-tight text-foreground">{item.name}</h3>
+          <h3 className="font-serif text-2xl leading-tight text-foreground tracking-tight">{item.name}</h3>
           <PricePill item={item} />
         </div>
+        <span aria-hidden className="gold-divider-rich" />
         {item.description && (
-          <p className="text-xs text-muted-foreground leading-relaxed">{item.description}</p>
+          <p className="text-sm text-muted-foreground leading-relaxed">{item.description}</p>
         )}
         <div className="mt-auto pt-2">
           <AddButtons item={item} onAdd={onAdd} onAddAlt={onAddAlt} />
@@ -96,13 +95,13 @@ function PricePill({ item }: { item: RetinaMenuItem }) {
   }
   return (
     <div className="text-right shrink-0">
-      <span className="inline-flex items-center font-display text-base text-primary-foreground bg-primary/90 border border-primary px-2.5 py-1 rounded-full leading-none shadow-[0_4px_14px_hsl(var(--bbq-crimson)/0.4)]">
+      <span className="price-pill-premium font-serif text-base leading-none">
         {item.price_alt
           ? `$${Number(item.price).toFixed(0)} / $${Number(item.price_alt).toFixed(0)}`
           : `$${Number(item.price).toFixed(2)}`}
       </span>
       {item.price_label && (
-        <div className="text-[10px] text-muted-foreground mt-1 font-stencil">{item.price_label}</div>
+        <div className="text-[10px] text-gold mt-1.5 font-stencil tracking-widest">{item.price_label}</div>
       )}
     </div>
   );
