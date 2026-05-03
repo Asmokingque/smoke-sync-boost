@@ -31,6 +31,32 @@ const AdminOrders = () => {
     fetchOrders();
   };
 
+  const updateHeroes = async (
+    o: any,
+    patch: { status?: "verified" | "removed" | "pending_verification"; amount?: number }
+  ) => {
+    const newAmount = patch.status === "removed" ? 0 : patch.amount ?? Number(o.heroes_discount_amount ?? 0);
+    const newStatus = patch.status ?? o.heroes_discount_status;
+    const subtotal = Number(o.subtotal ?? 0);
+    // Reconstruct prior promo discount from total reverse-engineering would be brittle.
+    // We keep tax based on (subtotal - newAmount) as a simple, transparent recompute.
+    const subAfter = Math.max(0, subtotal - newAmount);
+    const tax = Math.round(subAfter * 0.07 * 100) / 100;
+    const total = Math.round((subAfter + tax) * 100) / 100;
+    const { error } = await supabase
+      .from("orders")
+      .update({
+        heroes_discount_amount: newAmount,
+        heroes_discount_status: newStatus,
+        tax,
+        total,
+      })
+      .eq("id", o.id);
+    if (error) return toast.error(error.message);
+    toast.success("Heroes discount updated");
+    fetchOrders();
+  };
+
   return (
     <div>
       <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
