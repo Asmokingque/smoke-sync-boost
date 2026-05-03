@@ -97,7 +97,7 @@ const Catering = () => {
             { icon: PartyPopper, title: "Private Celebrations", body: "Weddings, anniversaries, milestones." },
             { icon: Flame, title: "Custom BBQ Packages", body: "Tell us the meats — we build the menu." },
           ].map((f) => (
-            <div key={f.title} className="retina-menu-card p-6 text-center">
+            <div key={f.title} className="luxury-card p-6 text-center">
               <f.icon className="h-8 w-8 text-gold mx-auto mb-3" />
               <h3 className="font-serif text-xl mb-2">{f.title}</h3>
               <span className="gold-rule-short mx-auto block mb-3" />
@@ -120,7 +120,7 @@ const Catering = () => {
             { n: "03", title: "Confirm date and details", body: "We finalize timing, service style, and delivery." },
             { n: "04", title: "We handle the flavor", body: "Anderson's brings bold smokehouse hospitality to you." },
           ].map((s) => (
-            <li key={s.n} className="premium-glass-card p-6">
+            <li key={s.n} className="luxury-card p-6">
               <div className="font-serif text-4xl text-gold/80 mb-2">{s.n}</div>
               <h3 className="font-serif text-xl mb-2 leading-tight">{s.title}</h3>
               <span className="gold-rule-short block mb-3" />
@@ -136,7 +136,7 @@ const Catering = () => {
           { icon: Calendar, title: "Flexible Dates", body: "Book ahead — popular dates fill up fast." },
           { icon: Mail, title: "Custom Menus", body: "Mix and match meats, sides, and desserts." },
         ].map((f) => (
-          <div key={f.title} className="retina-menu-card p-6 text-center">
+          <div key={f.title} className="luxury-card p-6 text-center">
             <f.icon className="h-7 w-7 text-gold mx-auto mb-3" />
             <h3 className="font-serif text-2xl mb-1">{f.title}</h3>
             <p className="text-sm text-muted-foreground leading-relaxed">{f.body}</p>
@@ -145,7 +145,7 @@ const Catering = () => {
       </section>
 
       <section className="container pb-24 pt-8 max-w-2xl">
-        <div className="retina-menu-card ring-gold-soft p-6 md:p-8">
+        <div className="luxury-card ring-gold-soft p-6 md:p-8">
           {done ? (
             <div className="text-center py-8">
               <h2 className="font-serif text-4xl mb-3">Thank you!</h2>
