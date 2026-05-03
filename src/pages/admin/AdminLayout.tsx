@@ -32,9 +32,10 @@ const AdminLayout = () => {
   if (!isAdmin) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background p-4">
-        <div className="max-w-md text-center bg-gradient-card border border-border rounded-lg p-8">
-          <ShieldAlert className="h-12 w-12 text-primary mx-auto mb-4" />
-          <h1 className="font-display text-3xl mb-2 tracking-wider">Access Denied</h1>
+        <div className="max-w-md text-center retina-menu-card ring-gold-soft p-8">
+          <ShieldAlert className="h-12 w-12 text-gold mx-auto mb-4" />
+          <h1 className="font-serif text-4xl mb-2">Access Denied</h1>
+          <span className="gold-rule-short mx-auto block mb-4" />
           <p className="text-muted-foreground mb-6 text-sm">
             This area is restricted to Anderson's Smoking Que admins. If you believe this is a mistake, sign in with the admin account.
           </p>
