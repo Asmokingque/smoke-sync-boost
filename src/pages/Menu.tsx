@@ -285,13 +285,14 @@ const Menu = () => {
                       <p className="text-sm text-muted-foreground mt-3 max-w-xl mx-auto">{cat.description}</p>
                     )}
                 </div>
-                {view === "card" ? (
-                  <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {grouped[cat.id]?.map((item) => <CardItem key={item.id} item={item} />)}
-                  </div>
-                ) : (
-                  <div>{grouped[cat.id]?.map((item) => <ListItem key={item.id} item={item} />)}</div>
-                )}
+                  {view === "card" ? (
+                    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {grouped[cat.id]?.map((item) => <CardItem key={item.id} item={item} />)}
+                    </div>
+                  ) : (
+                    <div>{grouped[cat.id]?.map((item) => <ListItem key={item.id} item={item} />)}</div>
+                  )}
+                </div>
               </div>
             ))}
           </>
