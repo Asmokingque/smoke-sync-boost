@@ -14,6 +14,8 @@ import {
   Printer,
   ArrowRight,
   MapPin,
+  Truck,
+  Store,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -155,35 +157,50 @@ const OrderConfirmation = () => {
       <section className="container py-12 md:py-16 max-w-3xl">
         {order && (
           <div className="grid md:grid-cols-2 gap-6 mb-8">
-            {/* Pickup details */}
-            <div className="retina-menu-card p-6">
-              <div className="flex items-center gap-2 mb-3">
-                <Clock className="h-4 w-4 text-gold" />
-                <h3 className="font-serif text-xl tracking-tight">Pickup</h3>
-              </div>
-              <span className="gold-rule-short block mb-4" />
-              <div className="space-y-3 text-sm">
-                <div className="flex items-start gap-3">
-                  <MapPin className="h-3.5 w-3.5 text-gold mt-0.5 shrink-0" />
-                  <div>
-                    <div className="text-foreground">Anderson's Smoking Que</div>
-                    <div className="text-muted-foreground text-xs">
-                      We'll text you when it's ready.
+            {/* Pickup / Delivery details */}
+            <div className="premium-glass-card p-6">
+              {(() => {
+                const isDelivery = order.order_type === "Delivery";
+                const Icon = isDelivery ? Truck : Store;
+                return (
+                  <>
+                    <div className="flex items-center gap-2 mb-3">
+                      <Icon className="h-4 w-4 text-gold" />
+                      <h3 className="font-serif text-xl tracking-tight">{isDelivery ? "Delivery" : "Pickup"}</h3>
                     </div>
-                  </div>
-                </div>
-                {pickup && (
-                  <div className="flex items-start gap-3">
-                    <Clock className="h-3.5 w-3.5 text-gold mt-0.5 shrink-0" />
-                    <div>
-                      <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-stencil">
-                        Requested time
+                    <span className="gold-rule-short block mb-4" />
+                    <div className="space-y-3 text-sm">
+                      <div className="flex items-start gap-3">
+                        <MapPin className="h-3.5 w-3.5 text-gold mt-0.5 shrink-0" />
+                        <div>
+                          {isDelivery ? (
+                            <>
+                              <div className="text-foreground whitespace-pre-line">{order.delivery_address || "Address on file"}</div>
+                              <div className="text-muted-foreground text-xs">We'll text you when we're on the way.</div>
+                            </>
+                          ) : (
+                            <>
+                              <div className="text-foreground">Anderson's Smoking Que</div>
+                              <div className="text-muted-foreground text-xs">We'll text you when it's ready.</div>
+                            </>
+                          )}
+                        </div>
                       </div>
-                      <div className="text-foreground">{pickup}</div>
+                      {pickup && (
+                        <div className="flex items-start gap-3">
+                          <Clock className="h-3.5 w-3.5 text-gold mt-0.5 shrink-0" />
+                          <div>
+                            <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-stencil">
+                              {isDelivery ? "Requested delivery" : "Requested pickup"}
+                            </div>
+                            <div className="text-foreground">{pickup}</div>
+                          </div>
+                        </div>
+                      )}
                     </div>
-                  </div>
-                )}
-              </div>
+                  </>
+                );
+              })()}
             </div>
 
             {/* Contact details */}
