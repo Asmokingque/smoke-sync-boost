@@ -35,7 +35,7 @@ const Home = () => {
                 className="badge-premium mb-6"
               >
                 <Flame className="h-3 w-3" />
-                <span>Hardwood Smoked Daily</span>
+                <span>Premium Southern Smokehouse</span>
               </motion.div>
 
               <h1 className="font-serif text-6xl sm:text-7xl md:text-8xl lg:text-[6.5rem] leading-[0.95] mb-2 tracking-tight">
