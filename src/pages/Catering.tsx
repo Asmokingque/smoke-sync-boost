@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Loader2, Users, Calendar, Mail } from "lucide-react";
+import { Loader2, Users, Calendar, Mail, PartyPopper, Briefcase, Church, Sparkles, Flame } from "lucide-react";
 import { toast } from "sonner";
 
 const schema = z.object({
@@ -66,42 +66,75 @@ const Catering = () => {
 
   return (
     <SiteLayout>
-      <section className="bg-gradient-smoke border-b border-border">
-        <div className="container py-12 md:py-16 text-center">
-          <div className="font-stencil text-sm text-primary mb-2">Catering</div>
-          <h1 className="font-display text-5xl md:text-6xl mb-4">We Bring the Smokehouse</h1>
-          <p className="text-muted-foreground max-w-xl mx-auto">
-            Family reunions, corporate events, weddings, parties — let us handle the BBQ.
+      <section className="relative bg-gradient-smoke border-b border-gold/20 overflow-hidden">
+        <div aria-hidden className="absolute left-1/2 top-0 -translate-x-1/2 h-[24rem] w-[40rem] rounded-full bg-primary/20 blur-[140px]" />
+        <div className="relative container py-20 md:py-28 text-center">
+          <span className="badge-premium mb-6"><Sparkles className="h-3 w-3" />Catering</span>
+          <h1 className="font-serif text-6xl md:text-7xl mb-2 leading-[0.95] tracking-tight">
+            Catering by Anderson's <span className="italic text-gradient-ember">Smoking Que</span>
+          </h1>
+          <div className="flex items-center justify-center gap-4 mt-6 mb-5">
+            <span className="gold-rule-short" />
+            <p className="font-stencil text-xs md:text-sm text-gold tracking-[0.32em]">Smoked Low · Served Bold</p>
+            <span className="gold-rule-short" />
+          </div>
+          <p className="text-muted-foreground max-w-xl mx-auto leading-relaxed">
+            Bring bold smokehouse flavor to your next gathering — from family reunions to corporate galas.
           </p>
         </div>
       </section>
 
-      <section className="container py-12 grid md:grid-cols-3 gap-6 max-w-5xl">
+      <section className="container py-16">
+        <div className="text-center mb-10">
+          <h2 className="font-serif text-4xl md:text-5xl mb-3">Built for Every Occasion</h2>
+          <span className="gold-rule-short mx-auto block" />
+        </div>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-4 max-w-6xl mx-auto">
+          {[
+            { icon: Users, title: "Family Gatherings", body: "Reunions, birthdays, holiday tables." },
+            { icon: Briefcase, title: "Corporate Events", body: "Office lunches, client dinners, conferences." },
+            { icon: Church, title: "Church Events", body: "Fellowship meals and community days." },
+            { icon: PartyPopper, title: "Private Celebrations", body: "Weddings, anniversaries, milestones." },
+            { icon: Flame, title: "Custom BBQ Packages", body: "Tell us the meats — we build the menu." },
+          ].map((f) => (
+            <div key={f.title} className="retina-menu-card p-6 text-center">
+              <f.icon className="h-8 w-8 text-gold mx-auto mb-3" />
+              <h3 className="font-serif text-xl mb-2">{f.title}</h3>
+              <span className="gold-rule-short mx-auto block mb-3" />
+              <p className="text-xs text-muted-foreground leading-relaxed">{f.body}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="container py-8 grid md:grid-cols-3 gap-6 max-w-5xl">
         {[
           { icon: Users, title: "Any Size", body: "From 10 guests to 500+. We scale to fit your event." },
           { icon: Calendar, title: "Flexible Dates", body: "Book ahead — popular dates fill up fast." },
           { icon: Mail, title: "Custom Menus", body: "Mix and match meats, sides, and desserts." },
         ].map((f) => (
-          <div key={f.title} className="bg-gradient-card border border-border rounded-lg p-6 text-center">
-            <f.icon className="h-8 w-8 text-primary mx-auto mb-3" />
-            <h3 className="font-stencil text-base mb-1">{f.title}</h3>
-            <p className="text-sm text-muted-foreground">{f.body}</p>
+          <div key={f.title} className="retina-menu-card p-6 text-center">
+            <f.icon className="h-7 w-7 text-gold mx-auto mb-3" />
+            <h3 className="font-serif text-2xl mb-1">{f.title}</h3>
+            <p className="text-sm text-muted-foreground leading-relaxed">{f.body}</p>
           </div>
         ))}
       </section>
 
-      <section className="container pb-20 max-w-2xl">
-        <div className="bg-gradient-card border border-border rounded-lg p-6 md:p-8">
+      <section className="container pb-24 pt-8 max-w-2xl">
+        <div className="retina-menu-card ring-gold-soft p-6 md:p-8">
           {done ? (
             <div className="text-center py-8">
-              <h2 className="font-display text-3xl mb-3">Thank you!</h2>
+              <h2 className="font-serif text-4xl mb-3">Thank you!</h2>
+              <span className="gold-rule-short mx-auto block mb-4" />
               <p className="text-muted-foreground">
                 We received your catering inquiry and will reach out within 24 hours.
               </p>
             </div>
           ) : (
             <form onSubmit={submit} className="space-y-5">
-              <h2 className="font-display text-3xl tracking-wider mb-2">Request Catering</h2>
+              <h2 className="font-serif text-4xl mb-1">Request Catering</h2>
+              <span className="gold-rule-short block mb-4" />
               <div className="grid sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="cname">Name *</Label>

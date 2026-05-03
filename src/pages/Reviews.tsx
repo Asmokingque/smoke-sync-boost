@@ -127,12 +127,16 @@ const Reviews = () => {
 
   return (
     <SiteLayout>
-      <section className="bg-gradient-smoke border-b border-border">
-        <div className="container py-12 md:py-16 text-center">
-          <div className="font-stencil text-sm text-primary mb-2">The Experience Wall</div>
-          <h1 className="font-display text-5xl md:text-6xl mb-4">Customer Reviews</h1>
-          <p className="text-muted-foreground max-w-xl mx-auto">
-            Hear what folks are saying — and share your own story.
+      <section className="relative bg-gradient-smoke border-b border-gold/20 overflow-hidden">
+        <div aria-hidden className="absolute left-1/2 top-0 -translate-x-1/2 h-[24rem] w-[40rem] rounded-full bg-primary/20 blur-[140px]" />
+        <div className="relative container py-20 md:py-28 text-center">
+          <span className="badge-premium mb-6"><Star className="h-3 w-3" />The Experience Wall</span>
+          <h1 className="font-serif text-6xl md:text-7xl mb-2 leading-[0.95] tracking-tight">
+            The Smokehouse <span className="italic text-gradient-ember">Experience</span>
+          </h1>
+          <span className="gold-rule-short mx-auto block mt-6 mb-5" />
+          <p className="text-muted-foreground max-w-xl mx-auto leading-relaxed">
+            See what customers are saying — and share your Anderson's Smoking Que experience.
           </p>
         </div>
       </section>
@@ -158,8 +162,9 @@ const Reviews = () => {
           )}
         </div>
 
-        <aside className="bg-charcoal-light border border-border rounded-lg p-6 h-fit lg:sticky lg:top-24">
-          <h2 className="font-display text-2xl mb-4 tracking-wider">Leave a Review</h2>
+        <aside className="retina-menu-card ring-gold-soft p-6 h-fit lg:sticky lg:top-24">
+          <h2 className="font-serif text-3xl mb-1">Leave a Review</h2>
+          <span className="gold-rule-short block mb-5" />
           {!user ? (
             <div>
               <p className="text-muted-foreground mb-4 text-sm">Sign in to share your experience.</p>

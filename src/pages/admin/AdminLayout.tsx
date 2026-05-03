@@ -32,9 +32,10 @@ const AdminLayout = () => {
   if (!isAdmin) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background p-4">
-        <div className="max-w-md text-center bg-gradient-card border border-border rounded-lg p-8">
-          <ShieldAlert className="h-12 w-12 text-primary mx-auto mb-4" />
-          <h1 className="font-display text-3xl mb-2 tracking-wider">Access Denied</h1>
+        <div className="max-w-md text-center retina-menu-card ring-gold-soft p-8">
+          <ShieldAlert className="h-12 w-12 text-gold mx-auto mb-4" />
+          <h1 className="font-serif text-4xl mb-2">Access Denied</h1>
+          <span className="gold-rule-short mx-auto block mb-4" />
           <p className="text-muted-foreground mb-6 text-sm">
             This area is restricted to Anderson's Smoking Que admins. If you believe this is a mistake, sign in with the admin account.
           </p>
@@ -51,12 +52,13 @@ const AdminLayout = () => {
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-background">
-      <aside className="md:w-64 md:min-h-screen border-b md:border-b-0 md:border-r border-border bg-sidebar">
+      <aside className="md:w-64 md:min-h-screen border-b md:border-b-0 md:border-r border-gold/20 bg-sidebar relative">
+        <span aria-hidden className="hidden md:block absolute top-0 right-0 h-full w-px bg-gradient-to-b from-transparent via-gold/40 to-transparent" />
         <div className="p-4 md:p-6 flex items-center gap-2 border-b border-sidebar-border">
           <img src={logo} alt="" className="h-10 w-10 object-contain" width={40} height={40} />
           <div className="leading-tight">
-            <div className="font-display text-lg">Admin</div>
-            <div className="font-stencil text-[10px] text-primary">Anderson's Smoking Que</div>
+            <div className="font-serif text-2xl tracking-tight">Admin</div>
+            <div className="font-stencil text-[10px] text-gold tracking-[0.32em] mt-0.5">Anderson's Smoking Que</div>
           </div>
         </div>
         <nav className="flex md:flex-col gap-1 p-2 overflow-x-auto">
