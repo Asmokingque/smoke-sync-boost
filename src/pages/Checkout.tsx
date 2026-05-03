@@ -279,8 +279,18 @@ const Checkout = () => {
     }
     const safe = guard.totals;
 
+    // Recompute heroes discount + final tax/total server-side-style from sanitized values
+    const safeHeroesPercent = heroesActive ? heroesPercent : 0;
+    const safeHeroesDiscount = Math.round(safe.discountedSubtotal * safeHeroesPercent * 100) / 100;
+    const safeSubAfterAll = Math.max(0, safe.discountedSubtotal - safeHeroesDiscount);
+    const safeTax = Math.round(safeSubAfterAll * TAX_RATE * 100) / 100;
+    const safeTotal = Math.round((safeSubAfterAll + safeTax) * 100) / 100;
+
     setSubmitting(true);
     try {
+      const heroesNote = heroesActive
+        ? `Heroes Deal: ${heroesGroup} ${(heroesPercent * 100).toFixed(0)}% −$${safeHeroesDiscount.toFixed(2)} (pending verification)`
+        : null;
       const { data: order, error: orderErr } = await supabase
         .from("orders")
         .insert({
@@ -291,12 +301,16 @@ const Checkout = () => {
           pickup_time: parsed.data.pickup_time ? new Date(parsed.data.pickup_time).toISOString() : null,
           order_type: parsed.data.order_type,
           delivery_address: parsed.data.order_type === "Delivery" ? parsed.data.delivery_address ?? null : null,
-          notes: [parsed.data.notes, promo ? `Promo: ${promo.code} (${promo.label}) −$${safe.discount.toFixed(2)}` : null].filter(Boolean).join(" • ") || null,
+          notes: [parsed.data.notes, promo ? `Promo: ${promo.code} (${promo.label}) −$${safe.discount.toFixed(2)}` : null, heroesNote].filter(Boolean).join(" • ") || null,
           subtotal: safe.subtotal,
-          tax: safe.tax,
-          total: safe.total,
+          tax: safeTax,
+          total: safeTotal,
           status: "pending",
           payment_status: "unpaid",
+          heroes_group: heroesActive ? heroesGroup : null,
+          heroes_discount_amount: safeHeroesDiscount,
+          heroes_discount_status: heroesActive ? "pending_verification" : null,
+          heroes_acknowledged: heroesActive,
         })
         .select()
         .single();
