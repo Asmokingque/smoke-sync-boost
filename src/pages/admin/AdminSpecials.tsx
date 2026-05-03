@@ -6,14 +6,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Loader2, Plus, Trash2, Calendar as CalendarIcon, ArrowUp, ArrowDown, Eye, EyeOff, Package } from "lucide-react";
+import { Loader2, Plus, Trash2, Calendar as CalendarIcon, ArrowUp, ArrowDown, Eye, EyeOff, Package, Heart } from "lucide-react";
 import { toast } from "sonner";
-import { FEDERAL_HOLIDAYS } from "@/lib/holidays";
 import type { Special, SpecialType } from "@/lib/specials";
 import { SPECIAL_TYPE_LABEL } from "@/lib/specials";
 
 const TYPES: SpecialType[] = ["daily", "lunch", "holiday", "featured", "catering"];
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const HOLIDAY_STATUSES = ["Open", "Closed", "Special Hours"] as const;
 
 type SpecialItem = {
   id: string;
