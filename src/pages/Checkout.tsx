@@ -36,6 +36,8 @@ const PROMOS: Promo[] = [
   { code: "PITMASTER5", label: "$5 off order", type: "fixed", value: 5 },
 ];
 
+type HeroesSettings = { enabled: boolean; discount_percent: number; eligible_groups: string[]; terms: string };
+
 const Checkout = () => {
   const { items, subtotal, clear, updateQuantity, removeItem } = useCart();
   const { user } = useAuth();
@@ -45,6 +47,16 @@ const Checkout = () => {
   const [submitting, setSubmitting] = useState(false);
   const [promoInput, setPromoInput] = useState("");
   const [promo, setPromo] = useState<Promo | null>(null);
+  const [heroesSettings, setHeroesSettings] = useState<HeroesSettings | null>(null);
+  const [heroesGroup, setHeroesGroup] = useState<string>("");
+  const [heroesAck, setHeroesAck] = useState(false);
+
+  useState(() => {
+    supabase.from("business_settings").select("setting_value").eq("setting_key", "community_heroes").maybeSingle().then(({ data }) => {
+      if (data?.setting_value) setHeroesSettings(data.setting_value as any);
+    });
+    return undefined;
+  });
   const toggleDebug = () => {
     const next = new URLSearchParams(searchParams);
     if (debugEnabled) next.delete("debug");
