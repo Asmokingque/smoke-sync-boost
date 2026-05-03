@@ -746,7 +746,7 @@ const Checkout = () => {
               )}
               {heroesActive && (
                 <div className="flex justify-between text-emerald-400">
-                  <span>Heroes Deal ({heroesGroup} −{Math.round(heroesPercent * 100)}%)</span>
+                  <span>{communityDiscount?.title ?? "Heroes Deal"} ({heroesGroup}{heroesPercent > 0 ? ` −${Math.round(heroesPercent * 100)}%` : ""})</span>
                   <span>−${heroesDiscount.toFixed(2)}</span>
                 </div>
               )}
