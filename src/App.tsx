@@ -23,6 +23,7 @@ import NotFound from "./pages/NotFound";
 import Specials from "./pages/Specials";
 import HolidayCalendar from "./pages/HolidayCalendar";
 import AdminSpecials from "./pages/admin/AdminSpecials";
+import AdminSOP from "./pages/admin/AdminSOP";
 
 const queryClient = new QueryClient();
 
@@ -52,6 +53,7 @@ const App = () => (
             <Route path="reviews" element={<AdminReviews />} />
             <Route path="catering" element={<AdminCatering />} />
             <Route path="contact" element={<AdminContact />} />
+            <Route path="sop" element={<AdminSOP />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
