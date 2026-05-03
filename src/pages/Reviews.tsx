@@ -136,7 +136,7 @@ const Reviews = () => {
           </h1>
           <span className="gold-rule-short mx-auto block mt-6 mb-5" />
           <p className="text-muted-foreground max-w-xl mx-auto leading-relaxed">
-            See what customers are saying — and share your Anderson's Smoking Que experience.
+            Real customers. Real smoke. Real flavor — straight from the Anderson's Smoking Que table.
           </p>
         </div>
       </section>

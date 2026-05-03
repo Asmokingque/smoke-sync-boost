@@ -1,5 +1,5 @@
 import { Link, NavLink, useLocation } from "react-router-dom";
-import { Menu, ShoppingCart, User as UserIcon, X } from "lucide-react";
+import { Menu, ShoppingCart, User as UserIcon, X, Flame } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -11,8 +11,9 @@ import logo from "@/assets/logo.png";
 const navItems = [
   { to: "/", label: "Home" },
   { to: "/menu", label: "Menu" },
-  { to: "/reviews", label: "Experience Wall" },
+  { to: "/menu", label: "Order Online" },
   { to: "/catering", label: "Catering" },
+  { to: "/reviews", label: "Experience Wall" },
   { to: "/order-status", label: "Order Status" },
   { to: "/contact", label: "Contact" },
 ];
@@ -35,10 +36,10 @@ export function Header({ onCartClick }: { onCartClick: () => void }) {
           </div>
         </Link>
 
-        <nav className="hidden lg:flex items-center gap-8">
-          {navItems.map((n) => (
+        <nav className="hidden lg:flex items-center gap-7">
+          {navItems.map((n, idx) => (
             <NavLink
-              key={n.to}
+              key={`${n.to}-${idx}`}
               to={n.to}
               end={n.to === "/"}
               className={({ isActive }) =>
@@ -53,6 +54,11 @@ export function Header({ onCartClick }: { onCartClick: () => void }) {
         </nav>
 
         <div className="flex items-center gap-2">
+          <Link to="/menu" className="hidden md:inline-flex">
+            <button className="premium-button h-10 px-5 font-stencil text-xs tracking-widest inline-flex items-center gap-2">
+              <Flame className="h-3.5 w-3.5" /> Order Now
+            </button>
+          </Link>
           <Button
             onClick={onCartClick}
             variant="ghost"

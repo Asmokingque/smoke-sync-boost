@@ -107,6 +107,29 @@ const Catering = () => {
         </div>
       </section>
 
+      <section className="container py-16 max-w-6xl">
+        <div className="text-center mb-10">
+          <span className="badge-premium mb-4"><Sparkles className="h-3 w-3" />The Process</span>
+          <h2 className="font-serif text-4xl md:text-5xl mb-3">How It Works</h2>
+          <span className="gold-rule-short mx-auto block" />
+        </div>
+        <ol className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[
+            { n: "01", title: "Tell us about your event", body: "Date, guest count, and the vibe you're going for." },
+            { n: "02", title: "Select your smoked favorites", body: "Pick meats, sides, and desserts — or let us craft a menu." },
+            { n: "03", title: "Confirm date and details", body: "We finalize timing, service style, and delivery." },
+            { n: "04", title: "We handle the flavor", body: "Anderson's brings bold smokehouse hospitality to you." },
+          ].map((s) => (
+            <li key={s.n} className="premium-glass-card p-6">
+              <div className="font-serif text-4xl text-gold/80 mb-2">{s.n}</div>
+              <h3 className="font-serif text-xl mb-2 leading-tight">{s.title}</h3>
+              <span className="gold-rule-short block mb-3" />
+              <p className="text-xs text-muted-foreground leading-relaxed">{s.body}</p>
+            </li>
+          ))}
+        </ol>
+      </section>
+
       <section className="container py-8 grid md:grid-cols-3 gap-6 max-w-5xl">
         {[
           { icon: Users, title: "Any Size", body: "From 10 guests to 500+. We scale to fit your event." },

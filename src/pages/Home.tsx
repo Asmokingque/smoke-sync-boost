@@ -35,7 +35,7 @@ const Home = () => {
                 className="badge-premium mb-6"
               >
                 <Flame className="h-3 w-3" />
-                <span>Hardwood Smoked Daily</span>
+                <span>Premium Southern Smokehouse</span>
               </motion.div>
 
               <h1 className="font-serif text-6xl sm:text-7xl md:text-8xl lg:text-[6.5rem] leading-[0.95] mb-2 tracking-tight">
@@ -53,7 +53,7 @@ const Home = () => {
               </div>
 
               <p className="font-sans text-lg md:text-xl text-foreground/80 max-w-xl mb-10 leading-relaxed">
-                Slow-smoked meats, Southern dinners, handcrafted sides, and catering — served with bold flavor and hometown hospitality.
+                Slow-smoked meats, Southern dinners, handcrafted sides, and catering prepared with bold flavor, patience, and hometown pride.
               </p>
 
               <motion.div
@@ -85,12 +85,12 @@ const Home = () => {
             >
               <div className="premium-glass-card p-8">
                 <div className="flex items-center justify-between mb-5">
-                  <span className="badge-premium"><Award className="h-3 w-3" /> Today's Featured Favorite</span>
+                  <span className="badge-premium"><Award className="h-3 w-3" /> Signature Favorite</span>
                   <span className="price-pill-premium font-serif text-xl">$15</span>
                 </div>
                 <h3 className="font-serif text-3xl mb-3 leading-tight tracking-tight">Two or Three Meat Plate</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed mb-6">
-                  Your pick of slow-smoked meats with two Southern sides and house cornbread.
+                  Your choice of slow-smoked meats with classic Southern sides and house cornbread.
                 </p>
                 <div className="gold-divider-rich mb-6" />
                 <Link to="/menu" className="block">
