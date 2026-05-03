@@ -177,6 +177,7 @@ const Checkout = () => {
     notes: "",
     order_type: "Pickup" as "Pickup" | "Delivery",
     delivery_address: "",
+    payment_method: "pay_later" as "pay_later" | "cod",
   });
 
   const breakdown = computeDiscount(
