@@ -53,7 +53,7 @@ const Home = () => {
               </div>
 
               <p className="font-sans text-lg md:text-xl text-foreground/80 max-w-xl mb-10 leading-relaxed">
-                Slow-smoked meats, Southern dinners, handcrafted sides, and catering — served with bold flavor and hometown hospitality.
+                Slow-smoked meats, Southern dinners, handcrafted sides, and catering prepared with bold flavor, patience, and hometown pride.
               </p>
 
               <motion.div
