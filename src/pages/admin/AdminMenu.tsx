@@ -195,6 +195,43 @@ const AdminMenu = () => {
     setItems((prev) => prev.map((i) => (i.id === id ? { ...i, is_available: val } : i)));
   };
 
+  const [rowUploadingId, setRowUploadingId] = useState<string | null>(null);
+
+  const handleRowImageUpload = async (item: Item, file: File) => {
+    setRowUploadingId(item.id);
+    try {
+      const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
+      const path = `uploads/${crypto.randomUUID()}.${ext}`;
+      const { error: upErr } = await supabase.storage
+        .from("menu-images")
+        .upload(path, file, { cacheControl: "3600", upsert: false });
+      if (upErr) throw upErr;
+      const { data } = supabase.storage.from("menu-images").getPublicUrl(path);
+      const newUrl = data.publicUrl;
+      const { error: dbErr } = await supabase
+        .from("menu_items")
+        .update({ image_url: newUrl })
+        .eq("id", item.id);
+      if (dbErr) throw dbErr;
+      setItems((prev) => prev.map((i) => (i.id === item.id ? { ...i, image_url: newUrl } : i)));
+      toast.success(`Photo updated for ${item.name}`);
+    } catch (e: any) {
+      toast.error(e.message ?? "Upload failed");
+    } finally {
+      setRowUploadingId(null);
+    }
+  };
+
+  const handleRowImageClear = async (item: Item) => {
+    const { error } = await supabase
+      .from("menu_items")
+      .update({ image_url: null })
+      .eq("id", item.id);
+    if (error) return toast.error(error.message);
+    setItems((prev) => prev.map((i) => (i.id === item.id ? { ...i, image_url: null } : i)));
+    toast.success("Photo removed");
+  };
+
   return (
     <div>
       <div className="flex items-center justify-between mb-6 gap-3 flex-wrap">
