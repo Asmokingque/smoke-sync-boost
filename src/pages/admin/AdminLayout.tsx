@@ -1,6 +1,6 @@
 import { Navigate, NavLink, Outlet, useLocation, Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { Loader2, ShoppingBag, MessageSquareText, UtensilsCrossed, Mail, LogOut, Home, ShieldAlert } from "lucide-react";
+import { Loader2, ShoppingBag, MessageSquareText, UtensilsCrossed, Mail, LogOut, Home, ShieldAlert, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import logo from "@/assets/logo.png";
@@ -8,6 +8,7 @@ import logo from "@/assets/logo.png";
 const navItems = [
   { to: "/admin", end: true, label: "Orders", icon: ShoppingBag },
   { to: "/admin/menu", label: "Menu", icon: UtensilsCrossed },
+  { to: "/admin/specials", label: "Specials & Calendar", icon: Sparkles },
   { to: "/admin/reviews", label: "Reviews", icon: MessageSquareText },
   { to: "/admin/catering", label: "Catering", icon: Mail },
   { to: "/admin/contact", label: "Contact", icon: MessageSquareText },
