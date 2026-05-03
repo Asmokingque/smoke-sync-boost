@@ -326,7 +326,7 @@ const Menu = () => {
                     transition={{ duration: 0.6 }}
                     className="text-center mb-12"
                   >
-                    <h2 className="luxury-category-title text-sm md:text-base mb-4">{cat.name}</h2>
+                    <h2 className="luxury-category-title text-sm md:text-base mb-4">The Menu</h2>
                     <h3 className="luxury-menu-title text-5xl md:text-6xl mb-4">{cat.name}</h3>
                     <span className="luxury-gold-line mx-auto block mb-4" />
                     {cat.description && (
