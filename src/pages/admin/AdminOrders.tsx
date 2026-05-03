@@ -123,6 +123,49 @@ const AdminOrders = () => {
                 })}
               </ul>
               {o.notes && <div className="mt-3 text-xs text-muted-foreground italic">Note: {o.notes}</div>}
+              {o.heroes_group && (
+                <div className="mt-3 rounded-lg border border-gold/30 bg-gold/5 p-3">
+                  <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+                    <div className="flex items-center gap-2 text-sm">
+                      <Heart className="h-4 w-4 text-gold" />
+                      <span className="font-stencil tracking-wider text-xs uppercase text-gold">Heroes Deal</span>
+                      <span className="text-muted-foreground">· {o.heroes_group}</span>
+                      <span className={`text-[11px] px-2 py-0.5 rounded-full border ${
+                        o.heroes_discount_status === "verified"
+                          ? "border-emerald-500/40 text-emerald-400 bg-emerald-500/10"
+                          : o.heroes_discount_status === "removed"
+                          ? "border-destructive/40 text-destructive bg-destructive/10"
+                          : "border-gold/40 text-gold bg-gold/5"
+                      }`}>
+                        {o.heroes_discount_status ?? "—"}
+                      </span>
+                    </div>
+                    <div className="text-sm text-emerald-400">−${Number(o.heroes_discount_amount ?? 0).toFixed(2)}</div>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Button type="button" size="sm" variant="outline" className="h-8 text-[11px] font-stencil"
+                      onClick={() => updateHeroes(o, { status: "verified" })}>
+                      <ShieldCheck className="h-3.5 w-3.5 mr-1" /> Verify
+                    </Button>
+                    <Button type="button" size="sm" variant="outline" className="h-8 text-[11px] font-stencil text-destructive"
+                      onClick={() => updateHeroes(o, { status: "removed" })}>
+                      <XIcon className="h-3.5 w-3.5 mr-1" /> Remove
+                    </Button>
+                    <div className="flex items-center gap-1">
+                      <span className="text-[11px] text-muted-foreground">Adjust $</span>
+                      <Input type="number" min={0} step="0.01"
+                        defaultValue={Number(o.heroes_discount_amount ?? 0)}
+                        className="h-8 w-24 text-xs"
+                        onBlur={(e) => {
+                          const v = Number(e.target.value);
+                          if (!Number.isFinite(v) || v < 0) return;
+                          if (v === Number(o.heroes_discount_amount ?? 0)) return;
+                          updateHeroes(o, { amount: v, status: o.heroes_discount_status ?? "pending_verification" });
+                        }} />
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           ))}
         </div>
