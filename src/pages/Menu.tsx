@@ -226,53 +226,17 @@ const Menu = () => {
         </motion.div>
       </section>
 
-      {/* Sticky jump nav + search + view toggle */}
-      <div className="sticky top-16 md:top-20 z-30 bg-background/90 backdrop-blur-md border-b border-border" id="menu-start">
-        <div className="container py-3 space-y-3">
-          <div className="flex items-center gap-3">
-            <div className="flex-1 overflow-x-auto">
-              <div className="flex gap-2 min-w-max">
-                {featured.length > 0 && (
-                  <button
-                    onClick={() => jumpTo("featured")}
-                    className={`font-stencil text-sm px-4 py-2 rounded-md whitespace-nowrap transition-all ${
-                      activeSlug === "featured" ? "bg-primary text-primary-foreground shadow-ember" : "bg-secondary text-foreground/80 hover:bg-secondary/70"
-                    }`}
-                  >
-                    <Star className="h-3.5 w-3.5 inline mr-1.5 -mt-0.5" />Featured
-                  </button>
-                )}
-                {categories.map((c) => (
-                  <button
-                    key={c.id}
-                    onClick={() => jumpTo(c.slug)}
-                    className={`font-stencil text-sm px-4 py-2 rounded-md whitespace-nowrap transition-all ${
-                      activeSlug === c.slug ? "bg-primary text-primary-foreground shadow-ember" : "bg-secondary text-foreground/80 hover:bg-secondary/70"
-                    }`}
-                  >
-                    {c.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div className="hidden sm:flex items-center gap-1 bg-secondary rounded-md p-1 shrink-0">
-              <button
-                onClick={() => setView("card")}
-                aria-label="Card view"
-                className={`p-2 rounded transition-colors ${view === "card" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
-              >
-                <LayoutGrid className="h-4 w-4" />
-              </button>
-              <button
-                onClick={() => setView("list")}
-                aria-label="List view"
-                className={`p-2 rounded transition-colors ${view === "list" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
-              >
-                <List className="h-4 w-4" />
-              </button>
-            </div>
-          </div>
-
+      {/* Sticky jump nav + view toggle */}
+      <div id="menu-start">
+        <CategoryJumpBar
+          categories={categories.map((c) => ({ slug: c.slug, name: c.name }))}
+          activeSlug={activeSlug}
+          onJump={jumpTo}
+          showFeatured={featured.length > 0}
+          view={view}
+          onViewChange={setView}
+        />
+        <div className="container py-3">
           <div className="relative max-w-md">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
@@ -313,16 +277,16 @@ const Menu = () => {
             {featured.length > 0 && !search && (
               <div id="cat-featured" className="scroll-mt-32">
                 <div className="text-center mb-8">
-                  <div className="menu-divider mb-4" />
-                  <h2 className="font-display text-4xl md:text-5xl text-primary tracking-widest flex items-center justify-center gap-3">
+                  <SmokeDivider className="mb-4" />
+                  <h2 className="font-display text-4xl md:text-5xl retina-heading flex items-center justify-center gap-3">
                     <Flame className="h-8 w-8" /> FEATURED FAVORITES
                   </h2>
-                  <div className="menu-divider mt-4" />
+                  <SmokeDivider className="mt-4" />
                   <p className="text-sm text-muted-foreground mt-3 max-w-xl mx-auto">
                     Pitmaster picks — the bold, smoky favorites our regulars come back for.
                   </p>
                 </div>
-                <FeaturedCarousel
+                <FeaturedMenuCarousel
                   items={featured}
                   renderItem={(item, i) => <CardItem item={item as Item} index={i} />}
                 />
