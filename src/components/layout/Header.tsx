@@ -11,8 +11,9 @@ import logo from "@/assets/logo.png";
 const navItems = [
   { to: "/", label: "Home" },
   { to: "/menu", label: "Menu" },
-  { to: "/reviews", label: "Reviews" },
+  { to: "/reviews", label: "Experience Wall" },
   { to: "/catering", label: "Catering" },
+  { to: "/order-status", label: "Order Status" },
   { to: "/contact", label: "Contact" },
 ];
 
