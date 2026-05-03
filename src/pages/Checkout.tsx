@@ -285,6 +285,7 @@ const Checkout = () => {
     const safeTotal = Math.round((safeSubAfterAll + safeTax) * 100) / 100;
 
     setSubmitting(true);
+    const isCOD = parsed.data.order_type === "Delivery" && form.payment_method === "cod";
     try {
       const heroesNote = heroesActive
         ? `${communityDiscount?.title ?? "Heroes Deal"}: ${heroesGroup} −$${safeHeroesDiscount.toFixed(2)} (pending verification)`
