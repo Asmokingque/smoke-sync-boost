@@ -406,27 +406,33 @@ const AdminSpecials = () => {
             )}
           </section>
 
-          {/* Holiday hours overrides */}
+          {/* Holiday Events */}
           <section>
             <div className="flex items-center justify-between mb-3">
-              <h2 className="font-display text-2xl">Holiday Hours &amp; Closures</h2>
-              <Button onClick={addHourOverride} variant="outline" size="sm"><Plus className="h-4 w-4" /> Add Date</Button>
+              <h2 className="font-display text-2xl">Holiday Calendar</h2>
+              <Button onClick={() => setEditingHoliday(blankHoliday())} variant="outline" size="sm"><Plus className="h-4 w-4" /> Add Holiday</Button>
             </div>
-            <p className="text-xs text-muted-foreground mb-3">Federal holidays auto-populate the calendar. Add date overrides here to mark closures or special hours.</p>
-            {hours.length === 0 ? (
-              <p className="text-muted-foreground text-sm">No overrides yet.</p>
+            <p className="text-xs text-muted-foreground mb-3">Federal + custom holidays. Mark business open/closed/special hours and link a holiday special.</p>
+            {holidays.length === 0 ? (
+              <p className="text-muted-foreground text-sm">No holidays yet.</p>
             ) : (
               <ul className="space-y-2">
-                {hours.map((h) => {
-                  const fed = FEDERAL_HOLIDAYS.find((f) => f.date === h.override_date);
+                {holidays.map((h) => {
+                  const linked = specials.find((s) => s.id === h.special_id);
                   return (
-                    <li key={h.id} className="luxury-card p-4 flex items-center gap-3">
+                    <li key={h.id} className="luxury-card p-4 flex flex-wrap items-center gap-3">
                       <CalendarIcon className="h-4 w-4 text-gold" />
-                      <div className="flex-1 text-sm">
-                        <div className="font-stencil text-xs uppercase tracking-wider">{h.override_date}</div>
-                        <div>{h.label ?? fed?.name ?? "—"} · <span className="text-muted-foreground">{h.status}</span></div>
+                      <div className="flex-1 min-w-[200px] text-sm">
+                        <div className="font-stencil text-xs uppercase tracking-wider text-gold">{h.holiday_date}</div>
+                        <div className="font-display text-lg">{h.holiday_name}</div>
+                        <div className="text-xs text-muted-foreground">
+                          {h.business_status ?? "Open"}
+                          {linked && <> · Linked: {linked.title}</>}
+                          {!h.is_active && " · Hidden"}
+                        </div>
                       </div>
-                      <Button size="sm" variant="ghost" onClick={() => removeOverride(h.id)}><Trash2 className="h-4 w-4" /></Button>
+                      <Button size="sm" variant="outline" onClick={() => setEditingHoliday(h)}>Edit</Button>
+                      <Button size="sm" variant="ghost" onClick={() => removeHoliday(h.id)}><Trash2 className="h-4 w-4" /></Button>
                     </li>
                   );
                 })}
@@ -434,20 +440,64 @@ const AdminSpecials = () => {
             )}
           </section>
 
-          {/* Community Heroes */}
-          <section className="luxury-card p-6 max-w-xl">
-            <h2 className="font-display text-2xl mb-4">Community Heroes Deal</h2>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <Label>Enabled</Label>
-                <Switch checked={heroesSettings.enabled} onCheckedChange={(v) => setHeroesSettings({ ...heroesSettings, enabled: v })} />
-              </div>
-              <div className="space-y-2">
-                <Label>Discount Percent</Label>
-                <Input type="number" min={0} max={100} value={heroesSettings.discount_percent} onChange={(e) => setHeroesSettings({ ...heroesSettings, discount_percent: Number(e.target.value) })} className="luxury-input h-11" />
-              </div>
-              <Button onClick={saveHeroes} className="luxury-primary-btn h-11 px-6 font-stencil text-xs">Save</Button>
+          {/* Community Discounts */}
+          <section>
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="font-display text-2xl flex items-center gap-2"><Heart className="h-5 w-5 text-gold" /> Community Heroes Deals</h2>
+              <Button onClick={() => setEditingDiscount(blankDiscount())} variant="outline" size="sm"><Plus className="h-4 w-4" /> Add Deal</Button>
             </div>
+            {discounts.length === 0 ? (
+              <p className="text-muted-foreground text-sm">No community discounts yet.</p>
+            ) : (
+              <ul className="space-y-2">
+                {discounts.map((d) => (
+                  <li key={d.id} className="luxury-card p-4 flex flex-wrap items-center gap-3">
+                    <div className="flex-1 min-w-[200px]">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="font-display text-lg">{d.title}</span>
+                        {!d.is_active && <span className="luxury-badge">Disabled</span>}
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        {d.discount_type === "percentage" ? `${d.discount_value}% off` : `$${d.discount_value} off`}
+                        {d.max_discount ? ` · max $${d.max_discount}` : ""}
+                        {d.min_subtotal ? ` · min $${d.min_subtotal}` : ""}
+                        {" · "}{d.eligible_groups.join(", ")}
+                      </div>
+                    </div>
+                    <Button size="sm" variant="outline" onClick={() => toggleDiscountActive(d)}>
+                      {d.is_active ? <><EyeOff className="h-3.5 w-3.5 mr-1" />Disable</> : <><Eye className="h-3.5 w-3.5 mr-1" />Enable</>}
+                    </Button>
+                    <Button size="sm" variant="outline" onClick={() => setEditingDiscount(d)}>Edit</Button>
+                    <Button size="sm" variant="ghost" onClick={() => removeDiscount(d.id)}><Trash2 className="h-4 w-4" /></Button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+
+          {/* Discount orders */}
+          <section>
+            <h2 className="font-display text-2xl mb-3">Recent Orders Using a Discount</h2>
+            {discountOrders.length === 0 ? (
+              <p className="text-muted-foreground text-sm">No orders with discounts yet.</p>
+            ) : (
+              <ul className="space-y-2">
+                {discountOrders.map((o) => (
+                  <li key={o.id} className="luxury-card p-4 flex flex-wrap items-center gap-3">
+                    <div className="flex-1 min-w-[220px] text-sm">
+                      <div className="font-stencil text-xs text-muted-foreground">#{o.order_number ?? o.id.slice(0, 8).toUpperCase()} · {new Date(o.created_at).toLocaleString()}</div>
+                      <div className="font-display text-lg">{o.customer_name}</div>
+                      <div className="text-xs text-muted-foreground">
+                        {o.discount_name} · {o.community_group} · −${Number(o.discount_amount ?? 0).toFixed(2)} · Total ${Number(o.total).toFixed(2)}
+                      </div>
+                    </div>
+                    <span className={`luxury-badge ${o.discount_status === "Verified" ? "" : ""}`}>{o.discount_status ?? "—"}</span>
+                    <Button size="sm" variant="outline" onClick={() => verifyDiscountOrder(o.id, "Verified")}>Verify</Button>
+                    <Button size="sm" variant="outline" className="text-destructive" onClick={() => verifyDiscountOrder(o.id, "Removed")}>Remove</Button>
+                  </li>
+                ))}
+              </ul>
+            )}
           </section>
         </>
       )}
