@@ -1,10 +1,8 @@
-import { useEffect, useState } from "react";
-import { Navigate, NavLink, Outlet } from "react-router-dom";
+import { Navigate, NavLink, Outlet, useLocation, Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { Loader2, ShoppingBag, MessageSquareText, UtensilsCrossed, Mail, LogOut, Home } from "lucide-react";
+import { Loader2, ShoppingBag, MessageSquareText, UtensilsCrossed, Mail, LogOut, Home, ShieldAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import { Link } from "react-router-dom";
 import logo from "@/assets/logo.png";
 
 const navItems = [
@@ -17,21 +15,39 @@ const navItems = [
 
 const AdminLayout = () => {
   const { user, isAdmin, loading } = useAuth();
-  const [checked, setChecked] = useState(false);
+  const location = useLocation();
 
-  useEffect(() => {
-    if (!loading) setChecked(true);
-  }, [loading]);
-
-  if (!checked) {
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
-  if (!user) return <Navigate to="/auth" replace />;
-  if (!isAdmin) return <Navigate to="/" replace />;
+
+  if (!user) {
+    return <Navigate to={`/auth?redirect=${encodeURIComponent(location.pathname)}`} replace />;
+  }
+
+  if (!isAdmin) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background p-4">
+        <div className="max-w-md text-center bg-gradient-card border border-border rounded-lg p-8">
+          <ShieldAlert className="h-12 w-12 text-primary mx-auto mb-4" />
+          <h1 className="font-display text-3xl mb-2 tracking-wider">Access Denied</h1>
+          <p className="text-muted-foreground mb-6 text-sm">
+            This area is restricted to Anderson's Smoking Que admins. If you believe this is a mistake, sign in with the admin account.
+          </p>
+          <div className="flex gap-2 justify-center flex-wrap">
+            <Button asChild variant="outline" className="font-stencil"><Link to="/">Back to site</Link></Button>
+            <Button onClick={() => supabase.auth.signOut()} className="bg-primary hover:bg-primary/90 font-stencil">
+              Switch account
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-background">
