@@ -128,25 +128,19 @@ export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange
                           </button>
                         </div>
                       </div>
-                    </li>
+                    </motion.li>
                   );
                 })}
               </ul>
             </ScrollArea>
 
-            <div className="border-t border-border p-6 space-y-4 bg-background/50">
+            <div className="border-t border-gold/20 p-6 space-y-4 bg-background/60 backdrop-blur">
               <div className="flex justify-between text-lg">
                 <span className="font-stencil">Subtotal</span>
                 <span className="font-display text-2xl text-primary">${total.toFixed(2)}</span>
               </div>
               <p className="text-xs text-muted-foreground">Tax calculated at checkout</p>
-              <Button
-                asChild
-                onClick={() => onOpenChange(false)}
-                className="w-full h-12 bg-primary hover:bg-primary/90 font-stencil text-base"
-              >
-                <Link to="/checkout">Checkout</Link>
-              </Button>
+              <SecureCheckoutButton onBeforeNavigate={() => onOpenChange(false)} />
             </div>
           </>
         )}
