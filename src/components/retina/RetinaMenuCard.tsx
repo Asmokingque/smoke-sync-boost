@@ -127,25 +127,45 @@ function AddButtons({
       </button>
     );
   }
+  const flyOnAdd = !item.requires_options;
+
   if (item.price_alt && onAddAlt) {
     return (
       <div className="grid grid-cols-2 gap-2">
-        <button onClick={onAdd} className={baseBtn}>
+        <AnimatedAddToCartButton
+          itemName={item.name}
+          fly={flyOnAdd}
+          onAdd={onAdd}
+          className={baseBtn}
+          ariaLabel={`Add ${item.name} for $${Number(item.price).toFixed(0)}`}
+        >
           <Plus className="h-3.5 w-3.5" />${Number(item.price).toFixed(0)}
-        </button>
-        <button onClick={onAddAlt} className={baseBtn}>
+        </AnimatedAddToCartButton>
+        <AnimatedAddToCartButton
+          itemName={item.name}
+          fly={flyOnAdd}
+          onAdd={onAddAlt}
+          className={baseBtn}
+          ariaLabel={`Add ${item.name} for $${Number(item.price_alt).toFixed(0)}`}
+        >
           <Plus className="h-3.5 w-3.5" />${Number(item.price_alt).toFixed(0)}
-        </button>
+        </AnimatedAddToCartButton>
       </div>
     );
   }
   return (
-    <button onClick={onAdd} className={`${baseBtn} w-full text-sm h-11`}>
+    <AnimatedAddToCartButton
+      itemName={item.name}
+      fly={flyOnAdd}
+      onAdd={onAdd}
+      className={`${baseBtn} w-full text-sm h-11`}
+      ariaLabel={`Add ${item.name} to order`}
+    >
       {item.requires_options ? (
         <><Settings2 className="h-4 w-4" />Customize</>
       ) : (
         <><Plus className="h-4 w-4" />Add to Order</>
       )}
-    </button>
+    </AnimatedAddToCartButton>
   );
 }
