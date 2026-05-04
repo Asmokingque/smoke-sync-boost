@@ -16,7 +16,7 @@ import { SmokeBackground } from "@/components/ui/SmokeBackground";
 import { ShimmerButton } from "@/components/ui/ShimmerButton";
 import { FeaturedMenuCarousel } from "@/components/retina/FeaturedMenuCarousel";
 import { RetinaMenuCard } from "@/components/retina/RetinaMenuCard";
-import { AnimatedAddToCartButton } from "@/components/cart/AnimatedAddToCartButton";
+import { AnimatedCartControls } from "@/components/cart/AnimatedCartControls";
 import { CategoryJumpBar } from "@/components/retina/CategoryJumpBar";
 import { SmokeDivider } from "@/components/retina/SmokeDivider";
 
