@@ -38,7 +38,15 @@ export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange
                   const basePrice = item.price - optionsTotal;
                   const lineTotal = item.price * item.quantity;
                   return (
-                    <li key={item.id} className="flex gap-3 pb-4 border-b border-border/50">
+                    <motion.li
+                      key={item.id}
+                      layout
+                      initial={{ opacity: 0, y: 12 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, x: 24 }}
+                      transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+                      className="flex gap-3 pb-4 border-b border-border/50"
+                    >
                       <div className="flex-1 min-w-0">
                         <div className="font-stencil text-sm text-foreground">{item.name}</div>
 
