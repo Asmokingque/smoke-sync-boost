@@ -319,28 +319,57 @@ const AdminMenu = () => {
   return (
     <div>
       <div className="flex items-center justify-between mb-6 gap-3 flex-wrap">
-        <h1 className="font-display text-3xl tracking-wider">Menu</h1>
-        <Button onClick={() => openCreate()} className="bg-primary font-stencil">
-          <Plus className="h-4 w-4" /> Add Item
-        </Button>
+        <div>
+          <h1 className="font-display text-3xl tracking-wider">Menu</h1>
+          <p className="text-xs text-muted-foreground mt-1">Manage categories and items shown on the customer menu.</p>
+        </div>
+        <div className="flex gap-2">
+          <Button onClick={openCatCreate} variant="outline" className="font-stencil">
+            <FolderPlus className="h-4 w-4" /> Add Category
+          </Button>
+          <Button onClick={() => openCreate()} className="bg-primary font-stencil">
+            <Plus className="h-4 w-4" /> Add Item
+          </Button>
+        </div>
       </div>
 
       {loading ? (
         <Loader2 className="h-6 w-6 animate-spin text-primary" />
       ) : (
         <div className="space-y-8">
-          {cats.map((cat) => (
-            <div key={cat.id}>
-              <div className="flex items-center justify-between mb-3">
-                <h2 className="font-display text-xl text-primary tracking-wider">{cat.name}</h2>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => openCreate(cat.id)}
-                  className="font-stencil text-xs"
-                >
-                  <Plus className="h-3.5 w-3.5" /> Add to {cat.name}
-                </Button>
+          {cats.length === 0 && (
+            <div className="text-sm text-muted-foreground italic">
+              No categories yet. Click "Add Category" to create your first one.
+            </div>
+          )}
+          {cats.map((cat, catIdx) => (
+            <div key={cat.id} className="border border-border/60 rounded-lg p-4 bg-card/30">
+              <div className="flex items-center justify-between mb-3 gap-2 flex-wrap">
+                <div className="flex items-center gap-2">
+                  <div className="flex flex-col">
+                    <Button size="icon" variant="ghost" className="h-5 w-5" disabled={catIdx === 0} onClick={() => moveCategory(cat, -1)}>
+                      <ArrowUp className="h-3 w-3" />
+                    </Button>
+                    <Button size="icon" variant="ghost" className="h-5 w-5" disabled={catIdx === cats.length - 1} onClick={() => moveCategory(cat, 1)}>
+                      <ArrowDown className="h-3 w-3" />
+                    </Button>
+                  </div>
+                  <div>
+                    <h2 className="font-display text-xl text-primary tracking-wider">{cat.name}</h2>
+                    <div className="text-[10px] text-muted-foreground font-stencil tracking-wider">/{cat.slug}</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Button size="sm" variant="ghost" onClick={() => openCreate(cat.id)} className="font-stencil text-xs">
+                    <Plus className="h-3.5 w-3.5" /> Add Item
+                  </Button>
+                  <Button size="icon" variant="ghost" onClick={() => openCatEdit(cat)}>
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                  <Button size="icon" variant="ghost" onClick={() => setDeleteCatId(cat.id)} className="text-destructive hover:text-destructive">
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
               <div className="space-y-2">
                 {items.filter((i) => i.category_id === cat.id).length === 0 && (
