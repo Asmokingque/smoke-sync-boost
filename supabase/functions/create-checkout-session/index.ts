@@ -33,7 +33,6 @@ type CustomerInfoInput = {
 };
 
 const TAX_RATE = 0.0825;
-const SERVICE_FEE_RATE = 0.03;
 const DELIVERY_FEE_CENTS = 699;
 const DELIVERY_FREE_THRESHOLD_CENTS = 7500;
 const HEROES_PERCENT = 0.10;
