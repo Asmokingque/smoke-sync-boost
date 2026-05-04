@@ -685,6 +685,91 @@ const AdminMenu = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Category create / edit */}
+      <Dialog open={catDialogOpen} onOpenChange={setCatDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="font-display tracking-wider">
+              {catForm.id ? "Edit Category" : "Add Category"}
+            </DialogTitle>
+            <DialogDescription>
+              Categories group menu items (e.g. Meat, Sides, Desserts).
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label>Name</Label>
+              <Input
+                value={catForm.name}
+                onChange={(e) => {
+                  const name = e.target.value;
+                  setCatForm((f) => ({
+                    ...f,
+                    name,
+                    slug: f.id ? f.slug : slugify(name),
+                  }));
+                }}
+                placeholder="e.g. BBQ By The Pound"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Slug</Label>
+              <Input
+                value={catForm.slug}
+                onChange={(e) => setCatForm({ ...catForm, slug: e.target.value })}
+                placeholder="auto-generated"
+              />
+              <p className="text-[10px] text-muted-foreground">Used in URLs and category jump nav.</p>
+            </div>
+            <div className="space-y-2">
+              <Label>Description (optional)</Label>
+              <Textarea
+                rows={2}
+                value={catForm.description}
+                onChange={(e) => setCatForm({ ...catForm, description: e.target.value })}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Display Order</Label>
+              <Input
+                type="number"
+                value={catForm.display_order}
+                onChange={(e) => setCatForm({ ...catForm, display_order: e.target.value })}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setCatDialogOpen(false)}>
+              <X className="h-4 w-4" /> Cancel
+            </Button>
+            <Button onClick={handleCatSave} disabled={catSaving} className="bg-primary">
+              {catSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
+              {catForm.id ? "Save Changes" : "Create Category"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <AlertDialog open={!!deleteCatId} onOpenChange={(o) => !o && setDeleteCatId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete this category?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This permanently removes the category. Items must be moved or deleted first.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleCatDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
