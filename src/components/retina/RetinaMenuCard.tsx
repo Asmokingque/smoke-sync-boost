@@ -99,7 +99,7 @@ export function RetinaMenuCard({
           <p className="luxury-subtitle text-sm">{item.description}</p>
         )}
         <div className="mt-auto pt-2">
-          <AddButtons item={item} onAdd={onAdd} onAddAlt={onAddAlt} />
+          <AddButtons item={item} onAdd={handleAdd} onAddAlt={handleAddAlt} />
         </div>
       </div>
     </motion.article>
