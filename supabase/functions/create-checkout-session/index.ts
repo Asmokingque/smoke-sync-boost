@@ -251,7 +251,6 @@ Deno.serve(async (req) => {
       }
     };
     pushFee("Estimated Tax", taxCents);
-    pushFee("Service Fee", serviceFeeCents);
     pushFee("Delivery Fee", deliveryFeeCents);
     pushFee("Tip", tipCents);
 
