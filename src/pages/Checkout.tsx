@@ -459,11 +459,33 @@ const Checkout = () => {
                   </li>
                 ))}
               </ul>
-              <div className="mt-3 pt-3 border-t border-gold/30 flex items-baseline justify-between">
-                <span className="font-stencil text-xs uppercase tracking-[0.25em] text-gold">Total</span>
-                <span className="font-serif text-2xl text-gradient-ember">${total.toFixed(2)}</span>
+              <div className="mt-3 pt-3 border-t border-gold/30 space-y-1.5 text-sm">
+                <div className="flex items-baseline justify-between text-muted-foreground">
+                  <span>Subtotal</span>
+                  <span>${subAfterAll.toFixed(2)}</span>
+                </div>
+                <div className="flex items-baseline justify-between text-muted-foreground">
+                  <span>Tax</span>
+                  <span>${tax.toFixed(2)}</span>
+                </div>
+                {form.order_type === "Delivery" && (
+                  <div className="flex items-baseline justify-between text-muted-foreground">
+                    <span className="inline-flex items-center gap-1.5"><Truck className="h-3 w-3 text-gold" />Delivery Fee</span>
+                    {deliveryFee === 0 ? (
+                      <span className="font-stencil text-xs uppercase tracking-wider text-gold">FREE</span>
+                    ) : (
+                      <span>${deliveryFee.toFixed(2)}</span>
+                    )}
+                  </div>
+                )}
+                <div className="pt-2 mt-1 border-t border-gold/20 flex items-baseline justify-between">
+                  <span className="font-stencil text-xs uppercase tracking-[0.25em] text-gold">Total</span>
+                  <span className="font-serif text-2xl text-gradient-ember">${total.toFixed(2)}</span>
+                </div>
               </div>
-              <p className="text-[10px] text-muted-foreground/70 mt-1 text-right">Includes tax{promo && discountAmount > 0 ? " & promo" : ""}</p>
+              <p className="text-[10px] text-muted-foreground/70 mt-1 text-right">
+                {form.order_type === "Delivery" ? "Delivery" : "Pickup"} • Includes tax{promo && discountAmount > 0 ? " & promo" : ""}
+              </p>
             </section>
 
             <div>
