@@ -33,7 +33,11 @@ import {
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 
-type Category = { id: string; name: string; slug: string; display_order: number };
+type Category = { id: string; name: string; slug: string; display_order: number; description?: string | null };
+
+type CatForm = { id: string | null; name: string; slug: string; description: string; display_order: string };
+const emptyCatForm = (): CatForm => ({ id: null, name: "", slug: "", description: "", display_order: "0" });
+const slugify = (s: string) => s.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 type Item = {
   id: string;
   category_id: string;
@@ -92,6 +96,12 @@ const AdminMenu = () => {
   const [uploading, setUploading] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Category management
+  const [catDialogOpen, setCatDialogOpen] = useState(false);
+  const [catForm, setCatForm] = useState<CatForm>(emptyCatForm());
+  const [catSaving, setCatSaving] = useState(false);
+  const [deleteCatId, setDeleteCatId] = useState<string | null>(null);
 
   const fetchData = async () => {
     setLoading(true);
@@ -232,31 +242,134 @@ const AdminMenu = () => {
     toast.success("Photo removed");
   };
 
+  // -------- Category CRUD --------
+  const openCatCreate = () => {
+    setCatForm({ ...emptyCatForm(), display_order: String((cats[cats.length - 1]?.display_order ?? 0) + 1) });
+    setCatDialogOpen(true);
+  };
+  const openCatEdit = (c: Category) => {
+    setCatForm({
+      id: c.id,
+      name: c.name,
+      slug: c.slug,
+      description: c.description ?? "",
+      display_order: String(c.display_order),
+    });
+    setCatDialogOpen(true);
+  };
+  const handleCatSave = async () => {
+    if (!catForm.name.trim()) return toast.error("Name is required");
+    const slug = catForm.slug.trim() ? slugify(catForm.slug) : slugify(catForm.name);
+    if (!slug) return toast.error("Slug is required");
+    setCatSaving(true);
+    const payload = {
+      name: catForm.name.trim(),
+      slug,
+      description: catForm.description.trim() || null,
+      display_order: Number(catForm.display_order) || 0,
+    };
+    const { error } = catForm.id
+      ? await supabase.from("menu_categories").update(payload).eq("id", catForm.id)
+      : await supabase.from("menu_categories").insert(payload);
+    setCatSaving(false);
+    if (error) return toast.error(error.message);
+    toast.success(catForm.id ? "Category updated" : "Category created");
+    setCatDialogOpen(false);
+    fetchData();
+  };
+  const handleCatDelete = async () => {
+    if (!deleteCatId) return;
+    const hasItems = items.some((i) => i.category_id === deleteCatId);
+    if (hasItems) {
+      toast.error("Move or delete items in this category first");
+      setDeleteCatId(null);
+      return;
+    }
+    const { error } = await supabase.from("menu_categories").delete().eq("id", deleteCatId);
+    if (error) return toast.error(error.message);
+    toast.success("Category deleted");
+    setDeleteCatId(null);
+    fetchData();
+  };
+  const moveCategory = async (cat: Category, dir: -1 | 1) => {
+    const sorted = [...cats].sort((a, b) => a.display_order - b.display_order);
+    const idx = sorted.findIndex((c) => c.id === cat.id);
+    const swap = sorted[idx + dir];
+    if (!swap) return;
+    await Promise.all([
+      supabase.from("menu_categories").update({ display_order: swap.display_order }).eq("id", cat.id),
+      supabase.from("menu_categories").update({ display_order: cat.display_order }).eq("id", swap.id),
+    ]);
+    fetchData();
+  };
+  const moveItem = async (item: Item, dir: -1 | 1) => {
+    const peers = items
+      .filter((i) => i.category_id === item.category_id)
+      .sort((a, b) => a.display_order - b.display_order);
+    const idx = peers.findIndex((i) => i.id === item.id);
+    const swap = peers[idx + dir];
+    if (!swap) return;
+    await Promise.all([
+      supabase.from("menu_items").update({ display_order: swap.display_order }).eq("id", item.id),
+      supabase.from("menu_items").update({ display_order: item.display_order }).eq("id", swap.id),
+    ]);
+    fetchData();
+  };
+
   return (
     <div>
       <div className="flex items-center justify-between mb-6 gap-3 flex-wrap">
-        <h1 className="font-display text-3xl tracking-wider">Menu</h1>
-        <Button onClick={() => openCreate()} className="bg-primary font-stencil">
-          <Plus className="h-4 w-4" /> Add Item
-        </Button>
+        <div>
+          <h1 className="font-display text-3xl tracking-wider">Menu</h1>
+          <p className="text-xs text-muted-foreground mt-1">Manage categories and items shown on the customer menu.</p>
+        </div>
+        <div className="flex gap-2">
+          <Button onClick={openCatCreate} variant="outline" className="font-stencil">
+            <FolderPlus className="h-4 w-4" /> Add Category
+          </Button>
+          <Button onClick={() => openCreate()} className="bg-primary font-stencil">
+            <Plus className="h-4 w-4" /> Add Item
+          </Button>
+        </div>
       </div>
 
       {loading ? (
         <Loader2 className="h-6 w-6 animate-spin text-primary" />
       ) : (
         <div className="space-y-8">
-          {cats.map((cat) => (
-            <div key={cat.id}>
-              <div className="flex items-center justify-between mb-3">
-                <h2 className="font-display text-xl text-primary tracking-wider">{cat.name}</h2>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => openCreate(cat.id)}
-                  className="font-stencil text-xs"
-                >
-                  <Plus className="h-3.5 w-3.5" /> Add to {cat.name}
-                </Button>
+          {cats.length === 0 && (
+            <div className="text-sm text-muted-foreground italic">
+              No categories yet. Click "Add Category" to create your first one.
+            </div>
+          )}
+          {cats.map((cat, catIdx) => (
+            <div key={cat.id} className="border border-border/60 rounded-lg p-4 bg-card/30">
+              <div className="flex items-center justify-between mb-3 gap-2 flex-wrap">
+                <div className="flex items-center gap-2">
+                  <div className="flex flex-col">
+                    <Button size="icon" variant="ghost" className="h-5 w-5" disabled={catIdx === 0} onClick={() => moveCategory(cat, -1)}>
+                      <ArrowUp className="h-3 w-3" />
+                    </Button>
+                    <Button size="icon" variant="ghost" className="h-5 w-5" disabled={catIdx === cats.length - 1} onClick={() => moveCategory(cat, 1)}>
+                      <ArrowDown className="h-3 w-3" />
+                    </Button>
+                  </div>
+                  <div>
+                    <h2 className="font-display text-xl text-primary tracking-wider">{cat.name}</h2>
+                    <div className="text-[10px] text-muted-foreground font-stencil tracking-wider">/{cat.slug}</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Button size="sm" variant="ghost" onClick={() => openCreate(cat.id)} className="font-stencil text-xs">
+                    <Plus className="h-3.5 w-3.5" /> Add Item
+                  </Button>
+                  <Button size="icon" variant="ghost" onClick={() => openCatEdit(cat)}>
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                  <Button size="icon" variant="ghost" onClick={() => setDeleteCatId(cat.id)} className="text-destructive hover:text-destructive">
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
               <div className="space-y-2">
                 {items.filter((i) => i.category_id === cat.id).length === 0 && (
@@ -326,6 +439,14 @@ const AdminMenu = () => {
                           : "—"}
                       </div>
                       <div className="flex items-center gap-1">
+                        <div className="flex flex-col">
+                          <Button size="icon" variant="ghost" className="h-5 w-5" onClick={() => moveItem(item, -1)}>
+                            <ArrowUp className="h-3 w-3" />
+                          </Button>
+                          <Button size="icon" variant="ghost" className="h-5 w-5" onClick={() => moveItem(item, 1)}>
+                            <ArrowDown className="h-3 w-3" />
+                          </Button>
+                        </div>
                         <Switch
                           checked={item.is_available}
                           onCheckedChange={(v) => toggleAvail(item.id, v)}
@@ -557,6 +678,91 @@ const AdminMenu = () => {
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Category create / edit */}
+      <Dialog open={catDialogOpen} onOpenChange={setCatDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="font-display tracking-wider">
+              {catForm.id ? "Edit Category" : "Add Category"}
+            </DialogTitle>
+            <DialogDescription>
+              Categories group menu items (e.g. Meat, Sides, Desserts).
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label>Name</Label>
+              <Input
+                value={catForm.name}
+                onChange={(e) => {
+                  const name = e.target.value;
+                  setCatForm((f) => ({
+                    ...f,
+                    name,
+                    slug: f.id ? f.slug : slugify(name),
+                  }));
+                }}
+                placeholder="e.g. BBQ By The Pound"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Slug</Label>
+              <Input
+                value={catForm.slug}
+                onChange={(e) => setCatForm({ ...catForm, slug: e.target.value })}
+                placeholder="auto-generated"
+              />
+              <p className="text-[10px] text-muted-foreground">Used in URLs and category jump nav.</p>
+            </div>
+            <div className="space-y-2">
+              <Label>Description (optional)</Label>
+              <Textarea
+                rows={2}
+                value={catForm.description}
+                onChange={(e) => setCatForm({ ...catForm, description: e.target.value })}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Display Order</Label>
+              <Input
+                type="number"
+                value={catForm.display_order}
+                onChange={(e) => setCatForm({ ...catForm, display_order: e.target.value })}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setCatDialogOpen(false)}>
+              <X className="h-4 w-4" /> Cancel
+            </Button>
+            <Button onClick={handleCatSave} disabled={catSaving} className="bg-primary">
+              {catSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
+              {catForm.id ? "Save Changes" : "Create Category"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <AlertDialog open={!!deleteCatId} onOpenChange={(o) => !o && setDeleteCatId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete this category?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This permanently removes the category. Items must be moved or deleted first.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleCatDelete}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
               Delete
