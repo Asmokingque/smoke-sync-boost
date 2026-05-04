@@ -179,6 +179,30 @@ const Checkout = () => {
     delivery_address: "",
     payment_method: "pay_later" as "pay_later" | "cod",
   });
+  const [touched, setTouched] = useState<{ name?: boolean; phone?: boolean }>({});
+
+  const validateName = (v: string): string | null => {
+    const t = v.trim();
+    if (!t) return "Name is required";
+    if (t.length < 2) return "Name must be at least 2 characters";
+    if (t.length > 100) return "Name must be 100 characters or less";
+    if (!/^[A-Za-z][A-Za-z\s.'-]*$/.test(t)) return "Use letters, spaces, apostrophes, hyphens";
+    return null;
+  };
+
+  const validatePhone = (v: string): string | null => {
+    const t = v.trim();
+    if (!t) return "Phone is required";
+    const digits = t.replace(/\D/g, "");
+    if (digits.length < 10) return "Enter a valid phone (at least 10 digits)";
+    if (digits.length > 15) return "Phone is too long";
+    if (!/^[+\d][\d\s().-]*$/.test(t)) return "Only digits, spaces, and ()+-. allowed";
+    return null;
+  };
+
+  const nameError = validateName(form.customer_name);
+  const phoneError = validatePhone(form.customer_phone);
+  const contactValid = !nameError && !phoneError;
 
   const breakdown = computeDiscount(
     items.map((i) => ({ price: i.price, quantity: i.quantity })),
@@ -258,6 +282,11 @@ const Checkout = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (nameError || phoneError) {
+      setTouched({ name: true, phone: true });
+      toast.error(nameError || phoneError || "Please fix the highlighted fields");
+      return;
+    }
     const parsed = schema.safeParse(form);
     if (!parsed.success) {
       toast.error(parsed.error.issues[0].message);
@@ -470,11 +499,38 @@ const Checkout = () => {
             <div className="grid sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="name" className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-muted-foreground"><User className="h-3 w-3 text-gold" />Name *</Label>
-                <Input id="name" required value={form.customer_name} onChange={(e) => setForm({ ...form, customer_name: e.target.value })} className="luxury-input h-12" />
+                <Input
+                  id="name"
+                  required
+                  value={form.customer_name}
+                  onChange={(e) => setForm({ ...form, customer_name: e.target.value })}
+                  onBlur={() => setTouched((t) => ({ ...t, name: true }))}
+                  aria-invalid={touched.name && !!nameError}
+                  aria-describedby={touched.name && nameError ? "name-error" : undefined}
+                  className={`luxury-input h-12 ${touched.name && nameError ? "border-destructive focus-visible:ring-destructive" : ""}`}
+                />
+                {touched.name && nameError && (
+                  <p id="name-error" role="alert" className="text-xs text-destructive">{nameError}</p>
+                )}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="phone" className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-muted-foreground"><Phone className="h-3 w-3 text-gold" />Phone *</Label>
-                <Input id="phone" type="tel" required value={form.customer_phone} onChange={(e) => setForm({ ...form, customer_phone: e.target.value })} className="luxury-input h-12" />
+                <Input
+                  id="phone"
+                  type="tel"
+                  inputMode="tel"
+                  autoComplete="tel"
+                  required
+                  value={form.customer_phone}
+                  onChange={(e) => setForm({ ...form, customer_phone: e.target.value })}
+                  onBlur={() => setTouched((t) => ({ ...t, phone: true }))}
+                  aria-invalid={touched.phone && !!phoneError}
+                  aria-describedby={touched.phone && phoneError ? "phone-error" : undefined}
+                  className={`luxury-input h-12 ${touched.phone && phoneError ? "border-destructive focus-visible:ring-destructive" : ""}`}
+                />
+                {touched.phone && phoneError && (
+                  <p id="phone-error" role="alert" className="text-xs text-destructive">{phoneError}</p>
+                )}
               </div>
             </div>
             <div className="space-y-2">
@@ -595,7 +651,8 @@ const Checkout = () => {
             <div className="grid sm:grid-cols-2 gap-3">
               <Button
                 type="submit"
-                disabled={submitting}
+                disabled={submitting || !contactValid}
+                title={!contactValid ? "Enter a valid name and phone to continue" : undefined}
                 className="h-14 luxury-primary-btn font-stencil text-sm tracking-widest"
               >
                 {submitting ? <Loader2 className="h-5 w-5 animate-spin" /> : (
