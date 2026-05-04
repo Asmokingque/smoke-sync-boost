@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { Plus, Settings2, Star, Flame } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { AnimatedAddToCartButton } from "@/components/cart/AnimatedAddToCartButton";
 
 export type RetinaMenuItem = {
   id: string;
