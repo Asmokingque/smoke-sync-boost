@@ -4,6 +4,8 @@ import { Minus, Plus, ShoppingBag, Trash2 } from "lucide-react";
 import { useCart } from "@/store/cart";
 import { Link } from "react-router-dom";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { motion } from "framer-motion";
+import { SecureCheckoutButton } from "@/components/cart/SecureCheckoutButton";
 
 export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange: (o: boolean) => void }) {
   const { items, updateQuantity, removeItem, subtotal } = useCart();
@@ -36,7 +38,15 @@ export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange
                   const basePrice = item.price - optionsTotal;
                   const lineTotal = item.price * item.quantity;
                   return (
-                    <li key={item.id} className="flex gap-3 pb-4 border-b border-border/50">
+                    <motion.li
+                      key={item.id}
+                      layout
+                      initial={{ opacity: 0, y: 12 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, x: 24 }}
+                      transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+                      className="flex gap-3 pb-4 border-b border-border/50"
+                    >
                       <div className="flex-1 min-w-0">
                         <div className="font-stencil text-sm text-foreground">{item.name}</div>
 
@@ -118,25 +128,19 @@ export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange
                           </button>
                         </div>
                       </div>
-                    </li>
+                    </motion.li>
                   );
                 })}
               </ul>
             </ScrollArea>
 
-            <div className="border-t border-border p-6 space-y-4 bg-background/50">
+            <div className="border-t border-gold/20 p-6 space-y-4 bg-background/60 backdrop-blur">
               <div className="flex justify-between text-lg">
                 <span className="font-stencil">Subtotal</span>
                 <span className="font-display text-2xl text-primary">${total.toFixed(2)}</span>
               </div>
               <p className="text-xs text-muted-foreground">Tax calculated at checkout</p>
-              <Button
-                asChild
-                onClick={() => onOpenChange(false)}
-                className="w-full h-12 bg-primary hover:bg-primary/90 font-stencil text-base"
-              >
-                <Link to="/checkout">Checkout</Link>
-              </Button>
+              <SecureCheckoutButton onBeforeNavigate={() => onOpenChange(false)} />
             </div>
           </>
         )}

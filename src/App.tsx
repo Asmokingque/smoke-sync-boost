@@ -25,6 +25,8 @@ import HolidayCalendar from "./pages/HolidayCalendar";
 import AdminSpecials from "./pages/admin/AdminSpecials";
 import AdminSOP from "./pages/admin/AdminSOP";
 import ChangePassword from "./pages/ChangePassword";
+import CheckoutSuccess from "./pages/CheckoutSuccess";
+import CheckoutCancel from "./pages/CheckoutCancel";
 
 const queryClient = new QueryClient();
 
@@ -40,6 +42,8 @@ const App = () => (
           <Route path="/specials" element={<Specials />} />
           <Route path="/holiday-calendar" element={<HolidayCalendar />} />
           <Route path="/checkout" element={<Checkout />} />
+          <Route path="/checkout/success" element={<CheckoutSuccess />} />
+          <Route path="/checkout/cancel" element={<CheckoutCancel />} />
           <Route path="/order-confirmation/:id" element={<OrderConfirmation />} />
           <Route path="/order-status" element={<OrderStatus />} />
           <Route path="/reviews" element={<Reviews />} />

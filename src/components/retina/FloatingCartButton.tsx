@@ -33,7 +33,7 @@ export function FloatingCartButton({ onClick }: { onClick: () => void }) {
           transition={{ type: "spring", stiffness: 380, damping: 28 }}
           whileTap={{ scale: 0.95 }}
           onClick={onClick}
-          className="lg:hidden fixed bottom-5 left-1/2 -translate-x-1/2 z-40 flex items-center gap-3 bg-primary hover:bg-primary/90 text-primary-foreground rounded-full pl-4 pr-5 h-14 shadow-ember font-stencil tracking-wider"
+          className="fixed bottom-5 left-1/2 -translate-x-1/2 lg:left-auto lg:right-6 lg:translate-x-0 z-40 flex items-center gap-3 bg-primary hover:bg-primary/90 text-primary-foreground rounded-full pl-4 pr-5 h-14 shadow-ember font-stencil tracking-wider ring-1 ring-gold/40"
           aria-label={`View cart, ${itemCount} items, $${total.toFixed(2)}`}
         >
           <motion.span animate={controls} className="relative inline-flex">
