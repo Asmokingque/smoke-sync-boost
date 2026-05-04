@@ -130,7 +130,7 @@ const Menu = () => {
         </div>
       ) : item.price ? (
         <div className="font-display text-xl text-primary leading-none">
-          ${Number(item.price).toFixed(2)}
+          {item.requires_options ? "From " : ""}${Number(item.price).toFixed(2)}
         </div>
       ) : (
         <div className="font-stencil text-xs text-muted-foreground">Market</div>

@@ -98,7 +98,7 @@ function PricePill({ item }: { item: RetinaMenuItem }) {
       <span className="luxury-price font-serif text-base leading-none">
         {item.price_alt
           ? `$${Number(item.price).toFixed(0)} / $${Number(item.price_alt).toFixed(0)}`
-          : `$${Number(item.price).toFixed(2)}`}
+          : `${item.requires_options ? "From " : ""}$${Number(item.price).toFixed(2)}`}
       </span>
       {item.price_label && (
         <div className="text-[10px] text-gold mt-1.5 font-stencil tracking-widest">{item.price_label}</div>
