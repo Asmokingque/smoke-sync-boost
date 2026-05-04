@@ -393,6 +393,11 @@ const Menu = () => {
             selectedOptions,
             notes: notes || undefined,
           });
+          // Trigger flying animation from screen center after option dialog closes
+          useCartUI.getState().fly({
+            name: pickerItem.name,
+            from: { x: window.innerWidth / 2, y: window.innerHeight / 2 },
+          });
           toast.success(`${pickerItem.name} added to your order.`, { duration: 2500 });
         }}
       />
