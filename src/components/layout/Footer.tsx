@@ -33,7 +33,7 @@ export function Footer() {
         <div>
           <h3 className="font-stencil text-sm text-primary mb-3">Visit</h3>
           <ul className="space-y-2 text-sm text-muted-foreground">
-            <li className="flex items-start gap-2"><Mail className="h-4 w-4 mt-0.5 shrink-0" /><a href="mailto:williealanderson@gmail.com" className="hover:text-primary break-all">williealanderson@gmail.com</a></li>
+            <li className="flex items-start gap-2"><Mail className="h-4 w-4 mt-0.5 shrink-0" /><a href="mailto:Support@Asmokingque.com" className="hover:text-primary break-all">Support@Asmokingque.com</a></li>
             <li className="flex items-start gap-2"><Phone className="h-4 w-4 mt-0.5 shrink-0" /> Contact for catering</li>
             <li className="flex items-start gap-2"><MapPin className="h-4 w-4 mt-0.5 shrink-0" /> Serving local communities</li>
           </ul>
