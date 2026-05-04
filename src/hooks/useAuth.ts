@@ -6,19 +6,19 @@ export function useAuth() {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [mustChangePassword, setMustChangePassword] = useState(false);
   const [loading, setLoading] = useState(true);
   const [roleLoading, setRoleLoading] = useState(true);
 
   useEffect(() => {
-    const checkRole = async (uid: string) => {
+    const checkRoleAndProfile = async (uid: string) => {
       setRoleLoading(true);
-      const { data } = await supabase
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", uid)
-        .eq("role", "admin")
-        .maybeSingle();
-      setIsAdmin(!!data);
+      const [{ data: roleData }, { data: profileData }] = await Promise.all([
+        supabase.from("user_roles").select("role").eq("user_id", uid).eq("role", "admin").maybeSingle(),
+        supabase.from("profiles").select("must_change_password").eq("user_id", uid).maybeSingle(),
+      ]);
+      setIsAdmin(!!roleData);
+      setMustChangePassword(!!profileData?.must_change_password);
       setRoleLoading(false);
     };
 
@@ -26,10 +26,10 @@ export function useAuth() {
       setSession(sess);
       setUser(sess?.user ?? null);
       if (sess?.user) {
-        // defer to avoid deadlock with auth callback
-        setTimeout(() => checkRole(sess.user.id), 0);
+        setTimeout(() => checkRoleAndProfile(sess.user.id), 0);
       } else {
         setIsAdmin(false);
+        setMustChangePassword(false);
         setRoleLoading(false);
       }
     });
@@ -39,7 +39,7 @@ export function useAuth() {
       setUser(session?.user ?? null);
       setLoading(false);
       if (session?.user) {
-        checkRole(session.user.id);
+        checkRoleAndProfile(session.user.id);
       } else {
         setRoleLoading(false);
       }
@@ -48,5 +48,5 @@ export function useAuth() {
     return () => subscription.unsubscribe();
   }, []);
 
-  return { session, user, isAdmin, loading: loading || roleLoading };
+  return { session, user, isAdmin, mustChangePassword, loading: loading || roleLoading };
 }

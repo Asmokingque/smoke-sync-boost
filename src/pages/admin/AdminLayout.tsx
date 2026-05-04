@@ -16,8 +16,12 @@ const navItems = [
 ];
 
 const AdminLayout = () => {
-  const { user, isAdmin, loading } = useAuth();
+  const { user, isAdmin, mustChangePassword, loading } = useAuth();
   const location = useLocation();
+
+  if (!loading && user && mustChangePassword && location.pathname !== "/change-password") {
+    return <Navigate to="/change-password" replace />;
+  }
 
   if (loading) {
     return (

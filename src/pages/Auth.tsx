@@ -18,12 +18,12 @@ const Auth = () => {
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const redirect = params.get("redirect") || "/account";
-  const { user, loading } = useAuth();
+  const { user, mustChangePassword, loading } = useAuth();
   const [busy, setBusy] = useState(false);
   const [signinForm, setSigninForm] = useState({ email: "", password: "" });
   const [signupForm, setSignupForm] = useState({ email: "", password: "", display_name: "" });
 
-  if (!loading && user) return <Navigate to={redirect} replace />;
+  if (!loading && user) return <Navigate to={mustChangePassword ? "/change-password" : redirect} replace />;
 
   const signIn = async (e: React.FormEvent) => {
     e.preventDefault();
