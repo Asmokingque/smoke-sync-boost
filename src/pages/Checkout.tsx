@@ -219,7 +219,10 @@ const Checkout = () => {
   const heroesDiscount = heroesActive ? computeCommunityDiscountAmount(communityDiscount, discountedSub) : 0;
   const subAfterAll = Math.max(0, discountedSub - heroesDiscount);
   const tax = Math.max(0, subAfterAll * TAX_RATE);
-  const total = Math.max(0, subAfterAll + tax);
+  const deliveryFee = form.order_type === "Delivery"
+    ? (subAfterAll >= DELIVERY_FREE_THRESHOLD ? 0 : DELIVERY_FEE)
+    : 0;
+  const total = Math.max(0, subAfterAll + tax + deliveryFee);
   const heroesPercent = communityDiscount?.discount_type === "percentage"
     ? Math.min(Math.max(Number(communityDiscount.discount_value), 0), 100) / 100
     : 0;
