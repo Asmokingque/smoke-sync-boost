@@ -1,11 +1,12 @@
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { Menu, ShoppingCart, User as UserIcon, X, Flame } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useCart } from "@/store/cart";
 import { useAuth } from "@/hooks/useAuth";
 import { TopAlertBar } from "./TopAlertBar";
+import { CartPulseBadge, useRegisterDesktopCartTarget } from "@/components/cart/CartPulseBadge";
 import logo from "@/assets/logo.png";
 
 const navItems = [
