@@ -43,7 +43,8 @@ type CustomerInfoInput = {
 
 const TAX_RATE = 0.0825;
 const SERVICE_FEE_RATE = 0.03;
-const DELIVERY_FEE_CENTS = 500;
+const DELIVERY_FEE_CENTS = 699;
+const DELIVERY_FREE_THRESHOLD_CENTS = 7500;
 const HEROES_PERCENT = 0.10;
 const HEROES_CAP_CENTS = 2500;
 
@@ -202,7 +203,10 @@ Deno.serve(async (req) => {
     // ---- Totals --------------------------------------------------------
     const subtotalCents = calculated.reduce((s, i) => s + i.lineTotalCents, 0);
     const serviceFeeCents = Math.round(subtotalCents * SERVICE_FEE_RATE);
-    const deliveryFeeCents = orderType === "Delivery" ? DELIVERY_FEE_CENTS : 0;
+    const deliveryFeeCents =
+      orderType === "Delivery" && subtotalCents < DELIVERY_FREE_THRESHOLD_CENTS
+        ? DELIVERY_FEE_CENTS
+        : 0;
     const tipCents = Math.min(
       Math.max(Number(customerInfo.tipCents || 0), 0),
       50000,
