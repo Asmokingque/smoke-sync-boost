@@ -5,12 +5,14 @@ import { CartDrawer } from "@/components/cart/CartDrawer";
 import { FloatingCartButton } from "@/components/retina/FloatingCartButton";
 import { FlyingCartLayer } from "@/components/cart/FlyingCartLayer";
 import { useCartUI } from "@/store/cartUi";
+import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 
 export function SiteLayout({ children }: { children: ReactNode }) {
   const cartOpen = useCartUI((s) => s.drawerOpen);
   const setCartOpen = useCartUI((s) => s.setDrawerOpen);
   return (
     <div className="luxury-page-bg min-h-screen flex flex-col">
+      <PaymentTestModeBanner />
       <Header onCartClick={() => setCartOpen(true)} />
       <main className="flex-1">{children}</main>
       <Footer />
