@@ -439,6 +439,14 @@ const AdminMenu = () => {
                           : "—"}
                       </div>
                       <div className="flex items-center gap-1">
+                        <div className="flex flex-col">
+                          <Button size="icon" variant="ghost" className="h-5 w-5" onClick={() => moveItem(item, -1)}>
+                            <ArrowUp className="h-3 w-3" />
+                          </Button>
+                          <Button size="icon" variant="ghost" className="h-5 w-5" onClick={() => moveItem(item, 1)}>
+                            <ArrowDown className="h-3 w-3" />
+                          </Button>
+                        </div>
                         <Switch
                           checked={item.is_available}
                           onCheckedChange={(v) => toggleAvail(item.id, v)}
