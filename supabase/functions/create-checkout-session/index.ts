@@ -33,7 +33,6 @@ type CustomerInfoInput = {
 };
 
 const TAX_RATE = 0.0825;
-const SERVICE_FEE_RATE = 0.03;
 const DELIVERY_FEE_CENTS = 699;
 const DELIVERY_FREE_THRESHOLD_CENTS = 7500;
 const HEROES_PERCENT = 0.10;
@@ -69,8 +68,22 @@ Deno.serve(async (req) => {
     if (!body || typeof body !== "object") return jsonResponse(400, { error: "Invalid request body." });
 
     const env: StripeEnv = body.environment === "live" ? "live" : "sandbox";
-    const returnUrl = cleanText(body.returnUrl, 500);
+    const origin = req.headers.get("origin") || "";
+    const returnUrl = cleanText(body.returnUrl, 500) || (origin ? `${origin}/checkout/success` : "");
     if (!returnUrl) return jsonResponse(400, { error: "returnUrl is required." });
+
+    // Best-effort: if a user JWT is provided, link the order to that user.
+    let userId: string | null = null;
+    const authHeader = req.headers.get("Authorization");
+    if (authHeader?.startsWith("Bearer ")) {
+      try {
+        const userClient = createClient(supabaseUrl, Deno.env.get("SUPABASE_ANON_KEY") || "", {
+          global: { headers: { Authorization: authHeader } },
+        });
+        const { data: u } = await userClient.auth.getUser();
+        userId = u?.user?.id ?? null;
+      } catch (_) { /* anonymous checkout */ }
+    }
 
     const stripe = createStripeClient(env);
     const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey);
@@ -138,7 +151,6 @@ Deno.serve(async (req) => {
     });
 
     const subtotalCents = calculated.reduce((s, i) => s + i.lineTotalCents, 0);
-    const serviceFeeCents = Math.round(subtotalCents * SERVICE_FEE_RATE);
     const deliveryFeeCents =
       orderType === "Delivery" && subtotalCents < DELIVERY_FREE_THRESHOLD_CENTS ? DELIVERY_FEE_CENTS : 0;
     const tipCents = Math.min(Math.max(Number(customerInfo.tipCents || 0), 0), 50000);
@@ -156,7 +168,7 @@ Deno.serve(async (req) => {
 
     const taxableCents = Math.max(0, subtotalCents - discountAmountCents);
     const taxCents = Math.round(taxableCents * TAX_RATE);
-    const totalCents = taxableCents + taxCents + serviceFeeCents + deliveryFeeCents + tipCents;
+    const totalCents = taxableCents + taxCents + deliveryFeeCents + tipCents;
     if (totalCents <= 0) return jsonResponse(400, { error: "Order total is invalid." });
 
     let pickupTimestamp: string | null = null;
@@ -180,6 +192,7 @@ Deno.serve(async (req) => {
     const { data: order, error: orderError } = await supabaseAdmin
       .from("orders")
       .insert({
+        user_id: userId,
         customer_name: customerName,
         customer_phone: phone,
         customer_email: email || "",
@@ -189,7 +202,7 @@ Deno.serve(async (req) => {
         notes: noteParts.length ? noteParts.join(" • ") : null,
         subtotal: subtotalCents / 100,
         tax: taxCents / 100,
-        service_fee: serviceFeeCents / 100,
+        service_fee: 0,
         delivery_fee: deliveryFeeCents / 100,
         tip: tipCents / 100,
         discount_name: discountName,
@@ -238,7 +251,6 @@ Deno.serve(async (req) => {
       }
     };
     pushFee("Estimated Tax", taxCents);
-    pushFee("Service Fee", serviceFeeCents);
     pushFee("Delivery Fee", deliveryFeeCents);
     pushFee("Tip", tipCents);
 

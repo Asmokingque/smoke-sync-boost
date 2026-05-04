@@ -16,6 +16,7 @@ import { Link } from "react-router-dom";
 import { computeDiscount, buildSafeOrderTotals, type Promo } from "@/lib/promo";
 import { useCommunityDiscount, computeCommunityDiscountAmount } from "@/hooks/useCommunityDiscount";
 import { StripeEmbeddedCheckout, type CheckoutCartItem, type CheckoutCustomerInfo } from "@/components/checkout/StripeEmbeddedCheckout";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 const schema = z.object({
   customer_name: z.string().trim().min(1, "Name is required").max(100),
@@ -30,7 +31,7 @@ const schema = z.object({
   path: ["delivery_address"],
 });
 
-const TAX_RATE = 0.07;
+const TAX_RATE = 0.0825;
 const DELIVERY_FEE = 6.99;
 const DELIVERY_FREE_THRESHOLD = 75;
 
@@ -328,49 +329,32 @@ const Checkout = () => {
       return;
     }
 
-    setSubmitting(true);
-    try {
-      // Server-side: all trusted totals computed in the Edge Function.
-      // Frontend totals shown above are preview-only.
-      const payload = {
-        cartItems: items.map((i) => ({
-          menuItemId: i.menuItemId,
-          quantity: i.quantity,
-          selectedOptionIds: (i.selectedOptions ?? [])
-            .map((o: any) => o.id)
-            .filter(Boolean),
-          notes: i.notes ?? undefined,
-        })),
-        customerInfo: {
-          customerName: parsed.data.customer_name,
-          phone: parsed.data.customer_phone,
-          email: parsed.data.customer_email,
-          orderType: parsed.data.order_type,
-          pickupTime: parsed.data.pickup_time
-            ? new Date(parsed.data.pickup_time).toISOString()
-            : undefined,
-          deliveryAddress:
-            parsed.data.order_type === "Delivery"
-              ? parsed.data.delivery_address
-              : undefined,
-          orderNotes: parsed.data.notes,
-          communityGroup: heroesActive ? heroesGroup : "",
-        },
-      };
+    const cartItems: CheckoutCartItem[] = items.map((i) => ({
+      menuItemId: i.menuItemId,
+      quantity: i.quantity,
+      selectedOptionIds: (i.selectedOptions ?? [])
+        .map((o: any) => o.id)
+        .filter(Boolean),
+      notes: i.notes ?? undefined,
+    }));
+    const customerInfo: CheckoutCustomerInfo = {
+      customerName: parsed.data.customer_name,
+      phone: parsed.data.customer_phone,
+      email: parsed.data.customer_email,
+      orderType: parsed.data.order_type,
+      pickupTime: parsed.data.pickup_time
+        ? new Date(parsed.data.pickup_time).toISOString()
+        : undefined,
+      deliveryAddress:
+        parsed.data.order_type === "Delivery"
+          ? parsed.data.delivery_address
+          : undefined,
+      orderNotes: parsed.data.notes,
+      communityGroup: heroesActive ? heroesGroup : "",
+    };
 
-      const { data, error } = await supabase.functions.invoke(
-        "create-checkout-session",
-        { body: payload }
-      );
-      if (error) throw error;
-      if (!data?.url) throw new Error("No checkout URL returned");
-
-      // Redirect to Stripe Checkout. Webhook finalises the order.
-      window.location.href = data.url as string;
-    } catch (err: any) {
-      toast.error(err?.message ?? "Could not start secure checkout");
-      setSubmitting(false);
-    }
+    setEmbeddedPayload({ cartItems, customerInfo });
+    setShowEmbedded(true);
   };
 
   return (
@@ -967,7 +951,7 @@ const Checkout = () => {
                   <span>−${heroesDiscount.toFixed(2)}</span>
                 </div>
               )}
-              <div className="flex justify-between text-muted-foreground"><span>Tax (7%)</span><span>${tax.toFixed(2)}</span></div>
+              <div className="flex justify-between text-muted-foreground"><span>Tax (8.25%)</span><span>${tax.toFixed(2)}</span></div>
               {form.order_type === "Delivery" && (
                 <div className="flex justify-between text-muted-foreground">
                   <span className="inline-flex items-center gap-1.5"><Truck className="h-3 w-3 text-gold" />Delivery Fee</span>
@@ -1096,6 +1080,24 @@ const Checkout = () => {
           </aside>
         </div>
       </section>
+
+      <Dialog open={showEmbedded} onOpenChange={(o) => { if (!o) { setShowEmbedded(false); setSubmitting(false); } }}>
+        <DialogContent className="max-w-2xl p-0 overflow-hidden bg-background">
+          <DialogHeader className="px-6 pt-6">
+            <DialogTitle className="font-serif text-2xl">Secure Payment</DialogTitle>
+          </DialogHeader>
+          <div className="p-4 max-h-[80vh] overflow-y-auto">
+            {embeddedPayload && (
+              <StripeEmbeddedCheckout
+                cartItems={embeddedPayload.cartItems}
+                customerInfo={embeddedPayload.customerInfo}
+                returnUrl={`${window.location.origin}/checkout/success`}
+                onError={(msg) => { toast.error(msg); setShowEmbedded(false); }}
+              />
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </SiteLayout>
   );
 };

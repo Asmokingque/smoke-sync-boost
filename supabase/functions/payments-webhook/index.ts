@@ -53,6 +53,15 @@ Deno.serve(async (req) => {
             : session.payment_intent?.id ?? null;
 
         const paid = session.payment_status === "paid";
+
+        // Idempotency: only update + send emails if not already marked paid.
+        const { data: existing } = await supabase
+          .from("orders")
+          .select("payment_status")
+          .eq("id", orderId)
+          .maybeSingle();
+        const wasAlreadyPaid = existing?.payment_status === "paid";
+
         const { error } = await supabase
           .from("orders")
           .update({
@@ -64,7 +73,7 @@ Deno.serve(async (req) => {
           .eq("id", orderId);
         if (error) throw error;
 
-        if (paid) await notifyEmails(orderId);
+        if (paid && !wasAlreadyPaid) await notifyEmails(orderId);
         console.log("Order paid:", session.metadata?.order_number ?? orderId);
         break;
       }
