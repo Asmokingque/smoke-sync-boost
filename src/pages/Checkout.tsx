@@ -419,6 +419,39 @@ const Checkout = () => {
       <section className="container py-12 md:py-16 max-w-5xl">
         <div className="grid lg:grid-cols-[1fr_400px] gap-8">
           <form onSubmit={handleSubmit} className="space-y-8 premium-glass-card p-6 md:p-8">
+            {/* Cart summary — at-a-glance */}
+            <section aria-labelledby="cart-summary-heading" className="rounded-lg border border-gold/20 bg-background/50 p-5">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <ShoppingCart className="h-4 w-4 text-gold" />
+                  <h2 id="cart-summary-heading" className="font-stencil text-xs uppercase tracking-[0.25em] text-gold">
+                    Cart Summary
+                  </h2>
+                </div>
+                <span className="text-[11px] text-muted-foreground">
+                  {items.reduce((n, i) => n + i.quantity, 0)} {items.reduce((n, i) => n + i.quantity, 0) === 1 ? "item" : "items"}
+                </span>
+              </div>
+              <ul className="divide-y divide-border/40">
+                {items.map((i) => (
+                  <li key={i.id} className="flex items-baseline justify-between gap-3 py-2 text-sm">
+                    <div className="flex items-baseline gap-2 min-w-0">
+                      <span className="font-stencil text-xs text-gold/80 shrink-0 w-8">×{i.quantity}</span>
+                      <span className="truncate text-foreground">{i.name}</span>
+                    </div>
+                    <span className="font-display text-base text-primary shrink-0">
+                      ${(i.price * i.quantity).toFixed(2)}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+              <div className="mt-3 pt-3 border-t border-gold/30 flex items-baseline justify-between">
+                <span className="font-stencil text-xs uppercase tracking-[0.25em] text-gold">Total</span>
+                <span className="font-serif text-2xl text-gradient-ember">${total.toFixed(2)}</span>
+              </div>
+              <p className="text-[10px] text-muted-foreground/70 mt-1 text-right">Includes tax{promo && discountAmount > 0 ? " & promo" : ""}</p>
+            </section>
+
             <div>
               <div className="flex items-center gap-3 mb-1">
                 <span className="h-px flex-1 bg-gradient-to-r from-gold/50 to-transparent" />
