@@ -24,6 +24,7 @@ import Specials from "./pages/Specials";
 import HolidayCalendar from "./pages/HolidayCalendar";
 import AdminSpecials from "./pages/admin/AdminSpecials";
 import AdminSOP from "./pages/admin/AdminSOP";
+import ChangePassword from "./pages/ChangePassword";
 
 const queryClient = new QueryClient();
 
@@ -46,6 +47,7 @@ const App = () => (
           <Route path="/contact" element={<Contact />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/account" element={<Account />} />
+          <Route path="/change-password" element={<ChangePassword />} />
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<AdminOrders />} />
             <Route path="menu" element={<AdminMenu />} />
