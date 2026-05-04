@@ -2,9 +2,9 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { Button } from "@/components/ui/button";
 import { Minus, Plus, ShoppingBag, Trash2 } from "lucide-react";
 import { useCart } from "@/store/cart";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { SecureCheckoutButton } from "@/components/cart/SecureCheckoutButton";
 
 export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange: (o: boolean) => void }) {
