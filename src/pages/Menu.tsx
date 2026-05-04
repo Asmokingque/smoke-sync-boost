@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { SiteLayout } from "@/components/layout/SiteLayout";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/store/cart";
+import { useCartUI } from "@/store/cartUi";
 import { Plus, Settings2, Flame, Search, X } from "lucide-react";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
@@ -15,6 +16,7 @@ import { SmokeBackground } from "@/components/ui/SmokeBackground";
 import { ShimmerButton } from "@/components/ui/ShimmerButton";
 import { FeaturedMenuCarousel } from "@/components/retina/FeaturedMenuCarousel";
 import { RetinaMenuCard } from "@/components/retina/RetinaMenuCard";
+import { AnimatedAddToCartButton } from "@/components/cart/AnimatedAddToCartButton";
 import { CategoryJumpBar } from "@/components/retina/CategoryJumpBar";
 import { SmokeDivider } from "@/components/retina/SmokeDivider";
 
@@ -114,7 +116,7 @@ const Menu = () => {
       price,
       priceLabel: variantLabel ?? undefined,
     });
-    toast.success(`${item.name} added`, { duration: 1800 });
+    toast.success(`${item.name} added to your order.`, { duration: 2500 });
   };
 
   const jumpTo = (slug: string) => {
@@ -149,25 +151,39 @@ const Menu = () => {
         </Button>
       );
     }
+    const flyOnAdd = !item.requires_options;
+    const btnBase = "h-11 inline-flex items-center justify-center gap-1.5 rounded-md bg-primary hover:bg-primary/90 text-primary-foreground font-stencil";
     if (item.price_alt) {
       return (
         <div className={`flex gap-2 ${compact ? "" : "w-full"}`}>
-          <Button onClick={() => handleAdd(item, false)} className="flex-1 h-11 bg-primary hover:bg-primary/90 font-stencil text-xs">
+          <AnimatedAddToCartButton
+            itemName={item.name}
+            fly={flyOnAdd}
+            onAdd={() => handleAdd(item, false)}
+            className={`flex-1 text-xs ${btnBase}`}
+          >
             <Plus className="h-3.5 w-3.5" />${Number(item.price).toFixed(0)}
-          </Button>
-          <Button onClick={() => handleAdd(item, true)} className="flex-1 h-11 bg-primary hover:bg-primary/90 font-stencil text-xs">
+          </AnimatedAddToCartButton>
+          <AnimatedAddToCartButton
+            itemName={item.name}
+            fly={flyOnAdd}
+            onAdd={() => handleAdd(item, true)}
+            className={`flex-1 text-xs ${btnBase}`}
+          >
             <Plus className="h-3.5 w-3.5" />${Number(item.price_alt).toFixed(0)}
-          </Button>
+          </AnimatedAddToCartButton>
         </div>
       );
     }
     return (
-      <Button
-        onClick={() => handleAdd(item)}
-        className={`${compact ? "" : "w-full"} h-11 bg-primary hover:bg-primary/90 font-stencil text-sm`}
+      <AnimatedAddToCartButton
+        itemName={item.name}
+        fly={flyOnAdd}
+        onAdd={() => handleAdd(item)}
+        className={`${compact ? "" : "w-full"} text-sm ${btnBase}`}
       >
         {item.requires_options ? <><Settings2 className="h-4 w-4" />Customize</> : <><Plus className="h-4 w-4" />Order Online</>}
-      </Button>
+      </AnimatedAddToCartButton>
     );
   };
 
@@ -377,7 +393,12 @@ const Menu = () => {
             selectedOptions,
             notes: notes || undefined,
           });
-          toast.success(`${pickerItem.name} added`, { duration: 1800 });
+          // Trigger flying animation from screen center after option dialog closes
+          useCartUI.getState().fly({
+            name: pickerItem.name,
+            from: { x: window.innerWidth / 2, y: window.innerHeight / 2 },
+          });
+          toast.success(`${pickerItem.name} added to your order.`, { duration: 2500 });
         }}
       />
     </SiteLayout>

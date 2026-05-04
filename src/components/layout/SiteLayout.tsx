@@ -1,11 +1,14 @@
-import { useState, ReactNode } from "react";
+import { ReactNode } from "react";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
 import { CartDrawer } from "@/components/cart/CartDrawer";
 import { FloatingCartButton } from "@/components/retina/FloatingCartButton";
+import { FlyingCartLayer } from "@/components/cart/FlyingCartLayer";
+import { useCartUI } from "@/store/cartUi";
 
 export function SiteLayout({ children }: { children: ReactNode }) {
-  const [cartOpen, setCartOpen] = useState(false);
+  const cartOpen = useCartUI((s) => s.drawerOpen);
+  const setCartOpen = useCartUI((s) => s.setDrawerOpen);
   return (
     <div className="luxury-page-bg min-h-screen flex flex-col">
       <Header onCartClick={() => setCartOpen(true)} />
@@ -13,6 +16,7 @@ export function SiteLayout({ children }: { children: ReactNode }) {
       <Footer />
       <CartDrawer open={cartOpen} onOpenChange={setCartOpen} />
       <FloatingCartButton onClick={() => setCartOpen(true)} />
+      <FlyingCartLayer />
       {/* Mobile sticky Order Now CTA */}
       <a
         href="/menu"

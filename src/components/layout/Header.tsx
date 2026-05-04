@@ -1,11 +1,12 @@
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { Menu, ShoppingCart, User as UserIcon, X, Flame } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useCart } from "@/store/cart";
 import { useAuth } from "@/hooks/useAuth";
 import { TopAlertBar } from "./TopAlertBar";
+import { CartPulseBadge, useRegisterDesktopCartTarget } from "@/components/cart/CartPulseBadge";
 import logo from "@/assets/logo.png";
 
 const navItems = [
@@ -24,6 +25,8 @@ export function Header({ onCartClick }: { onCartClick: () => void }) {
   const { user, isAdmin } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
+  const cartBtnRef = useRef<HTMLButtonElement>(null);
+  useRegisterDesktopCartTarget(cartBtnRef);
 
   return (
     <header className="luxury-nav sticky top-0 z-40">
@@ -61,6 +64,7 @@ export function Header({ onCartClick }: { onCartClick: () => void }) {
             </button>
           </Link>
           <Button
+            ref={cartBtnRef}
             onClick={onCartClick}
             variant="ghost"
             size="icon"
@@ -68,11 +72,7 @@ export function Header({ onCartClick }: { onCartClick: () => void }) {
             aria-label={`Open cart, ${itemCount} items`}
           >
             <ShoppingCart className="h-5 w-5" />
-            {itemCount > 0 && (
-              <span className="absolute -right-0.5 -top-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
-                {itemCount}
-              </span>
-            )}
+            <CartPulseBadge />
           </Button>
 
           <Link to={user ? (isAdmin ? "/admin" : "/account") : "/auth"} className="hidden sm:block">

@@ -32,6 +32,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
+import { useCartUI } from "@/store/cartUi";
 
 type Category = { id: string; name: string; slug: string; display_order: number; description?: string | null };
 
@@ -332,6 +333,8 @@ const AdminMenu = () => {
           </Button>
         </div>
       </div>
+
+      <AutoOpenCartSetting />
 
       {loading ? (
         <Loader2 className="h-6 w-6 animate-spin text-primary" />
@@ -775,3 +778,22 @@ const AdminMenu = () => {
 };
 
 export default AdminMenu;
+
+function AutoOpenCartSetting() {
+  const autoOpen = useCartUI((s) => s.autoOpenOnAdd);
+  const setAutoOpen = useCartUI((s) => s.setAutoOpenOnAdd);
+  return (
+    <div className="mb-6 flex items-center justify-between gap-4 rounded-md border border-border/60 bg-card/40 px-4 py-3">
+      <div>
+        <Label htmlFor="auto-open-cart" className="font-stencil text-sm">
+          Auto-open cart drawer after Add to Order
+        </Label>
+        <p className="text-xs text-muted-foreground mt-0.5">
+          When off, the cart button animates instead of opening the drawer.
+        </p>
+      </div>
+      <Switch id="auto-open-cart" checked={autoOpen} onCheckedChange={setAutoOpen} />
+    </div>
+  );
+}
+
