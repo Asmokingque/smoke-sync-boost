@@ -242,6 +242,80 @@ const AdminMenu = () => {
     toast.success("Photo removed");
   };
 
+  // -------- Category CRUD --------
+  const openCatCreate = () => {
+    setCatForm({ ...emptyCatForm(), display_order: String((cats[cats.length - 1]?.display_order ?? 0) + 1) });
+    setCatDialogOpen(true);
+  };
+  const openCatEdit = (c: Category) => {
+    setCatForm({
+      id: c.id,
+      name: c.name,
+      slug: c.slug,
+      description: c.description ?? "",
+      display_order: String(c.display_order),
+    });
+    setCatDialogOpen(true);
+  };
+  const handleCatSave = async () => {
+    if (!catForm.name.trim()) return toast.error("Name is required");
+    const slug = catForm.slug.trim() ? slugify(catForm.slug) : slugify(catForm.name);
+    if (!slug) return toast.error("Slug is required");
+    setCatSaving(true);
+    const payload = {
+      name: catForm.name.trim(),
+      slug,
+      description: catForm.description.trim() || null,
+      display_order: Number(catForm.display_order) || 0,
+    };
+    const { error } = catForm.id
+      ? await supabase.from("menu_categories").update(payload).eq("id", catForm.id)
+      : await supabase.from("menu_categories").insert(payload);
+    setCatSaving(false);
+    if (error) return toast.error(error.message);
+    toast.success(catForm.id ? "Category updated" : "Category created");
+    setCatDialogOpen(false);
+    fetchData();
+  };
+  const handleCatDelete = async () => {
+    if (!deleteCatId) return;
+    const hasItems = items.some((i) => i.category_id === deleteCatId);
+    if (hasItems) {
+      toast.error("Move or delete items in this category first");
+      setDeleteCatId(null);
+      return;
+    }
+    const { error } = await supabase.from("menu_categories").delete().eq("id", deleteCatId);
+    if (error) return toast.error(error.message);
+    toast.success("Category deleted");
+    setDeleteCatId(null);
+    fetchData();
+  };
+  const moveCategory = async (cat: Category, dir: -1 | 1) => {
+    const sorted = [...cats].sort((a, b) => a.display_order - b.display_order);
+    const idx = sorted.findIndex((c) => c.id === cat.id);
+    const swap = sorted[idx + dir];
+    if (!swap) return;
+    await Promise.all([
+      supabase.from("menu_categories").update({ display_order: swap.display_order }).eq("id", cat.id),
+      supabase.from("menu_categories").update({ display_order: cat.display_order }).eq("id", swap.id),
+    ]);
+    fetchData();
+  };
+  const moveItem = async (item: Item, dir: -1 | 1) => {
+    const peers = items
+      .filter((i) => i.category_id === item.category_id)
+      .sort((a, b) => a.display_order - b.display_order);
+    const idx = peers.findIndex((i) => i.id === item.id);
+    const swap = peers[idx + dir];
+    if (!swap) return;
+    await Promise.all([
+      supabase.from("menu_items").update({ display_order: swap.display_order }).eq("id", item.id),
+      supabase.from("menu_items").update({ display_order: item.display_order }).eq("id", swap.id),
+    ]);
+    fetchData();
+  };
+
   return (
     <div>
       <div className="flex items-center justify-between mb-6 gap-3 flex-wrap">
