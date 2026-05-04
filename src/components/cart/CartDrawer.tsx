@@ -32,7 +32,7 @@ export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange
           <>
             <ScrollArea className="flex-1 px-6 py-4">
               <ul className="space-y-4">
-                {items.map((item) => {
+                {items.map((item, idx) => {
                   const opts = item.selectedOptions ?? [];
                   const optionsTotal = opts.reduce((s, o) => s + Number(o.price_adjustment ?? 0), 0);
                   const basePrice = item.price - optionsTotal;
@@ -44,7 +44,7 @@ export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange
                       initial={{ opacity: 0, y: 12 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, x: 24 }}
-                      transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+                      transition={{ duration: 0.32, delay: Math.min(idx * 0.06, 0.4), ease: [0.22, 1, 0.36, 1] }}
                       className="flex gap-3 pb-4 border-b border-border/50"
                     >
                       <div className="flex-1 min-w-0">

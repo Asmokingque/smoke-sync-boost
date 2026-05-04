@@ -27,7 +27,7 @@ export default function CheckoutCancel() {
           <Button asChild className="bg-primary hover:bg-primary/90 font-stencil h-12 px-8">
             <Link to="/checkout">
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Return to Cart
+              Return to Checkout
             </Link>
           </Button>
           <Button asChild variant="outline" className="border-gold/40 font-stencil h-12 px-8">
