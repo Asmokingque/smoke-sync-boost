@@ -32,6 +32,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
+import { useCartUI } from "@/store/cartUi";
 
 type Category = { id: string; name: string; slug: string; display_order: number; description?: string | null };
 
