@@ -329,49 +329,32 @@ const Checkout = () => {
       return;
     }
 
-    setSubmitting(true);
-    try {
-      // Server-side: all trusted totals computed in the Edge Function.
-      // Frontend totals shown above are preview-only.
-      const payload = {
-        cartItems: items.map((i) => ({
-          menuItemId: i.menuItemId,
-          quantity: i.quantity,
-          selectedOptionIds: (i.selectedOptions ?? [])
-            .map((o: any) => o.id)
-            .filter(Boolean),
-          notes: i.notes ?? undefined,
-        })),
-        customerInfo: {
-          customerName: parsed.data.customer_name,
-          phone: parsed.data.customer_phone,
-          email: parsed.data.customer_email,
-          orderType: parsed.data.order_type,
-          pickupTime: parsed.data.pickup_time
-            ? new Date(parsed.data.pickup_time).toISOString()
-            : undefined,
-          deliveryAddress:
-            parsed.data.order_type === "Delivery"
-              ? parsed.data.delivery_address
-              : undefined,
-          orderNotes: parsed.data.notes,
-          communityGroup: heroesActive ? heroesGroup : "",
-        },
-      };
+    const cartItems: CheckoutCartItem[] = items.map((i) => ({
+      menuItemId: i.menuItemId,
+      quantity: i.quantity,
+      selectedOptionIds: (i.selectedOptions ?? [])
+        .map((o: any) => o.id)
+        .filter(Boolean),
+      notes: i.notes ?? undefined,
+    }));
+    const customerInfo: CheckoutCustomerInfo = {
+      customerName: parsed.data.customer_name,
+      phone: parsed.data.customer_phone,
+      email: parsed.data.customer_email,
+      orderType: parsed.data.order_type,
+      pickupTime: parsed.data.pickup_time
+        ? new Date(parsed.data.pickup_time).toISOString()
+        : undefined,
+      deliveryAddress:
+        parsed.data.order_type === "Delivery"
+          ? parsed.data.delivery_address
+          : undefined,
+      orderNotes: parsed.data.notes,
+      communityGroup: heroesActive ? heroesGroup : "",
+    };
 
-      const { data, error } = await supabase.functions.invoke(
-        "create-checkout-session",
-        { body: payload }
-      );
-      if (error) throw error;
-      if (!data?.url) throw new Error("No checkout URL returned");
-
-      // Redirect to Stripe Checkout. Webhook finalises the order.
-      window.location.href = data.url as string;
-    } catch (err: any) {
-      toast.error(err?.message ?? "Could not start secure checkout");
-      setSubmitting(false);
-    }
+    setEmbeddedPayload({ cartItems, customerInfo });
+    setShowEmbedded(true);
   };
 
   return (
