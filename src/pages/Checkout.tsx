@@ -256,6 +256,27 @@ const Checkout = () => {
   };
 
   if (items.length === 0) {
+    const loadSample = () => {
+      const add = useCart.getState().addItem;
+      add({
+        id: "sample-brisket-plate",
+        menuItemId: "sample-brisket-plate",
+        name: "Sample Brisket Plate",
+        price: 18.5,
+        quantity: 1,
+        priceLabel: "Test item",
+      });
+      add({
+        id: "sample-pulled-pork-sandwich",
+        menuItemId: "sample-pulled-pork-sandwich",
+        name: "Sample Pulled Pork Sandwich",
+        price: 12.0,
+        quantity: 2,
+        priceLabel: "Test item",
+      });
+      toast.success("Sample items added to cart.");
+    };
+
     return (
       <SiteLayout>
         <section className="container py-24 text-center max-w-xl">
@@ -266,9 +287,15 @@ const Checkout = () => {
           <h1 className="font-serif text-5xl md:text-6xl mb-3 tracking-tight">Your cart is empty</h1>
           <span className="gold-rule-short mx-auto block mb-5" />
           <p className="text-muted-foreground mb-8 leading-relaxed">Browse our smokehouse menu and build your order — slow-smoked, served bold.</p>
-          <Button asChild className="bg-primary hover:bg-primary/90 font-stencil h-12 px-10 shadow-ember">
-            <Link to="/menu">Browse Menu</Link>
-          </Button>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+            <Button asChild className="bg-primary hover:bg-primary/90 font-stencil h-12 px-10 shadow-ember">
+              <Link to="/menu">Browse Menu</Link>
+            </Button>
+            <Button onClick={loadSample} variant="outline" className="font-stencil h-12 px-10 border-gold/40 text-gold hover:bg-gold/10">
+              Load Sample Items
+            </Button>
+          </div>
+          <p className="mt-4 text-xs text-muted-foreground/70">"Load Sample Items" populates the cart for testing the checkout flow.</p>
         </section>
       </SiteLayout>
     );
