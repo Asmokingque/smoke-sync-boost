@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { SiteLayout } from "@/components/layout/SiteLayout";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/store/cart";
+import { useCartUI } from "@/store/cartUi";
 import { Plus, Settings2, Flame, Search, X } from "lucide-react";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
@@ -15,6 +16,7 @@ import { SmokeBackground } from "@/components/ui/SmokeBackground";
 import { ShimmerButton } from "@/components/ui/ShimmerButton";
 import { FeaturedMenuCarousel } from "@/components/retina/FeaturedMenuCarousel";
 import { RetinaMenuCard } from "@/components/retina/RetinaMenuCard";
+import { AnimatedAddToCartButton } from "@/components/cart/AnimatedAddToCartButton";
 import { CategoryJumpBar } from "@/components/retina/CategoryJumpBar";
 import { SmokeDivider } from "@/components/retina/SmokeDivider";
 
