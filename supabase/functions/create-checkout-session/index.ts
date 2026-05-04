@@ -192,6 +192,7 @@ Deno.serve(async (req) => {
     const { data: order, error: orderError } = await supabaseAdmin
       .from("orders")
       .insert({
+        user_id: userId,
         customer_name: customerName,
         customer_phone: phone,
         customer_email: email || "",
@@ -201,7 +202,7 @@ Deno.serve(async (req) => {
         notes: noteParts.length ? noteParts.join(" • ") : null,
         subtotal: subtotalCents / 100,
         tax: taxCents / 100,
-        service_fee: serviceFeeCents / 100,
+        service_fee: 0,
         delivery_fee: deliveryFeeCents / 100,
         tip: tipCents / 100,
         discount_name: discountName,
