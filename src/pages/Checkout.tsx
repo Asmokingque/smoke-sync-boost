@@ -433,9 +433,18 @@ const Checkout = () => {
                     Cart Summary
                   </h2>
                 </div>
-                <span className="text-[11px] text-muted-foreground">
-                  {items.reduce((n, i) => n + i.quantity, 0)} {items.reduce((n, i) => n + i.quantity, 0) === 1 ? "item" : "items"}
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className="inline-flex items-center gap-1 rounded-full border border-gold/30 bg-background/60 px-2 py-0.5 text-[10px] font-stencil uppercase tracking-[0.18em] text-gold">
+                    {form.order_type === "Delivery" ? (
+                      <><Truck className="h-3 w-3" />Delivery</>
+                    ) : (
+                      <><Store className="h-3 w-3" />Pickup</>
+                    )}
+                  </span>
+                  <span className="text-[11px] text-muted-foreground">
+                    {items.reduce((n, i) => n + i.quantity, 0)} {items.reduce((n, i) => n + i.quantity, 0) === 1 ? "item" : "items"}
+                  </span>
+                </div>
               </div>
               <ul className="divide-y divide-border/40">
                 {items.map((i) => (
