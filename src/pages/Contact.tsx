@@ -97,11 +97,11 @@ const Contact = () => {
         </div>
 
         <aside className="space-y-4">
-          <a href="mailto:williealanderson@gmail.com"
+          <a href="mailto:Support@Asmokingque.com"
             className="block bg-gradient-card border border-border rounded-lg p-6 hover:border-primary/60 transition-colors">
             <Mail className="h-7 w-7 text-primary mb-2" />
             <div className="font-stencil text-xs text-muted-foreground mb-1">Email</div>
-            <div className="text-foreground break-all text-sm">williealanderson@gmail.com</div>
+            <div className="text-foreground break-all text-sm">Support@Asmokingque.com</div>
           </a>
           <div className="bg-gradient-card border border-border rounded-lg p-6">
             <Phone className="h-7 w-7 text-primary mb-2" />
