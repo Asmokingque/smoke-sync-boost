@@ -30,7 +30,7 @@ const schema = z.object({
   path: ["delivery_address"],
 });
 
-const TAX_RATE = 0.07;
+const TAX_RATE = 0.0825;
 const DELIVERY_FEE = 6.99;
 const DELIVERY_FREE_THRESHOLD = 75;
 
