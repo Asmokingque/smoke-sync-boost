@@ -1,3 +1,4 @@
+import { useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Plus, Settings2, Star, Flame } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
