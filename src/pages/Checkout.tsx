@@ -651,7 +651,8 @@ const Checkout = () => {
             <div className="grid sm:grid-cols-2 gap-3">
               <Button
                 type="submit"
-                disabled={submitting}
+                disabled={submitting || !contactValid}
+                title={!contactValid ? "Enter a valid name and phone to continue" : undefined}
                 className="h-14 luxury-primary-btn font-stencil text-sm tracking-widest"
               >
                 {submitting ? <Loader2 className="h-5 w-5 animate-spin" /> : (
