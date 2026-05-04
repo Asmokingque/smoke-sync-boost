@@ -49,6 +49,8 @@ const Checkout = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const debugEnabled = searchParams.get("debug") === "1";
   const [submitting, setSubmitting] = useState(false);
+  const [showEmbedded, setShowEmbedded] = useState(false);
+  const [embeddedPayload, setEmbeddedPayload] = useState<{ cartItems: CheckoutCartItem[]; customerInfo: CheckoutCustomerInfo } | null>(null);
   const [promoInput, setPromoInput] = useState("");
   const [promo, setPromo] = useState<Promo | null>(null);
   const { discount: communityDiscount } = useCommunityDiscount();
@@ -719,16 +721,70 @@ const Checkout = () => {
               </Button>
               <Button
                 type="button"
-                disabled
-                title="Card payment coming soon"
-                className="h-14 luxury-secondary-btn font-stencil text-sm tracking-widest cursor-not-allowed opacity-80"
+                disabled={submitting || !contactValid}
+                onClick={() => {
+                  if (nameError || phoneError) {
+                    setTouched({ name: true, phone: true });
+                    toast.error(nameError || phoneError || "Please complete your details");
+                    return;
+                  }
+                  const parsed = schema.safeParse(form);
+                  if (!parsed.success) {
+                    toast.error(parsed.error.issues[0].message);
+                    return;
+                  }
+                  setEmbeddedPayload({
+                    cartItems: items.map((i) => ({
+                      menuItemId: i.menuItemId,
+                      quantity: i.quantity,
+                      selectedOptionIds: (i.selectedOptions ?? []).map((o: any) => o.id).filter(Boolean),
+                      notes: i.notes ?? undefined,
+                    })),
+                    customerInfo: {
+                      customerName: parsed.data.customer_name,
+                      phone: parsed.data.customer_phone,
+                      email: parsed.data.customer_email,
+                      orderType: parsed.data.order_type,
+                      pickupTime: parsed.data.pickup_time
+                        ? new Date(parsed.data.pickup_time).toISOString()
+                        : undefined,
+                      deliveryAddress:
+                        parsed.data.order_type === "Delivery" ? parsed.data.delivery_address : undefined,
+                      orderNotes: parsed.data.notes,
+                      communityGroup: heroesActive ? heroesGroup : "",
+                    },
+                  });
+                  setShowEmbedded(true);
+                }}
+                className="h-14 luxury-secondary-btn font-stencil text-sm tracking-widest"
               >
                 Pay with Card · ${total.toFixed(2)}
               </Button>
             </div>
             <p className="text-[11px] text-muted-foreground/70 text-center -mt-4">
-              Secure card checkout via Stripe — coming soon.
+              Secure card checkout powered by Stripe.
             </p>
+
+            {showEmbedded && embeddedPayload && (
+              <div className="mt-6">
+                <StripeEmbeddedCheckout
+                  cartItems={embeddedPayload.cartItems}
+                  customerInfo={embeddedPayload.customerInfo}
+                  returnUrl={`${window.location.origin}/checkout/success`}
+                  onError={(msg) => {
+                    toast.error(msg);
+                    setShowEmbedded(false);
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowEmbedded(false)}
+                  className="mt-2 text-xs text-muted-foreground hover:text-foreground underline w-full text-center"
+                >
+                  Cancel card payment
+                </button>
+              </div>
+            )}
           </form>
 
           <aside className="premium-glass-card p-6 h-fit lg:sticky lg:top-24">
