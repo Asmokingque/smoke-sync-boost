@@ -293,88 +293,47 @@ const Checkout = () => {
       return;
     }
 
-    // Final guard: recompute totals from authoritative item data so a tampered
-    // client state can't submit negative or inconsistent amounts.
-    const guard = buildSafeOrderTotals(
-      items.map((i) => ({ price: i.price, quantity: i.quantity })),
-      promo,
-      TAX_RATE
-    );
-    if (guard.ok === false) {
-      toast.error(`Order rejected: ${guard.error}`);
-      return;
-    }
-    const safe = guard.totals;
-
-    // Recompute heroes discount + final tax/total server-side-style from sanitized values
-    const safeHeroesPercent = heroesActive ? heroesPercent : 0;
-    const safeHeroesDiscount = Math.round(safe.discountedSubtotal * safeHeroesPercent * 100) / 100;
-    const safeSubAfterAll = Math.max(0, safe.discountedSubtotal - safeHeroesDiscount);
-    const safeTax = Math.round(safeSubAfterAll * TAX_RATE * 100) / 100;
-    const safeTotal = Math.round((safeSubAfterAll + safeTax) * 100) / 100;
-
     setSubmitting(true);
-    const isCOD = parsed.data.order_type === "Delivery" && form.payment_method === "cod";
     try {
-      const heroesNote = heroesActive
-        ? `${communityDiscount?.title ?? "Heroes Deal"}: ${heroesGroup} −$${safeHeroesDiscount.toFixed(2)} (pending verification)`
-        : null;
-      const { data: order, error: orderErr } = await supabase
-        .from("orders")
-        .insert({
-          user_id: user?.id ?? null,
-          customer_name: parsed.data.customer_name,
-          customer_email: parsed.data.customer_email,
-          customer_phone: parsed.data.customer_phone,
-          pickup_time: parsed.data.pickup_time ? new Date(parsed.data.pickup_time).toISOString() : null,
-          order_type: parsed.data.order_type,
-          delivery_address: parsed.data.order_type === "Delivery" ? parsed.data.delivery_address ?? null : null,
-          notes: [parsed.data.notes, promo ? `Promo: ${promo.code} (${promo.label}) −$${safe.discount.toFixed(2)}` : null, heroesNote, isCOD ? `Payment: Cash on Delivery (COD)` : null].filter(Boolean).join(" • ") || null,
-          subtotal: safe.subtotal,
-          tax: safeTax,
-          total: safeTotal,
-          status: "pending",
-          payment_status: isCOD ? "cod_pending" : "unpaid",
-          // Heroes (legacy) columns
-          heroes_group: heroesActive ? heroesGroup : null,
-          heroes_discount_amount: safeHeroesDiscount,
-          heroes_discount_status: heroesActive ? "pending_verification" : null,
-          heroes_acknowledged: heroesActive,
-          // New community discount columns
-          discount_id: heroesActive ? communityDiscount?.id ?? null : null,
-          discount_name: heroesActive ? communityDiscount?.title ?? null : null,
-          discount_amount: safeHeroesDiscount,
-          discount_status: heroesActive ? "Pending Verification" : "None",
-          community_group: heroesActive ? heroesGroup : null,
-        })
-        .select()
-        .single();
-      if (orderErr) throw orderErr;
-
-      const orderItems = items.map((i, idx) => {
-        const alloc = safe.lines[idx];
-        const lineTotal = alloc ? Math.max(0, alloc.lineAfter) : Math.max(0, i.price * i.quantity);
-        return {
-          order_id: order.id,
-          menu_item_id: i.menuItemId,
-          item_name: i.optionLabel ? `${i.name} — ${i.optionLabel}` : i.name,
-          unit_price: i.price,
+      // Server-side: all trusted totals computed in the Edge Function.
+      // Frontend totals shown above are preview-only.
+      const payload = {
+        cartItems: items.map((i) => ({
+          menuItemId: i.menuItemId,
           quantity: i.quantity,
-          line_total: lineTotal,
-          selected_options: (i.selectedOptions ?? []) as any,
-          notes: i.notes ?? null,
-        };
-      });
+          selectedOptionIds: (i.selectedOptions ?? [])
+            .map((o: any) => o.id)
+            .filter(Boolean),
+          notes: i.notes ?? undefined,
+        })),
+        customerInfo: {
+          customerName: parsed.data.customer_name,
+          phone: parsed.data.customer_phone,
+          email: parsed.data.customer_email,
+          orderType: parsed.data.order_type,
+          pickupTime: parsed.data.pickup_time
+            ? new Date(parsed.data.pickup_time).toISOString()
+            : undefined,
+          deliveryAddress:
+            parsed.data.order_type === "Delivery"
+              ? parsed.data.delivery_address
+              : undefined,
+          orderNotes: parsed.data.notes,
+          communityGroup: heroesActive ? heroesGroup : "",
+        },
+      };
 
-      const { error: itemsErr } = await supabase.from("order_items").insert(orderItems);
-      if (itemsErr) throw itemsErr;
+      const { data, error } = await supabase.functions.invoke(
+        "create-checkout-session",
+        { body: payload }
+      );
+      if (error) throw error;
+      if (!data?.url) throw new Error("No checkout URL returned");
 
-      clear();
-      toast.success("Order placed! We'll be in touch shortly.");
-      navigate(`/order-confirmation/${order.id}`);
+      // Redirect to Stripe Checkout. Webhook finalises the order.
+      window.location.href = data.url as string;
     } catch (err: any) {
-      toast.error(err.message ?? "Could not place order");
-    } finally {
+      toast.error(err?.message ?? "Could not start secure checkout");
       setSubmitting(false);
     }
   };
