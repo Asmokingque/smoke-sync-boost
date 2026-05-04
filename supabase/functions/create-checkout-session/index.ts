@@ -151,7 +151,6 @@ Deno.serve(async (req) => {
     });
 
     const subtotalCents = calculated.reduce((s, i) => s + i.lineTotalCents, 0);
-    const serviceFeeCents = Math.round(subtotalCents * SERVICE_FEE_RATE);
     const deliveryFeeCents =
       orderType === "Delivery" && subtotalCents < DELIVERY_FREE_THRESHOLD_CENTS ? DELIVERY_FEE_CENTS : 0;
     const tipCents = Math.min(Math.max(Number(customerInfo.tipCents || 0), 0), 50000);
@@ -169,7 +168,7 @@ Deno.serve(async (req) => {
 
     const taxableCents = Math.max(0, subtotalCents - discountAmountCents);
     const taxCents = Math.round(taxableCents * TAX_RATE);
-    const totalCents = taxableCents + taxCents + serviceFeeCents + deliveryFeeCents + tipCents;
+    const totalCents = taxableCents + taxCents + deliveryFeeCents + tipCents;
     if (totalCents <= 0) return jsonResponse(400, { error: "Order total is invalid." });
 
     let pickupTimestamp: string | null = null;
