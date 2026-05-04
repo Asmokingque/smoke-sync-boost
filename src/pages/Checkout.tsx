@@ -880,6 +880,21 @@ const Checkout = () => {
                 </div>
               )}
               <div className="flex justify-between text-muted-foreground"><span>Tax (7%)</span><span>${tax.toFixed(2)}</span></div>
+              {form.order_type === "Delivery" && (
+                <div className="flex justify-between text-muted-foreground">
+                  <span className="inline-flex items-center gap-1.5"><Truck className="h-3 w-3 text-gold" />Delivery Fee</span>
+                  {deliveryFee === 0 ? (
+                    <span className="text-emerald-400">FREE</span>
+                  ) : (
+                    <span>${deliveryFee.toFixed(2)}</span>
+                  )}
+                </div>
+              )}
+              {form.order_type === "Delivery" && deliveryFee > 0 && (
+                <p className="text-[10px] text-muted-foreground/60 -mt-0.5">
+                  Free delivery on orders over ${DELIVERY_FREE_THRESHOLD.toFixed(0)} (${(DELIVERY_FREE_THRESHOLD - subAfterAll).toFixed(2)} away)
+                </p>
+              )}
               <div className="mt-3 pt-3 border-t border-gold/30">
                 <div className="flex justify-between items-baseline">
                   <span className="font-stencil text-xs uppercase tracking-[0.25em] text-gold">Total</span>
