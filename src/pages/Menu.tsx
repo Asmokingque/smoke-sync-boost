@@ -48,15 +48,27 @@ const Menu = () => {
   const addItem = useCart((s) => s.addItem);
 
   useEffect(() => {
-    (async () => {
+    let active = true;
+    const fetchAll = async () => {
       const [cats, its] = await Promise.all([
         supabase.from("menu_categories").select("*").order("display_order"),
         supabase.from("menu_items").select("*").order("display_order"),
       ]);
+      if (!active) return;
       if (cats.data) setCategories(cats.data as Category[]);
       if (its.data) setItems(its.data as Item[]);
       setLoading(false);
-    })();
+    };
+    fetchAll();
+    const channel = supabase
+      .channel("menu-live")
+      .on("postgres_changes", { event: "*", schema: "public", table: "menu_categories" }, fetchAll)
+      .on("postgres_changes", { event: "*", schema: "public", table: "menu_items" }, fetchAll)
+      .subscribe();
+    return () => {
+      active = false;
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const featured = useMemo(() => items.filter((i) => i.is_featured && i.is_available), [items]);
