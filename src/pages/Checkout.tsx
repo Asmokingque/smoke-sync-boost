@@ -30,6 +30,8 @@ const schema = z.object({
 });
 
 const TAX_RATE = 0.07;
+const DELIVERY_FEE = 6.99;
+const DELIVERY_FREE_THRESHOLD = 75;
 
 const PROMOS: Promo[] = [
   { code: "SMOKE10", label: "10% off", type: "percent", value: 0.1 },
