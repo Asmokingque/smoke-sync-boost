@@ -156,34 +156,34 @@ const Menu = () => {
     if (item.price_alt) {
       return (
         <div className={`flex gap-2 ${compact ? "" : "w-full"}`}>
-          <AnimatedAddToCartButton
+          <AnimatedCartControls
             itemName={item.name}
             fly={flyOnAdd}
             onAdd={() => handleAdd(item, false)}
             className={`flex-1 text-xs ${btnBase}`}
           >
             <Plus className="h-3.5 w-3.5" />${Number(item.price).toFixed(0)}
-          </AnimatedAddToCartButton>
-          <AnimatedAddToCartButton
+          </AnimatedCartControls>
+          <AnimatedCartControls
             itemName={item.name}
             fly={flyOnAdd}
             onAdd={() => handleAdd(item, true)}
             className={`flex-1 text-xs ${btnBase}`}
           >
             <Plus className="h-3.5 w-3.5" />${Number(item.price_alt).toFixed(0)}
-          </AnimatedAddToCartButton>
+          </AnimatedCartControls>
         </div>
       );
     }
     return (
-      <AnimatedAddToCartButton
+      <AnimatedCartControls
         itemName={item.name}
         fly={flyOnAdd}
         onAdd={() => handleAdd(item)}
         className={`${compact ? "" : "w-full"} text-sm ${btnBase}`}
       >
         {item.requires_options ? <><Settings2 className="h-4 w-4" />Customize</> : <><Plus className="h-4 w-4" />Order Online</>}
-      </AnimatedAddToCartButton>
+      </AnimatedCartControls>
     );
   };
 
