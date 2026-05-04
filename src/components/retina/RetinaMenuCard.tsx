@@ -31,6 +31,20 @@ export function RetinaMenuCard({
   onAddAlt?: () => void;
   className?: string;
 }) {
+  const [pulsed, setPulsed] = useState(false);
+  const pulseTimer = useRef<number | null>(null);
+  const triggerPulse = () => {
+    setPulsed(false);
+    if (pulseTimer.current) window.clearTimeout(pulseTimer.current);
+    // Re-apply on next frame so the animation restarts on rapid adds.
+    requestAnimationFrame(() => {
+      setPulsed(true);
+      pulseTimer.current = window.setTimeout(() => setPulsed(false), 700);
+    });
+  };
+  const handleAdd = () => { onAdd(); triggerPulse(); };
+  const handleAddAlt = onAddAlt ? () => { onAddAlt(); triggerPulse(); } : undefined;
+
   return (
     <motion.article
       initial={{ opacity: 0, y: 16 }}
@@ -41,6 +55,7 @@ export function RetinaMenuCard({
       className={cn(
         "group luxury-card flex flex-col",
         !item.is_available && "opacity-60",
+        pulsed && "menu-card-added cart-ember-glow",
         className,
       )}
     >
