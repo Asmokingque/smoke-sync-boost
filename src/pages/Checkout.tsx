@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { Link } from "react-router-dom";
 import { computeDiscount, buildSafeOrderTotals, type Promo } from "@/lib/promo";
 import { useCommunityDiscount, computeCommunityDiscountAmount } from "@/hooks/useCommunityDiscount";
+import { StripeEmbeddedCheckout, type CheckoutCartItem, type CheckoutCustomerInfo } from "@/components/checkout/StripeEmbeddedCheckout";
 
 const schema = z.object({
   customer_name: z.string().trim().min(1, "Name is required").max(100),
