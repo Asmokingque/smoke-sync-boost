@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { Plus, Settings2, Star, Flame } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { AnimatedAddToCartButton } from "@/components/cart/AnimatedAddToCartButton";
+import { AnimatedCartControls } from "@/components/cart/AnimatedCartControls";
 
 export type RetinaMenuItem = {
   id: string;
@@ -132,7 +132,7 @@ function AddButtons({
   if (item.price_alt && onAddAlt) {
     return (
       <div className="grid grid-cols-2 gap-2">
-        <AnimatedAddToCartButton
+        <AnimatedCartControls
           itemName={item.name}
           fly={flyOnAdd}
           onAdd={onAdd}
@@ -140,8 +140,8 @@ function AddButtons({
           ariaLabel={`Add ${item.name} for $${Number(item.price).toFixed(0)}`}
         >
           <Plus className="h-3.5 w-3.5" />${Number(item.price).toFixed(0)}
-        </AnimatedAddToCartButton>
-        <AnimatedAddToCartButton
+        </AnimatedCartControls>
+        <AnimatedCartControls
           itemName={item.name}
           fly={flyOnAdd}
           onAdd={onAddAlt}
@@ -149,12 +149,12 @@ function AddButtons({
           ariaLabel={`Add ${item.name} for $${Number(item.price_alt).toFixed(0)}`}
         >
           <Plus className="h-3.5 w-3.5" />${Number(item.price_alt).toFixed(0)}
-        </AnimatedAddToCartButton>
+        </AnimatedCartControls>
       </div>
     );
   }
   return (
-    <AnimatedAddToCartButton
+    <AnimatedCartControls
       itemName={item.name}
       fly={flyOnAdd}
       onAdd={onAdd}
@@ -166,6 +166,6 @@ function AddButtons({
       ) : (
         <><Plus className="h-4 w-4" />Add to Order</>
       )}
-    </AnimatedAddToCartButton>
+    </AnimatedCartControls>
   );
 }
