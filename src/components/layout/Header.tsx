@@ -64,6 +64,7 @@ export function Header({ onCartClick }: { onCartClick: () => void }) {
             </button>
           </Link>
           <Button
+            ref={cartBtnRef}
             onClick={onCartClick}
             variant="ghost"
             size="icon"
@@ -71,11 +72,7 @@ export function Header({ onCartClick }: { onCartClick: () => void }) {
             aria-label={`Open cart, ${itemCount} items`}
           >
             <ShoppingCart className="h-5 w-5" />
-            {itemCount > 0 && (
-              <span className="absolute -right-0.5 -top-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
-                {itemCount}
-              </span>
-            )}
+            <CartPulseBadge />
           </Button>
 
           <Link to={user ? (isAdmin ? "/admin" : "/account") : "/auth"} className="hidden sm:block">
