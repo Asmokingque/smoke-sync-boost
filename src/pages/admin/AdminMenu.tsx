@@ -33,7 +33,11 @@ import {
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 
-type Category = { id: string; name: string; slug: string; display_order: number };
+type Category = { id: string; name: string; slug: string; display_order: number; description?: string | null };
+
+type CatForm = { id: string | null; name: string; slug: string; description: string; display_order: string };
+const emptyCatForm = (): CatForm => ({ id: null, name: "", slug: "", description: "", display_order: "0" });
+const slugify = (s: string) => s.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 type Item = {
   id: string;
   category_id: string;
