@@ -334,6 +334,8 @@ const AdminMenu = () => {
         </div>
       </div>
 
+      <AutoOpenCartSetting />
+
       {loading ? (
         <Loader2 className="h-6 w-6 animate-spin text-primary" />
       ) : (
