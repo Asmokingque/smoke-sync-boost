@@ -97,6 +97,12 @@ const AdminMenu = () => {
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Category management
+  const [catDialogOpen, setCatDialogOpen] = useState(false);
+  const [catForm, setCatForm] = useState<CatForm>(emptyCatForm());
+  const [catSaving, setCatSaving] = useState(false);
+  const [deleteCatId, setDeleteCatId] = useState<string | null>(null);
+
   const fetchData = async () => {
     setLoading(true);
     const [c, i] = await Promise.all([
