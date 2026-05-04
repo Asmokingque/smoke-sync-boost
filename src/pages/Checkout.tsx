@@ -282,6 +282,11 @@ const Checkout = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (nameError || phoneError) {
+      setTouched({ name: true, phone: true });
+      toast.error(nameError || phoneError || "Please fix the highlighted fields");
+      return;
+    }
     const parsed = schema.safeParse(form);
     if (!parsed.success) {
       toast.error(parsed.error.issues[0].message);
