@@ -68,8 +68,22 @@ Deno.serve(async (req) => {
     if (!body || typeof body !== "object") return jsonResponse(400, { error: "Invalid request body." });
 
     const env: StripeEnv = body.environment === "live" ? "live" : "sandbox";
-    const returnUrl = cleanText(body.returnUrl, 500);
+    const origin = req.headers.get("origin") || "";
+    const returnUrl = cleanText(body.returnUrl, 500) || (origin ? `${origin}/checkout/success` : "");
     if (!returnUrl) return jsonResponse(400, { error: "returnUrl is required." });
+
+    // Best-effort: if a user JWT is provided, link the order to that user.
+    let userId: string | null = null;
+    const authHeader = req.headers.get("Authorization");
+    if (authHeader?.startsWith("Bearer ")) {
+      try {
+        const userClient = createClient(supabaseUrl, Deno.env.get("SUPABASE_ANON_KEY") || "", {
+          global: { headers: { Authorization: authHeader } },
+        });
+        const { data: u } = await userClient.auth.getUser();
+        userId = u?.user?.id ?? null;
+      } catch (_) { /* anonymous checkout */ }
+    }
 
     const stripe = createStripeClient(env);
     const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey);
