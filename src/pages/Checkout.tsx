@@ -967,7 +967,7 @@ const Checkout = () => {
                   <span>−${heroesDiscount.toFixed(2)}</span>
                 </div>
               )}
-              <div className="flex justify-between text-muted-foreground"><span>Tax (7%)</span><span>${tax.toFixed(2)}</span></div>
+              <div className="flex justify-between text-muted-foreground"><span>Tax (8.25%)</span><span>${tax.toFixed(2)}</span></div>
               {form.order_type === "Delivery" && (
                 <div className="flex justify-between text-muted-foreground">
                   <span className="inline-flex items-center gap-1.5"><Truck className="h-3 w-3 text-gold" />Delivery Fee</span>
