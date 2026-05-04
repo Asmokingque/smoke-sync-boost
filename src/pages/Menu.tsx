@@ -116,7 +116,7 @@ const Menu = () => {
       price,
       priceLabel: variantLabel ?? undefined,
     });
-    toast.success(`${item.name} added to your order.`, { duration: 2500 });
+    // Toast is shown by AnimatedCartControls. For options-required items handled in picker below.
   };
 
   const jumpTo = (slug: string) => {
