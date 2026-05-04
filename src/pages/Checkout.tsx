@@ -1080,6 +1080,24 @@ const Checkout = () => {
           </aside>
         </div>
       </section>
+
+      <Dialog open={showEmbedded} onOpenChange={(o) => { if (!o) { setShowEmbedded(false); setSubmitting(false); } }}>
+        <DialogContent className="max-w-2xl p-0 overflow-hidden bg-background">
+          <DialogHeader className="px-6 pt-6">
+            <DialogTitle className="font-serif text-2xl">Secure Payment</DialogTitle>
+          </DialogHeader>
+          <div className="p-4 max-h-[80vh] overflow-y-auto">
+            {embeddedPayload && (
+              <StripeEmbeddedCheckout
+                cartItems={embeddedPayload.cartItems}
+                customerInfo={embeddedPayload.customerInfo}
+                returnUrl={`${window.location.origin}/checkout/success`}
+                onError={(msg) => { toast.error(msg); setShowEmbedded(false); }}
+              />
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </SiteLayout>
   );
 };
