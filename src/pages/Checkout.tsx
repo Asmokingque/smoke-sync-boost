@@ -179,6 +179,30 @@ const Checkout = () => {
     delivery_address: "",
     payment_method: "pay_later" as "pay_later" | "cod",
   });
+  const [touched, setTouched] = useState<{ name?: boolean; phone?: boolean }>({});
+
+  const validateName = (v: string): string | null => {
+    const t = v.trim();
+    if (!t) return "Name is required";
+    if (t.length < 2) return "Name must be at least 2 characters";
+    if (t.length > 100) return "Name must be 100 characters or less";
+    if (!/^[A-Za-z][A-Za-z\s.'-]*$/.test(t)) return "Use letters, spaces, apostrophes, hyphens";
+    return null;
+  };
+
+  const validatePhone = (v: string): string | null => {
+    const t = v.trim();
+    if (!t) return "Phone is required";
+    const digits = t.replace(/\D/g, "");
+    if (digits.length < 10) return "Enter a valid phone (at least 10 digits)";
+    if (digits.length > 15) return "Phone is too long";
+    if (!/^[+\d][\d\s().-]*$/.test(t)) return "Only digits, spaces, and ()+-. allowed";
+    return null;
+  };
+
+  const nameError = validateName(form.customer_name);
+  const phoneError = validatePhone(form.customer_phone);
+  const contactValid = !nameError && !phoneError;
 
   const breakdown = computeDiscount(
     items.map((i) => ({ price: i.price, quantity: i.quantity })),
