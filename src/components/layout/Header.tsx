@@ -25,6 +25,8 @@ export function Header({ onCartClick }: { onCartClick: () => void }) {
   const { user, isAdmin } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
+  const cartBtnRef = useRef<HTMLButtonElement>(null);
+  useRegisterDesktopCartTarget(cartBtnRef);
 
   return (
     <header className="luxury-nav sticky top-0 z-40">
