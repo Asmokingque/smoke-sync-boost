@@ -27,6 +27,7 @@ import AdminSOP from "./pages/admin/AdminSOP";
 import ChangePassword from "./pages/ChangePassword";
 import CheckoutSuccess from "./pages/CheckoutSuccess";
 import CheckoutCancel from "./pages/CheckoutCancel";
+import Unsubscribe from "./pages/Unsubscribe";
 
 const queryClient = new QueryClient();
 
@@ -52,6 +53,7 @@ const App = () => (
           <Route path="/auth" element={<Auth />} />
           <Route path="/account" element={<Account />} />
           <Route path="/change-password" element={<ChangePassword />} />
+          <Route path="/unsubscribe" element={<Unsubscribe />} />
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<AdminOrders />} />
             <Route path="menu" element={<AdminMenu />} />
