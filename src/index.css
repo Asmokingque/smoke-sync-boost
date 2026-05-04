@@ -617,3 +617,31 @@
     outline: none;
   }
 }
+
+@layer utilities {
+  .cart-ember-glow {
+    box-shadow:
+      0 0 24px hsl(var(--bbq-crimson) / 0.42),
+      0 0 48px hsl(var(--bbq-ember) / 0.22),
+      inset 0 1px 0 hsl(0 0% 100% / 0.12);
+  }
+
+  .menu-card-added {
+    animation: menuCardAdded 650ms ease-out;
+  }
+
+  @keyframes menuCardAdded {
+    0% {
+      transform: scale(1);
+      box-shadow: 0 0 0 hsl(var(--bbq-ember) / 0);
+    }
+    45% {
+      transform: scale(1.025);
+      box-shadow: 0 0 42px hsl(var(--bbq-ember) / 0.36);
+    }
+    100% {
+      transform: scale(1);
+      box-shadow: 0 0 0 hsl(var(--bbq-ember) / 0);
+    }
+  }
+}
