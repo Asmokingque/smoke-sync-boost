@@ -494,11 +494,38 @@ const Checkout = () => {
             <div className="grid sm:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="name" className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-muted-foreground"><User className="h-3 w-3 text-gold" />Name *</Label>
-                <Input id="name" required value={form.customer_name} onChange={(e) => setForm({ ...form, customer_name: e.target.value })} className="luxury-input h-12" />
+                <Input
+                  id="name"
+                  required
+                  value={form.customer_name}
+                  onChange={(e) => setForm({ ...form, customer_name: e.target.value })}
+                  onBlur={() => setTouched((t) => ({ ...t, name: true }))}
+                  aria-invalid={touched.name && !!nameError}
+                  aria-describedby={touched.name && nameError ? "name-error" : undefined}
+                  className={`luxury-input h-12 ${touched.name && nameError ? "border-destructive focus-visible:ring-destructive" : ""}`}
+                />
+                {touched.name && nameError && (
+                  <p id="name-error" role="alert" className="text-xs text-destructive">{nameError}</p>
+                )}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="phone" className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-muted-foreground"><Phone className="h-3 w-3 text-gold" />Phone *</Label>
-                <Input id="phone" type="tel" required value={form.customer_phone} onChange={(e) => setForm({ ...form, customer_phone: e.target.value })} className="luxury-input h-12" />
+                <Input
+                  id="phone"
+                  type="tel"
+                  inputMode="tel"
+                  autoComplete="tel"
+                  required
+                  value={form.customer_phone}
+                  onChange={(e) => setForm({ ...form, customer_phone: e.target.value })}
+                  onBlur={() => setTouched((t) => ({ ...t, phone: true }))}
+                  aria-invalid={touched.phone && !!phoneError}
+                  aria-describedby={touched.phone && phoneError ? "phone-error" : undefined}
+                  className={`luxury-input h-12 ${touched.phone && phoneError ? "border-destructive focus-visible:ring-destructive" : ""}`}
+                />
+                {touched.phone && phoneError && (
+                  <p id="phone-error" role="alert" className="text-xs text-destructive">{phoneError}</p>
+                )}
               </div>
             </div>
             <div className="space-y-2">
