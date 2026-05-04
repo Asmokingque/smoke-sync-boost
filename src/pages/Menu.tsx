@@ -114,7 +114,7 @@ const Menu = () => {
       price,
       priceLabel: variantLabel ?? undefined,
     });
-    toast.success(`${item.name} added`, { duration: 1800 });
+    toast.success(`${item.name} added to your order.`, { duration: 2500 });
   };
 
   const jumpTo = (slug: string) => {
@@ -377,7 +377,7 @@ const Menu = () => {
             selectedOptions,
             notes: notes || undefined,
           });
-          toast.success(`${pickerItem.name} added`, { duration: 1800 });
+          toast.success(`${pickerItem.name} added to your order.`, { duration: 2500 });
         }}
       />
     </SiteLayout>
