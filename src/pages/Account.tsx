@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { OrderStatusTimeline } from "@/components/orders/OrderStatusTimeline";
 
 const Account = () => {
   const { user, loading, isAdmin } = useAuth();
