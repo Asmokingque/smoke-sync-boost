@@ -268,6 +268,7 @@ Deno.serve(async (req) => {
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
       ui_mode: "embedded_page",
+      payment_method_types: ["card", "cashapp"],
       line_items: lineItems,
       discounts: discountsParam,
       customer_email: email || undefined,
