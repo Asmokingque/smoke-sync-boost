@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { OrderStatusTimeline } from "@/components/orders/OrderStatusTimeline";
 
 const Account = () => {
   const { user, loading, isAdmin } = useAuth();
@@ -59,17 +60,20 @@ const Account = () => {
           <ul className="space-y-3">
             {orders.map((o) => (
               <li key={o.id} className="bg-gradient-card border border-border rounded-lg p-5">
-                <div className="flex justify-between flex-wrap gap-2 mb-2">
+                <div className="flex justify-between flex-wrap gap-2 mb-3">
                   <div>
-                    <div className="font-stencil text-xs text-muted-foreground">Order #{o.id.slice(0, 8).toUpperCase()}</div>
+                    <div className="font-stencil text-xs text-muted-foreground">Order #{o.order_number ?? o.id.slice(0, 8).toUpperCase()}</div>
                     <div className="text-sm">{new Date(o.created_at).toLocaleString()}</div>
                   </div>
                   <div className="text-right">
                     <div className="font-display text-xl text-primary">${Number(o.total).toFixed(2)}</div>
-                    <div className="text-xs font-stencil text-muted-foreground uppercase">{o.status}</div>
+                    <div className="text-xs font-stencil text-muted-foreground uppercase">{o.payment_status} · {o.status}</div>
                   </div>
                 </div>
-                <ul className="text-sm text-muted-foreground space-y-0.5 border-t border-border/50 pt-2 mt-2">
+                <div className="border-t border-border/50 pt-3 mt-1 mb-3">
+                  <OrderStatusTimeline status={o.status} paymentStatus={o.payment_status} />
+                </div>
+                <ul className="text-sm text-muted-foreground space-y-0.5 border-t border-border/50 pt-3 mt-2">
                   {o.order_items.map((i: any) => (
                     <li key={i.id}>{i.quantity}× {i.item_name}</li>
                   ))}
