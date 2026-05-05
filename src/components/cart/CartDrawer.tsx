@@ -1,153 +1,176 @@
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { Button } from "@/components/ui/button";
-import { Minus, Plus, ShoppingBag, Trash2 } from "lucide-react";
-import { useCart } from "@/store/cart";
-import { Link } from "react-router-dom";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { AnimatePresence, motion } from "framer-motion";
-import { SecureCheckoutButton } from "@/components/cart/SecureCheckoutButton";
+import { X, Trash2, Minus, Plus, Lock } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useCart } from "@/store/cart";
 
-export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange: (o: boolean) => void }) {
+export function CartDrawer({
+  open,
+  onOpenChange,
+}: {
+  open: boolean;
+  onOpenChange: (o: boolean) => void;
+}) {
+  const navigate = useNavigate();
   const { items, updateQuantity, removeItem, subtotal } = useCart();
-  const total = subtotal();
+
+  const sub = subtotal();
+  const tax = sub * 0.0825;
+  const total = sub + tax;
+
+  const onClose = () => onOpenChange(false);
+  const onCheckout = () => {
+    onOpenChange(false);
+    navigate("/checkout");
+  };
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent
-        side="right"
-        className="w-full sm:max-w-md p-0 flex flex-col bg-charcoal-light/95 backdrop-blur-xl border-l border-gold/30"
-      >
-        <span aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-gold to-transparent" />
-        <SheetHeader className="px-6 pt-6 pb-4 border-b border-border/60">
-          <SheetTitle className="font-serif text-3xl tracking-tight">Your Order</SheetTitle>
-          <span className="gold-rule-short" />
-        </SheetHeader>
+    <AnimatePresence>
+      {open && (
+        <>
+          <motion.div
+            key="cart-overlay"
+            className="fixed inset-0 z-[9998] bg-background/80 backdrop-blur-sm"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+            onClick={onClose}
+          />
+          <motion.aside
+            key="cart-drawer"
+            role="dialog"
+            aria-label="Your order"
+            className="fixed right-0 top-0 z-[9999] flex h-full w-full max-w-md flex-col border-l border-gold/30 bg-background shadow-2xl"
+            initial={{ x: "100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "100%" }}
+            transition={{ type: "spring", stiffness: 260, damping: 28 }}
+          >
+            <div className="border-b border-gold/20 bg-card/95 p-5">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-stencil text-xs font-bold uppercase tracking-[0.2em] text-gold">
+                    Anderson's Smoking Que
+                  </p>
+                  <h2 className="font-serif text-3xl text-foreground">Your Order</h2>
+                </div>
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="rounded-full border border-border bg-secondary/40 p-2 text-foreground hover:bg-secondary"
+                  aria-label="Close cart"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+            </div>
 
-        {items.length === 0 ? (
-          <div className="flex-1 flex flex-col items-center justify-center px-6 text-center">
-            <ShoppingBag className="h-16 w-16 text-muted-foreground/40 mb-4" />
-            <p className="text-muted-foreground mb-6">Your cart is empty.</p>
-            <Button asChild onClick={() => onOpenChange(false)} className="bg-primary hover:bg-primary/90">
-              <Link to="/menu">Browse Menu</Link>
-            </Button>
-          </div>
-        ) : (
-          <>
-            <ScrollArea className="flex-1 px-6 py-4">
-              <ul className="space-y-4">
-                {items.map((item, idx) => {
-                  const opts = item.selectedOptions ?? [];
-                  const optionsTotal = opts.reduce((s, o) => s + Number(o.price_adjustment ?? 0), 0);
-                  const basePrice = item.price - optionsTotal;
-                  const lineTotal = item.price * item.quantity;
-                  return (
-                    <motion.li
-                      key={item.id}
-                      layout
-                      initial={{ opacity: 0, y: 12 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, x: 24 }}
-                      transition={{ duration: 0.32, delay: Math.min(idx * 0.06, 0.4), ease: [0.22, 1, 0.36, 1] }}
-                      className="flex gap-3 pb-4 border-b border-border/50"
-                    >
-                      <div className="flex-1 min-w-0">
-                        <div className="font-stencil text-sm text-foreground">{item.name}</div>
-
-                        {/* Per-line price breakdown */}
-                        {(opts.length > 0 || item.notes) && (
-                          <div className="mt-2 rounded-md bg-background/60 border border-border/50 p-2 space-y-0.5 text-[11px]">
-                            <div className="flex justify-between text-muted-foreground">
-                              <span>Base</span>
-                              <span>${basePrice.toFixed(2)}</span>
-                            </div>
-                            {opts.map((o, idx) => (
-                              <div key={idx} className="flex justify-between text-muted-foreground">
-                                <span className="truncate pr-2">
-                                  <span className="text-muted-foreground/60">{o.group}:</span> {o.name}
-                                </span>
-                                <span
-                                  className={
-                                    o.price_adjustment > 0
-                                      ? "text-primary shrink-0"
-                                      : o.price_adjustment < 0
-                                      ? "text-emerald-400 shrink-0"
-                                      : "text-muted-foreground/60 shrink-0"
-                                  }
-                                >
-                                  {o.price_adjustment > 0
-                                    ? `+$${Number(o.price_adjustment).toFixed(2)}`
-                                    : o.price_adjustment < 0
-                                    ? `−$${Math.abs(Number(o.price_adjustment)).toFixed(2)}`
-                                    : "Included"}
-                                </span>
-                              </div>
-                            ))}
-                            <div className="flex justify-between pt-1 mt-1 border-t border-border/40 text-foreground">
-                              <span className="font-stencil">Unit</span>
-                              <span className="font-stencil">${item.price.toFixed(2)}</span>
-                            </div>
+            <div className="flex-1 overflow-y-auto p-5">
+              {items.length === 0 ? (
+                <div className="flex h-full flex-col items-center justify-center text-center">
+                  <p className="text-lg font-bold text-foreground">Your cart is empty.</p>
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    Add your favorite smokehouse items to get started.
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {items.map((item, index) => {
+                    const optionLabels =
+                      item.selectedOptions?.map((o) => `${o.group}: ${o.name}`) ?? [];
+                    return (
+                      <motion.div
+                        key={item.id}
+                        initial={{ opacity: 0, y: 14 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.05 }}
+                        className="rounded-2xl border border-gold/20 bg-card p-4"
+                      >
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="min-w-0">
+                            <h3 className="font-stencil font-bold text-foreground">{item.name}</h3>
+                            {optionLabels.length > 0 && (
+                              <p className="mt-1 text-xs text-muted-foreground">
+                                {optionLabels.join(", ")}
+                              </p>
+                            )}
                             {item.notes && (
-                              <div className="pt-1 mt-1 border-t border-border/40 text-muted-foreground/80 italic leading-snug">
-                                Note: {item.notes}
-                              </div>
+                              <p className="mt-1 text-xs text-gold">Note: {item.notes}</p>
                             )}
                           </div>
-                        )}
-
-                        {item.priceLabel && !item.optionLabel && opts.length === 0 && (
-                          <div className="text-xs text-muted-foreground mt-0.5">{item.priceLabel}</div>
-                        )}
-
-                        <div className="flex items-baseline justify-between mt-2">
-                          <span className="text-[11px] text-muted-foreground">
-                            ${item.price.toFixed(2)} × {item.quantity}
-                          </span>
-                          <span className="text-sm font-display text-primary">${lineTotal.toFixed(2)}</span>
+                          <p className="font-display text-lg font-black text-gold shrink-0">
+                            ${(item.price * item.quantity).toFixed(2)}
+                          </p>
                         </div>
-                      </div>
-                      <div className="flex flex-col items-end gap-2">
-                        <button
-                          onClick={() => removeItem(item.id)}
-                          className="text-muted-foreground hover:text-destructive transition-colors"
-                          aria-label="Remove"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                        <div className="flex items-center gap-1 bg-background rounded-md border border-border">
+                        <div className="mt-4 flex items-center justify-between">
+                          <div className="flex items-center gap-2 rounded-full border border-border bg-background/60 p-1">
+                            <button
+                              type="button"
+                              onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                              className="rounded-full p-2 text-foreground hover:bg-secondary"
+                              aria-label="Decrease quantity"
+                            >
+                              <Minus className="h-4 w-4" />
+                            </button>
+                            <span className="min-w-8 text-center font-bold text-foreground">
+                              {item.quantity}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                              className="rounded-full p-2 text-foreground hover:bg-secondary"
+                              aria-label="Increase quantity"
+                            >
+                              <Plus className="h-4 w-4" />
+                            </button>
+                          </div>
                           <button
-                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                            className="h-9 w-9 flex items-center justify-center hover:bg-secondary rounded-l-md"
-                            aria-label="Decrease quantity"
+                            type="button"
+                            onClick={() => removeItem(item.id)}
+                            className="rounded-full p-2 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+                            aria-label="Remove item"
                           >
-                            <Minus className="h-3 w-3" />
-                          </button>
-                          <span className="w-8 text-center text-sm font-semibold">{item.quantity}</span>
-                          <button
-                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                            className="h-9 w-9 flex items-center justify-center hover:bg-secondary rounded-r-md"
-                            aria-label="Increase quantity"
-                          >
-                            <Plus className="h-3 w-3" />
+                            <Trash2 className="h-4 w-4" />
                           </button>
                         </div>
-                      </div>
-                    </motion.li>
-                  );
-                })}
-              </ul>
-            </ScrollArea>
-
-            <div className="border-t border-gold/20 p-6 space-y-4 bg-background/60 backdrop-blur">
-              <div className="flex justify-between text-lg">
-                <span className="font-stencil">Subtotal</span>
-                <span className="font-display text-2xl text-primary">${total.toFixed(2)}</span>
-              </div>
-              <p className="text-xs text-muted-foreground">Tax calculated at checkout</p>
-              <SecureCheckoutButton onBeforeNavigate={() => onOpenChange(false)} />
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
-          </>
-        )}
-      </SheetContent>
-    </Sheet>
+
+            <div className="border-t border-gold/20 bg-card p-5">
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between text-muted-foreground">
+                  <span>Subtotal</span>
+                  <span>${sub.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-muted-foreground">
+                  <span>Estimated Tax (8.25%)</span>
+                  <span>${tax.toFixed(2)}</span>
+                </div>
+                <div className="h-px bg-gold/20" />
+                <div className="flex justify-between text-xl font-black text-foreground">
+                  <span>Total</span>
+                  <span>${total.toFixed(2)}</span>
+                </div>
+              </div>
+              <motion.button
+                type="button"
+                disabled={items.length === 0}
+                onClick={onCheckout}
+                whileHover={{ scale: items.length ? 1.02 : 1 }}
+                whileTap={{ scale: items.length ? 0.97 : 1 }}
+                className="mt-5 flex w-full items-center justify-center gap-3 rounded-full border border-gold/40 bg-gradient-to-r from-primary to-primary/80 px-6 py-4 font-stencil font-bold tracking-wider text-primary-foreground shadow-ember hover:from-primary hover:to-primary disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <Lock className="h-5 w-5" />
+                Secure Checkout
+              </motion.button>
+            </div>
+          </motion.aside>
+        </>
+      )}
+    </AnimatePresence>
   );
 }
