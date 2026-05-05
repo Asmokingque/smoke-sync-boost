@@ -2,9 +2,9 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { Button } from "@/components/ui/button";
 import { Minus, Plus, ShoppingBag, Trash2 } from "lucide-react";
 import { useCart } from "@/store/cart";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { SecureCheckoutButton } from "@/components/cart/SecureCheckoutButton";
 
 export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange: (o: boolean) => void }) {
@@ -13,8 +13,11 @@ export function CartDrawer({ open, onOpenChange }: { open: boolean; onOpenChange
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="right" className="w-full sm:max-w-md p-0 flex flex-col bg-charcoal-light/95 backdrop-blur-xl border-l border-gold/30 relative">
-        <span aria-hidden className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-gold to-transparent" />
+      <SheetContent
+        side="right"
+        className="w-full sm:max-w-md p-0 flex flex-col bg-charcoal-light/95 backdrop-blur-xl border-l border-gold/30"
+      >
+        <span aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-gold to-transparent" />
         <SheetHeader className="px-6 pt-6 pb-4 border-b border-border/60">
           <SheetTitle className="font-serif text-3xl tracking-tight">Your Order</SheetTitle>
           <span className="gold-rule-short" />
