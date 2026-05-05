@@ -1,68 +1,61 @@
-import { useEffect, useRef } from "react";
-import { useCart } from "@/store/cart";
+import { useRef } from "react";
+import { motion } from "framer-motion";
 import { ShoppingCart } from "lucide-react";
-import { AnimatePresence, motion, useAnimation } from "framer-motion";
-import { useCartUI } from "@/store/cartUi";
 import { useRegisterMobileCartTarget } from "@/components/cart/CartPulseBadge";
 
-export function FloatingCartButton({ onClick }: { onClick: () => void }) {
-  const itemCount = useCart((s) => s.itemCount());
-  const total = useCart((s) => s.subtotal());
-  const pulseKey = useCartUI((s) => s.pulseKey);
+type FloatingCartButtonProps = {
+  cartCount: number;
+  cartTotal?: number;
+  isPulsing?: boolean;
+  onClick: () => void;
+};
+
+export function FloatingCartButton({
+  cartCount,
+  cartTotal = 0,
+  isPulsing = false,
+  onClick,
+}: FloatingCartButtonProps) {
   const ref = useRef<HTMLButtonElement>(null);
   useRegisterMobileCartTarget(ref);
 
-  const controls = useAnimation();
-  useEffect(() => {
-    if (pulseKey === 0) return;
-    controls.start({
-      y: [0, -14, 0, -6, 0],
-      transition: { duration: 0.55, ease: "easeOut" },
-    });
-  }, [pulseKey, controls]);
+  if (cartCount <= 0) return null;
 
   return (
-    <AnimatePresence>
-      {itemCount > 0 && (
-        <motion.button
-          ref={ref}
-          key="floating-cart"
-          initial={{ y: 80, opacity: 0, scale: 0.85 }}
-          animate={{ y: 0, opacity: 1, scale: 1 }}
-          exit={{ y: 80, opacity: 0, scale: 0.85 }}
-          transition={{ type: "spring", stiffness: 380, damping: 28 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={onClick}
-          className="fixed bottom-5 left-1/2 -translate-x-1/2 lg:left-auto lg:right-6 lg:translate-x-0 z-40 flex items-center gap-3 bg-primary hover:bg-primary/90 text-primary-foreground rounded-full pl-4 pr-5 h-14 shadow-ember font-stencil tracking-wider ring-1 ring-gold/40"
-          aria-label={`View cart, ${itemCount} items, $${total.toFixed(2)}`}
-        >
-          <motion.span animate={controls} className="relative inline-flex">
-            <ShoppingCart className="h-5 w-5" />
-            <span className="absolute -top-3.5 -right-3.5 min-w-[1.5rem] h-6 px-1.5 rounded-full bg-gradient-ember text-primary-foreground text-xs font-stencil font-bold flex items-center justify-center border-2 border-background shadow-ember ring-1 ring-primary/60">
-              <motion.span
-                key={`pulse-${pulseKey}`}
-                aria-hidden
-                initial={{ scale: 1, opacity: 0.7 }}
-                animate={{ scale: 2.4, opacity: 0 }}
-                transition={{ duration: 0.45, ease: "easeOut" }}
-                className="absolute inset-0 rounded-full bg-primary/60"
-              />
-              <motion.span
-                key={`count-${itemCount}-${pulseKey}`}
-                initial={{ scale: 1.5 }}
-                animate={{ scale: 1 }}
-                transition={{ type: "spring", stiffness: 500, damping: 18 }}
-                className="relative"
-              >
-                {itemCount}
-              </motion.span>
-            </span>
+    <motion.button
+      ref={ref}
+      type="button"
+      onClick={onClick}
+      animate={
+        isPulsing
+          ? { scale: [1, 1.12, 1], rotate: [0, -3, 3, 0] }
+          : { scale: 1, rotate: 0 }
+      }
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
+      transition={{ duration: 0.35, ease: "easeOut" }}
+      className="fixed bottom-6 right-6 z-[9998] flex items-center gap-3 rounded-full border border-gold/40 bg-gradient-to-r from-primary to-primary/80 px-5 py-4 text-primary-foreground shadow-ember hover:from-primary hover:to-primary"
+      aria-label={`Open cart, ${cartCount} items, $${cartTotal.toFixed(2)}`}
+    >
+      <div className="relative">
+        <ShoppingCart className="h-6 w-6" />
+        {cartCount > 0 && (
+          <motion.span
+            key={cartCount}
+            initial={{ scale: 0.4, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="absolute -right-3 -top-3 flex h-6 min-w-6 items-center justify-center rounded-full border border-gold bg-background px-1 text-xs font-black text-foreground"
+          >
+            {cartCount}
           </motion.span>
-          <span className="text-sm">View Order</span>
-          <span className="text-sm">·</span>
-          <span className="font-display text-lg">${total.toFixed(2)}</span>
-        </motion.button>
-      )}
-    </AnimatePresence>
+        )}
+      </div>
+      <div className="hidden text-left sm:block">
+        <p className="font-stencil text-xs font-bold uppercase tracking-[0.18em] text-gold">
+          Cart
+        </p>
+        <p className="text-sm font-black">${cartTotal.toFixed(2)}</p>
+      </div>
+    </motion.button>
   );
 }
