@@ -7,6 +7,8 @@ import { SecureCheckoutOverlay } from "./SecureCheckoutOverlay";
 
 export type CheckoutCartItem = {
   menuItemId: string;
+  specialId?: string;
+  specialItemId?: string;
   quantity: number;
   selectedOptionIds?: string[];
   notes?: string;
