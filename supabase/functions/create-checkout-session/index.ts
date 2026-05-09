@@ -14,6 +14,8 @@ const corsHeaders = {
 
 type CartItemInput = {
   menuItemId: string;
+  specialId?: string;
+  specialItemId?: string;
   quantity: number;
   selectedOptionIds?: string[];
   notes?: string;
