@@ -59,6 +59,7 @@ export function SpecialCard({
     addItem({
       id: `special-${special.id}`,
       menuItemId: special.id,
+      specialId: special.id,
       name: special.title,
       price: Number(special.special_price),
       priceLabel: SPECIAL_TYPE_LABEL[special.type],
@@ -71,6 +72,8 @@ export function SpecialCard({
     addItem({
       id: `special-item-${it.id}`,
       menuItemId: it.menu_item_id ?? special.id,
+      specialId: special.id,
+      specialItemId: it.id,
       name: `${special.title} — ${it.item_name}`,
       price: Number(it.special_price),
       priceLabel: SPECIAL_TYPE_LABEL[special.type],
