@@ -107,13 +107,57 @@ Deno.serve(async (req) => {
       return jsonResponse(400, { error: "Delivery address is required for delivery orders." });
     }
 
-    const menuItemIds = [...new Set(cartItems.map((i) => i.menuItemId))];
-    const { data: menuRows, error: menuError } = await supabaseAdmin
-      .from("menu_items")
-      .select("id, name, description, price, is_available")
-      .in("id", menuItemIds);
-    if (menuError) throw menuError;
-    const menuMap = new Map(menuRows?.map((m) => [m.id, m]) ?? []);
+    // Resolve regular menu items.
+    const menuItemIds = [
+      ...new Set(
+        cartItems
+          .filter((i) => !i.specialId && !i.specialItemId)
+          .map((i) => i.menuItemId),
+      ),
+    ];
+    let menuMap = new Map<string, any>();
+    if (menuItemIds.length > 0) {
+      const { data: menuRows, error: menuError } = await supabaseAdmin
+        .from("menu_items")
+        .select("id, name, description, price, is_available")
+        .in("id", menuItemIds);
+      if (menuError) throw menuError;
+      menuMap = new Map(menuRows?.map((m) => [m.id, m]) ?? []);
+    }
+
+    // Resolve specials and special items for cart lines added from /specials.
+    const specialIds = [
+      ...new Set(
+        cartItems
+          .map((i) => i.specialId)
+          .filter((v): v is string => !!v),
+      ),
+    ];
+    let specialsMap = new Map<string, any>();
+    if (specialIds.length > 0) {
+      const { data: rows, error } = await supabaseAdmin
+        .from("specials")
+        .select("id, title, special_price, is_active, sold_out")
+        .in("id", specialIds);
+      if (error) throw error;
+      specialsMap = new Map(rows?.map((r: any) => [r.id, r]) ?? []);
+    }
+    const specialItemIds = [
+      ...new Set(
+        cartItems
+          .map((i) => i.specialItemId)
+          .filter((v): v is string => !!v),
+      ),
+    ];
+    let specialItemsMap = new Map<string, any>();
+    if (specialItemIds.length > 0) {
+      const { data: rows, error } = await supabaseAdmin
+        .from("special_items")
+        .select("id, item_name, special_price, is_active, special_id, menu_item_id")
+        .in("id", specialItemIds);
+      if (error) throw error;
+      specialItemsMap = new Map(rows?.map((r: any) => [r.id, r]) ?? []);
+    }
 
     const optionIds = [...new Set(cartItems.flatMap((i) => i.selectedOptionIds ?? []).filter(Boolean))];
     let optionMap = new Map<string, { id: string; option_name: string; price_adjustment: number }>();
@@ -127,10 +171,57 @@ Deno.serve(async (req) => {
     }
 
     const calculated = cartItems.map((ci) => {
+      const quantity = Math.min(Math.max(Number(ci.quantity || 1), 1), 25);
+
+      // Special item line.
+      if (ci.specialItemId) {
+        const si = specialItemsMap.get(ci.specialItemId);
+        if (!si || si.is_active === false) {
+          throw new Error("One or more special items are no longer available.");
+        }
+        const parent = specialsMap.get(si.special_id);
+        if (parent && (parent.is_active === false || parent.sold_out)) {
+          throw new Error(`${parent.title ?? "Special"} is currently unavailable.`);
+        }
+        const unitPriceCents = toCents(si.special_price);
+        if (unitPriceCents <= 0) throw new Error(`${si.item_name} does not have a valid price.`);
+        return {
+          menuItemId: si.menu_item_id ?? null,
+          itemName: parent ? `${parent.title} — ${si.item_name}` : si.item_name,
+          description: "",
+          quantity,
+          unitPriceCents,
+          lineTotalCents: unitPriceCents * quantity,
+          selectedOptions: [] as { id: string; name: string; priceAdjustmentCents: number }[],
+          notes: cleanText(ci.notes, 300),
+        };
+      }
+
+      // Special-level line.
+      if (ci.specialId) {
+        const sp = specialsMap.get(ci.specialId);
+        if (!sp || sp.is_active === false) {
+          throw new Error("One or more specials are no longer available.");
+        }
+        if (sp.sold_out) throw new Error(`${sp.title} is sold out.`);
+        const unitPriceCents = toCents(sp.special_price);
+        if (unitPriceCents <= 0) throw new Error(`${sp.title} does not have a valid price.`);
+        return {
+          menuItemId: null,
+          itemName: sp.title,
+          description: "",
+          quantity,
+          unitPriceCents,
+          lineTotalCents: unitPriceCents * quantity,
+          selectedOptions: [] as { id: string; name: string; priceAdjustmentCents: number }[],
+          notes: cleanText(ci.notes, 300),
+        };
+      }
+
+      // Regular menu item.
       const m = menuMap.get(ci.menuItemId);
       if (!m) throw new Error("One or more menu items could not be found.");
       if (!m.is_available) throw new Error(`${m.name} is currently unavailable.`);
-      const quantity = Math.min(Math.max(Number(ci.quantity || 1), 1), 25);
       const basePriceCents = toCents(m.price);
       if (basePriceCents <= 0) throw new Error(`${m.name} does not have a valid price.`);
       const selectedOptions = (ci.selectedOptionIds ?? []).map((id) => {
@@ -141,7 +232,7 @@ Deno.serve(async (req) => {
       const optionsTotalCents = selectedOptions.reduce((s, o) => s + o.priceAdjustmentCents, 0);
       const unitPriceCents = basePriceCents + optionsTotalCents;
       return {
-        menuItemId: m.id,
+        menuItemId: m.id as string | null,
         itemName: m.name,
         description: m.description ?? "",
         quantity,
