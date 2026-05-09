@@ -722,6 +722,8 @@ const Checkout = () => {
                   setEmbeddedPayload({
                     cartItems: items.map((i) => ({
                       menuItemId: i.menuItemId,
+                      specialId: i.specialId,
+                      specialItemId: i.specialItemId,
                       quantity: i.quantity,
                       selectedOptionIds: (i.selectedOptions ?? []).map((o: any) => o.id).filter(Boolean),
                       notes: i.notes ?? undefined,
