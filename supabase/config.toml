@@ -1,5 +1,8 @@
 project_id = "rqlefpspupxniwtlcdqp"
 
+[functions.health]
+verify_jwt = false
+
 [functions.create-checkout-session]
 verify_jwt = false
 
