@@ -17,6 +17,8 @@ export type CartItem = {
   priceLabel?: string | null;
   optionLabel?: string;
   selectedOptions?: SelectedOption[];
+  specialId?: string;
+  specialItemId?: string;
 };
 
 type CartState = {

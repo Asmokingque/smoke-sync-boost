@@ -5,6 +5,8 @@ import { useCallback, useMemo } from "react";
 
 export type CheckoutCartItem = {
   menuItemId: string;
+  specialId?: string;
+  specialItemId?: string;
   quantity: number;
   selectedOptionIds?: string[];
   notes?: string;
