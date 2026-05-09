@@ -1,0 +1,1 @@
+UPDATE public.menu_items SET image_url = '/menu/chopped-beef-sandwich-combo.jpg' WHERE id = '22222222-0000-0000-0000-000000000012';
