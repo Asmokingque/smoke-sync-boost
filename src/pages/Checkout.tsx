@@ -693,6 +693,8 @@ const Checkout = () => {
               </div>
             )}
 
+            <SafetyCommitmentBlock />
+
             <div className="grid sm:grid-cols-2 gap-3">
               <Button
                 type="submit"
