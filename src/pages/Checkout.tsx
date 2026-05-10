@@ -13,6 +13,7 @@ import { Loader2, ShoppingBag, Tag, X, Bug, Download, Check, ShoppingCart, User,
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
+import { SafetyCommitmentBlock } from "@/components/checkout/SafetyCommitmentBlock";
 import { computeDiscount, buildSafeOrderTotals, type Promo } from "@/lib/promo";
 import { useCommunityDiscount, computeCommunityDiscountAmount } from "@/hooks/useCommunityDiscount";
 import { StripeEmbeddedCheckout, type CheckoutCartItem, type CheckoutCustomerInfo } from "@/components/checkout/StripeEmbeddedCheckout";
@@ -691,6 +692,8 @@ const Checkout = () => {
                 </div>
               </div>
             )}
+
+            <SafetyCommitmentBlock />
 
             <div className="grid sm:grid-cols-2 gap-3">
               <Button
