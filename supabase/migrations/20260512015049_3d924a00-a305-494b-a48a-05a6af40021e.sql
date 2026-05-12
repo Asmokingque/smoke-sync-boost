@@ -1,0 +1,1 @@
+UPDATE public.menu_items SET name = 'Smoked Chicken Wings', image_url = '/menu/smoked-chicken-wings.jpg' WHERE id = '22222222-0000-0000-0000-000000000021';
