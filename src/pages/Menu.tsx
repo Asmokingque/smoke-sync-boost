@@ -62,11 +62,38 @@ const Menu = () => {
       setLoading(false);
     };
     fetchAll();
+
     const channel = supabase
       .channel("menu-live")
-      .on("postgres_changes", { event: "*", schema: "public", table: "menu_categories" }, fetchAll)
-      .on("postgres_changes", { event: "*", schema: "public", table: "menu_items" }, fetchAll)
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "menu_categories" }, (payload) => {
+        setCategories((prev) =>
+          [...prev, payload.new as Category].sort((a, b) => a.display_order - b.display_order)
+        );
+      })
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "menu_categories" }, (payload) => {
+        setCategories((prev) =>
+          prev.map((c) => (c.id === payload.new.id ? (payload.new as Category) : c))
+            .sort((a, b) => a.display_order - b.display_order)
+        );
+      })
+      .on("postgres_changes", { event: "DELETE", schema: "public", table: "menu_categories" }, (payload) => {
+        setCategories((prev) => prev.filter((c) => c.id !== payload.old.id));
+      })
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "menu_items" }, (payload) => {
+        setItems((prev) =>
+          [...prev, payload.new as Item].sort((a, b) => a.display_order - b.display_order)
+        );
+      })
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "menu_items" }, (payload) => {
+        setItems((prev) =>
+          prev.map((i) => (i.id === payload.new.id ? (payload.new as Item) : i))
+        );
+      })
+      .on("postgres_changes", { event: "DELETE", schema: "public", table: "menu_items" }, (payload) => {
+        setItems((prev) => prev.filter((i) => i.id !== payload.old.id));
+      })
       .subscribe();
+
     return () => {
       active = false;
       supabase.removeChannel(channel);
