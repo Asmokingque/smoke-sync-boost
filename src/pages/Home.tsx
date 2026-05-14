@@ -18,6 +18,11 @@ const Home = () => {
   const nextHolidays = upcomingHolidays.slice(0, 3);
   return (
     <SiteLayout>
+      <Seo
+        title="Anderson's Smoking Que — Smoked Low. Served Bold."
+        description="Authentic Southern smokehouse: slow-smoked brisket, ribs, pulled pork, wings & sides. Order online for pickup or book catering."
+        path="/"
+      />
       {/* HERO */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0">

@@ -127,6 +127,11 @@ const Reviews = () => {
 
   return (
     <SiteLayout>
+      <Seo
+        title="Customer Reviews — Anderson's Smoking Que"
+        description="Read real customer reviews and see photos from our smokehouse and catering events."
+        path="/reviews"
+      />
       <section className="relative bg-gradient-smoke border-b border-gold/20 overflow-hidden">
         <div aria-hidden className="absolute left-1/2 top-0 -translate-x-1/2 h-[24rem] w-[40rem] rounded-full bg-primary/20 blur-[140px]" />
         <div className="relative container py-20 md:py-28 text-center">

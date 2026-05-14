@@ -75,6 +75,11 @@ const OrderStatus = () => {
 
   return (
     <SiteLayout>
+      <Seo
+        title="Order Status — Anderson's Smoking Que"
+        description="Track your pickup order from Anderson's Smoking Que."
+        path="/order-status"
+      />
       <section className="bg-gradient-smoke border-b border-border">
         <div className="container py-12 md:py-16 text-center">
           <div className="font-stencil text-sm text-primary mb-2">Track Your Order</div>

@@ -23,6 +23,11 @@ const Specials = () => {
 
   return (
     <SiteLayout>
+      <Seo
+        title="Daily & Lunch Specials — Anderson's Smoking Que"
+        description="Today's smokehouse special, weekday lunch deals, and heroes discount — fresh from the pit."
+        path="/specials"
+      />
       {/* HERO */}
       <section className="relative border-b border-gold/20 overflow-hidden">
         <div aria-hidden className="absolute left-1/2 top-0 -translate-x-1/2 h-[24rem] w-[40rem] rounded-full bg-primary/20 blur-[140px]" />
