@@ -27,7 +27,7 @@ const Home = () => {
       {/* HERO */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0">
-          <img src={hero} alt="" width={1920} height={1080} className="h-full w-full object-cover opacity-30" />
+          <img src={hero} alt="" width={1920} height={1080} fetchPriority="high" decoding="async" className="h-full w-full object-cover opacity-30" />
           <div className="absolute inset-0 bg-gradient-to-b from-charcoal/70 via-charcoal/85 to-background" />
           {/* Crimson glow behind heading */}
           <div aria-hidden className="absolute left-1/2 top-1/3 -translate-x-1/2 -translate-y-1/2 h-[42rem] w-[42rem] rounded-full bg-primary/25 blur-[140px]" />
