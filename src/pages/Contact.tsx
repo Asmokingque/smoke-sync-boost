@@ -1,3 +1,4 @@
+import { Seo } from "@/components/seo/Seo";
 import { useState } from "react";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
@@ -46,6 +47,11 @@ const Contact = () => {
 
   return (
     <SiteLayout>
+      <Seo
+        title="Contact Us — Anderson's Smoking Que"
+        description="Questions, feedback, or catering inquiries? Get in touch with Anderson's Smoking Que."
+        path="/contact"
+      />
       <section className="bg-gradient-smoke border-b border-border">
         <div className="container py-12 md:py-16 text-center">
           <div className="font-stencil text-sm text-primary mb-2">Get in Touch</div>

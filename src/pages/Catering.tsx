@@ -1,3 +1,4 @@
+import { Seo } from "@/components/seo/Seo";
 import { useState } from "react";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
@@ -66,6 +67,11 @@ const Catering = () => {
 
   return (
     <SiteLayout>
+      <Seo
+        title="BBQ Catering — Anderson's Smoking Que"
+        description="Full-service BBQ catering for weddings, corporate events, birthdays & reunions. Slow-smoked meats and Southern sides delivered."
+        path="/catering"
+      />
       <section className="relative border-b border-gold/20 overflow-hidden">
         <div aria-hidden className="absolute left-1/2 top-0 -translate-x-1/2 h-[24rem] w-[40rem] rounded-full bg-primary/20 blur-[140px]" />
         <div className="relative container py-28 md:py-36 text-center">

@@ -1,0 +1,21 @@
+# Anderson's Smoking Que
+
+> Authentic Southern smokehouse serving slow-smoked brisket, ribs, pulled pork, wings, Southern sides, and full-service catering. Order online for pickup or book us for events.
+
+Anderson's Smoking Que cooks low and slow over hardwood. The site lets customers browse the menu, place pickup orders, request catering, view daily and lunch specials, check holiday hours, and read customer reviews.
+
+## Pages
+
+- [Home](/): Brand overview, today's special, signature favorites, catering CTA.
+- [Menu](/menu): Full BBQ menu — meats by the pound, plates, sandwiches, sides, desserts, drinks. Order online for pickup.
+- [Specials](/specials): Daily, lunch, and heroes specials currently running.
+- [Holiday Calendar](/holiday-calendar): Holiday hours and seasonal BBQ events.
+- [Catering](/catering): Request catering for birthdays, corporate events, weddings, and more.
+- [Reviews](/reviews): Customer experience wall with photos and ratings.
+- [Order Status](/order-status): Track an existing pickup order.
+- [Contact](/contact): Reach the team for questions or catering inquiries.
+
+## Optional
+
+- [Sign In](/auth): Customer account access.
+- [Account](/account): Manage saved details and order history.

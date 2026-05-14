@@ -1,3 +1,4 @@
+import { Seo } from "@/components/seo/Seo";
 import { useMemo, useState } from "react";
 import { SiteLayout } from "@/components/layout/SiteLayout";
 import { useSpecials } from "@/hooks/useSpecials";
@@ -51,6 +52,11 @@ const HolidayCalendar = () => {
 
   return (
     <SiteLayout>
+      <Seo
+        title="Holiday Hours & Calendar — Anderson's Smoking Que"
+        description="Holiday hours, seasonal BBQ events, and special menus throughout the year."
+        path="/holiday-calendar"
+      />
       <section className="relative border-b border-gold/20 overflow-hidden">
         <div aria-hidden className="absolute left-1/2 top-0 -translate-x-1/2 h-[24rem] w-[40rem] rounded-full bg-primary/20 blur-[140px]" />
         <motion.div

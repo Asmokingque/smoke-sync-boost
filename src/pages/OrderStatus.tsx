@@ -1,3 +1,4 @@
+import { Seo } from "@/components/seo/Seo";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { SiteLayout } from "@/components/layout/SiteLayout";
@@ -75,6 +76,11 @@ const OrderStatus = () => {
 
   return (
     <SiteLayout>
+      <Seo
+        title="Order Status — Anderson's Smoking Que"
+        description="Track your pickup order from Anderson's Smoking Que."
+        path="/order-status"
+      />
       <section className="bg-gradient-smoke border-b border-border">
         <div className="container py-12 md:py-16 text-center">
           <div className="font-stencil text-sm text-primary mb-2">Track Your Order</div>

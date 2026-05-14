@@ -1,3 +1,4 @@
+import { Seo } from "@/components/seo/Seo";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { SiteLayout } from "@/components/layout/SiteLayout";
@@ -251,6 +252,17 @@ const Menu = () => {
 
   return (
     <SiteLayout>
+      <Seo
+        title="BBQ Menu — Anderson's Smoking Que"
+        description="Slow-smoked brisket, ribs, pulled pork, wings, plates, sandwiches and Southern sides. Order online for pickup."
+        path="/menu"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "Menu",
+          name: "Anderson's Smoking Que Menu",
+          url: "https://asmokingque.com/menu",
+        }}
+      />
       {/* Hero with smoke + ember backdrop */}
       <section className="relative border-b border-gold/20 overflow-hidden">
         <SmokeBackground density="md" />
