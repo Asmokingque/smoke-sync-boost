@@ -1,3 +1,4 @@
+import { Seo } from "@/components/seo/Seo";
 import { useState } from "react";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";

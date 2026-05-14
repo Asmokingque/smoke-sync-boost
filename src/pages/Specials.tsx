@@ -1,3 +1,4 @@
+import { Seo } from "@/components/seo/Seo";
 import { useMemo } from "react";
 import { SiteLayout } from "@/components/layout/SiteLayout";
 import { SpecialCard } from "@/components/specials/SpecialCard";

@@ -1,3 +1,4 @@
+import { Seo } from "@/components/seo/Seo";
 import { useMemo, useState } from "react";
 import { SiteLayout } from "@/components/layout/SiteLayout";
 import { useSpecials } from "@/hooks/useSpecials";

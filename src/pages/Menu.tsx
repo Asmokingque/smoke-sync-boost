@@ -1,3 +1,4 @@
+import { Seo } from "@/components/seo/Seo";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { SiteLayout } from "@/components/layout/SiteLayout";

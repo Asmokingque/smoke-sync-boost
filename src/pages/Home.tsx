@@ -1,3 +1,4 @@
+import { Seo } from "@/components/seo/Seo";
 import { Link } from "react-router-dom";
 import { Flame, Clock, Award, ChevronRight, Plus, Sparkles, CalendarDays, Heart, UtensilsCrossed } from "lucide-react";
 import { motion } from "framer-motion";
