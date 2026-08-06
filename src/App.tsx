@@ -14,6 +14,8 @@ import Contact from "./pages/Contact";
 import Auth from "./pages/Auth";
 import Account from "./pages/Account";
 import AdminLayout from "./pages/admin/AdminLayout";
+import AdminLogin from "./pages/admin/AdminLogin";
+import AdminUsers from "./pages/admin/AdminUsers";
 import AdminOrders from "./pages/admin/AdminOrders";
 import AdminMenu from "./pages/admin/AdminMenu";
 import AdminReviews from "./pages/admin/AdminReviews";
@@ -57,6 +59,7 @@ const App = () => (
           <Route path="/account" element={<Account />} />
           <Route path="/change-password" element={<ChangePassword />} />
           <Route path="/unsubscribe" element={<Unsubscribe />} />
+          <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<AdminOrders />} />
             <Route path="menu" element={<AdminMenu />} />
@@ -66,6 +69,7 @@ const App = () => (
             <Route path="contact" element={<AdminContact />} />
             <Route path="sop" element={<AdminSOP />} />
             <Route path="content" element={<AdminContent />} />
+            <Route path="users" element={<AdminUsers />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>

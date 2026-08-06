@@ -1,23 +1,26 @@
 import { Navigate, NavLink, Outlet, useLocation, Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { Loader2, ShoppingBag, MessageSquareText, UtensilsCrossed, Mail, LogOut, Home, ShieldAlert, Sparkles, BookOpen, FileText } from "lucide-react";
+import { Loader2, ShoppingBag, MessageSquareText, UtensilsCrossed, Mail, LogOut, Home, ShieldAlert, Sparkles, BookOpen, FileText, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import logo from "@/assets/logo.png";
 
-const navItems = [
+type AdminNavItem = { to: string; label: string; icon: typeof ShoppingBag; end?: boolean; superOnly?: boolean };
+
+const navItems: AdminNavItem[] = [
   { to: "/admin", end: true, label: "Orders", icon: ShoppingBag },
   { to: "/admin/menu", label: "Menu", icon: UtensilsCrossed },
   { to: "/admin/specials", label: "Specials & Calendar", icon: Sparkles },
   { to: "/admin/reviews", label: "Reviews", icon: MessageSquareText },
   { to: "/admin/catering", label: "Catering", icon: Mail },
   { to: "/admin/contact", label: "Contact", icon: MessageSquareText },
-  { to: "/admin/content", label: "Site Content", icon: FileText },
+  { to: "/admin/content", label: "Site Content", icon: FileText, superOnly: true },
+  { to: "/admin/users", label: "Users & Admins", icon: Users, superOnly: true },
   { to: "/admin/sop", label: "Website SOP", icon: BookOpen },
 ];
 
 const AdminLayout = () => {
-  const { user, isAdmin, mustChangePassword, loading } = useAuth();
+  const { user, isAdmin, isSuperAdmin, mustChangePassword, loading } = useAuth();
   const location = useLocation();
 
   if (!loading && user && mustChangePassword && location.pathname !== "/change-password") {
@@ -33,7 +36,7 @@ const AdminLayout = () => {
   }
 
   if (!user) {
-    return <Navigate to={`/auth?redirect=${encodeURIComponent(location.pathname)}`} replace />;
+    return <Navigate to="/admin/login" replace state={{ from: location.pathname }} />;
   }
 
   if (!isAdmin) {
@@ -44,7 +47,7 @@ const AdminLayout = () => {
           <h1 className="font-serif text-4xl mb-2">Access Denied</h1>
           <span className="gold-rule-short mx-auto block mb-4" />
           <p className="text-muted-foreground mb-6 text-sm">
-            This area is restricted to Anderson's Smoking Que admins. If you believe this is a mistake, sign in with the admin account.
+            Access denied. This account is not authorized for the admin dashboard.
           </p>
           <div className="flex gap-2 justify-center flex-wrap">
             <Button asChild variant="outline" className="font-stencil"><Link to="/">Back to site</Link></Button>
@@ -57,6 +60,7 @@ const AdminLayout = () => {
     );
   }
 
+
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-background">
       <aside className="md:w-64 md:min-h-screen border-b md:border-b-0 md:border-r border-gold/20 bg-sidebar relative">
@@ -65,11 +69,13 @@ const AdminLayout = () => {
           <img src={logo} alt="" className="h-10 w-10 object-contain" width={40} height={40} />
           <div className="leading-tight">
             <div className="font-serif text-2xl tracking-tight">Admin</div>
-            <div className="font-stencil text-[10px] text-gold tracking-[0.32em] mt-0.5">Anderson's Smoking Que</div>
+            <div className="font-stencil text-[10px] text-gold tracking-[0.32em] mt-0.5">
+              {isSuperAdmin ? "Super Admin" : "Admin"}
+            </div>
           </div>
         </div>
         <nav className="flex md:flex-col gap-1 p-2 overflow-x-auto">
-          {navItems.map((n) => (
+          {navItems.filter((n) => !n.superOnly || isSuperAdmin).map((n) => (
             <NavLink
               key={n.to}
               to={n.to}
