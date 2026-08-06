@@ -1,6 +1,8 @@
 /**
  * theme.ts
  * ---------------------------------------------------------------------------
+ * Edit this file to change colors, spacing and shared style classes.
+ *
  * Design tokens in one place. Colors themselves are defined as CSS variables
  * in src/index.css (the locked brand palette). This file maps them to
  * friendly names plus reusable class strings so components don't repeat

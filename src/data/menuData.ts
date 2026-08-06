@@ -1,6 +1,8 @@
 /**
  * menuData.ts
  * ---------------------------------------------------------------------------
+ * Edit this file to change fallback menu items.
+ *
  * FALLBACK menu used when the backend (Lovable Cloud / Supabase) is not
  * connected or returns no rows — e.g. running locally after export.
  *

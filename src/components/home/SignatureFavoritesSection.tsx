@@ -10,19 +10,15 @@ import { PremiumCard } from "@/components/shared/PremiumCard";
 import { PremiumButton } from "@/components/shared/PremiumButton";
 import { siteContent } from "@/data/siteContent";
 
-/** Trust badges shown above the favorites */
-const highlights = [
-  { icon: Flame, title: "Wood-Fired", body: "Slow-smoked over hardwood for that deep, signature bark and smoke ring." },
-  { icon: Clock, title: "Made Daily", body: "Cooked fresh every morning. When it's gone, it's gone — get yours early." },
-  { icon: Award, title: "Catering Ready", body: "From small gatherings to large events, we bring the smokehouse to you." },
-];
+/** Icon lookup — copy lives in src/data/siteContent.ts */
+const icons = { flame: Flame, clock: Clock, award: Award } as const;
 
-/** The three featured dishes — edit names, descriptions and prices here */
-const favorites = [
-  { name: "Two Meat Plate", desc: "Your choice of two slow-smoked meats with two Southern sides and cornbread.", price: "$15" },
-  { name: "Smoked Brisket by the Pound", desc: "Hardwood-smoked brisket, sliced fresh and sold by the pound.", price: "$28" },
-  { name: "St. Louis Pork Ribs", desc: "Half or full slab — hand-rubbed and smoked low until tender.", price: "$22" },
-];
+const highlights = siteContent.highlights.map((h) => ({
+  ...h,
+  icon: icons[h.icon as keyof typeof icons] ?? Flame,
+}));
+
+const favorites = siteContent.favorites;
 
 export function SignatureFavoritesSection() {
   return (
