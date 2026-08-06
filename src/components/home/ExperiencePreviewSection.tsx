@@ -14,11 +14,8 @@ import { siteContent } from "@/data/siteContent";
 
 type Review = { id: string; author_name: string; rating: number; title: string | null; body: string };
 
-const experienceCopy = {
-  badge: "Guest Experience",
-  title: "From the Table",
-  subtitle: "Real words from real guests who came hungry and left happy.",
-};
+/** Copy lives in src/data/siteContent.ts */
+const experienceCopy = siteContent.experience;
 
 export function ExperiencePreviewSection() {
   const [reviews, setReviews] = useState<Review[]>([]);
