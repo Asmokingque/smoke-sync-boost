@@ -1,6 +1,8 @@
 import { Seo } from "@/components/seo/Seo";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useMenuData } from "@/hooks/useMenuData";
+
 import { SiteLayout } from "@/components/layout/SiteLayout";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/store/cart";
@@ -42,64 +44,13 @@ type ViewMode = "card" | "list";
 
 const Menu = () => {
   const [pickerItem, setPickerItem] = useState<Item | null>(null);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [items, setItems] = useState<Item[]>([]);
-  const [loading, setLoading] = useState(true);
+  // Menu data: loads from the backend, falls back to src/data/menuData.ts
+  const { categories, items, loading } = useMenuData();
   const [activeSlug, setActiveSlug] = useState<string>("featured");
   const [view, setView] = useState<ViewMode>("card");
   const [search, setSearch] = useState("");
   const addItem = useCart((s) => s.addItem);
 
-  useEffect(() => {
-    let active = true;
-    const fetchAll = async () => {
-      const [cats, its] = await Promise.all([
-        supabase.from("menu_categories").select("*").order("display_order"),
-        supabase.from("menu_items").select("*").order("display_order"),
-      ]);
-      if (!active) return;
-      if (cats.data) setCategories(cats.data as Category[]);
-      if (its.data) setItems(its.data as Item[]);
-      setLoading(false);
-    };
-    fetchAll();
-
-    const channel = supabase
-      .channel("menu-live")
-      .on("postgres_changes", { event: "INSERT", schema: "public", table: "menu_categories" }, (payload) => {
-        setCategories((prev) =>
-          [...prev, payload.new as Category].sort((a, b) => a.display_order - b.display_order)
-        );
-      })
-      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "menu_categories" }, (payload) => {
-        setCategories((prev) =>
-          prev.map((c) => (c.id === payload.new.id ? (payload.new as Category) : c))
-            .sort((a, b) => a.display_order - b.display_order)
-        );
-      })
-      .on("postgres_changes", { event: "DELETE", schema: "public", table: "menu_categories" }, (payload) => {
-        setCategories((prev) => prev.filter((c) => c.id !== payload.old.id));
-      })
-      .on("postgres_changes", { event: "INSERT", schema: "public", table: "menu_items" }, (payload) => {
-        setItems((prev) =>
-          [...prev, payload.new as Item].sort((a, b) => a.display_order - b.display_order)
-        );
-      })
-      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "menu_items" }, (payload) => {
-        setItems((prev) =>
-          prev.map((i) => (i.id === payload.new.id ? (payload.new as Item) : i))
-        );
-      })
-      .on("postgres_changes", { event: "DELETE", schema: "public", table: "menu_items" }, (payload) => {
-        setItems((prev) => prev.filter((i) => i.id !== payload.old.id));
-      })
-      .subscribe();
-
-    return () => {
-      active = false;
-      supabase.removeChannel(channel);
-    };
-  }, []);
 
   const featured = useMemo(() => items.filter((i) => i.is_featured && i.is_available), [items]);
 
