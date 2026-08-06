@@ -1,6 +1,6 @@
 import { Navigate, NavLink, Outlet, useLocation, Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { Loader2, ShoppingBag, MessageSquareText, UtensilsCrossed, Mail, LogOut, Home, ShieldAlert, Sparkles, BookOpen, FileText, Users } from "lucide-react";
+import { Loader2, ShoppingBag, MessageSquareText, UtensilsCrossed, Mail, LogOut, Home, Sparkles, BookOpen, FileText, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import logo from "@/assets/logo.png";
