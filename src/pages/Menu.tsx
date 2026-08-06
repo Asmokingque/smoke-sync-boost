@@ -1,6 +1,8 @@
 import { Seo } from "@/components/seo/Seo";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useMenuData } from "@/hooks/useMenuData";
+
 import { SiteLayout } from "@/components/layout/SiteLayout";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/store/cart";
