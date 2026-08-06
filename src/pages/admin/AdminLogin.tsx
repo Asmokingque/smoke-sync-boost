@@ -17,7 +17,7 @@ const DENIED = "Access denied. This account is not authorized for the admin dash
 const AdminLogin = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, isAdmin, mustChangePassword, loading } = useAdminAuth();
+  const { user, isAdmin, mustChangePassword, loading, signIn } = useAdminAuth();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [form, setForm] = useState({ email: "", password: "" });
