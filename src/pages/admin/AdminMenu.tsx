@@ -32,7 +32,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
-import { useAuth } from "@/hooks/useAuth";
+import { useAdminAuth } from "@/context/AdminAuthProvider";
 import { useCartUI } from "@/store/cartUi";
 
 type Category = { id: string; name: string; slug: string; display_order: number; description?: string | null };
@@ -87,7 +87,7 @@ const emptyForm = (categoryId = ""): FormState => ({
 });
 
 const AdminMenu = () => {
-  const { isSuperAdmin } = useAuth();
+  const { isSuperAdmin } = useAdminAuth();
   const [items, setItems] = useState<Item[]>([]);
   const [cats, setCats] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);

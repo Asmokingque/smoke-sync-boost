@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Loader2, Plus, Trash2, Calendar as CalendarIcon, ArrowUp, ArrowDown, Eye, EyeOff, Package, Heart } from "lucide-react";
 import { toast } from "sonner";
-import { useAuth } from "@/hooks/useAuth";
+import { useAdminAuth } from "@/context/AdminAuthProvider";
 import type { Special, SpecialType } from "@/lib/specials";
 import { SPECIAL_TYPE_LABEL } from "@/lib/specials";
 
@@ -89,7 +89,7 @@ type CommunityDisc = {
 type AdminSpecialsFocus = "all" | "lunch" | "holiday";
 
 const AdminSpecials = ({ focus = "all" }: { focus?: AdminSpecialsFocus }) => {
-  const { isSuperAdmin } = useAuth();
+  const { isSuperAdmin } = useAdminAuth();
   const [specials, setSpecials] = useState<Special[]>([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<Partial<Special> | null>(null);

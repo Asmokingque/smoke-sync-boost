@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2, Lock, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
-import { useAuth } from "@/hooks/useAuth";
+import { useAdminAuth } from "@/context/AdminAuthProvider";
 import { z } from "zod";
 import logo from "@/assets/logo.png";
 
@@ -17,7 +17,7 @@ const DENIED = "Access denied. This account is not authorized for the admin dash
 const AdminLogin = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, isAdmin, mustChangePassword, loading } = useAuth();
+  const { user, isAdmin, mustChangePassword, loading } = useAdminAuth();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [form, setForm] = useState({ email: "", password: "" });

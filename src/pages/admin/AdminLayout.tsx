@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Navigate, NavLink, Outlet, useLocation, Link } from "react-router-dom";
-import { useAuth } from "@/hooks/useAuth";
+import { useAdminAuth } from "@/context/AdminAuthProvider";
 import {
   Loader2, ShoppingBag, MessageSquareText, UtensilsCrossed, Mail, LogOut, Home,
   Sparkles, BookOpen, FileText, Users, Settings, CreditCard, LayoutDashboard,
@@ -31,7 +31,7 @@ const navItems: AdminNavItem[] = [
 ];
 
 const AdminLayout = () => {
-  const { user, isAdmin, isSuperAdmin, mustChangePassword, loading } = useAuth();
+  const { user, isAdmin, isSuperAdmin, mustChangePassword, loading } = useAdminAuth();
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
 

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/hooks/useAuth";
+import { useAdminAuth } from "@/context/AdminAuthProvider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -22,7 +22,7 @@ type AdminRow = {
 const emailSchema = z.string().trim().email("Enter a valid email").max(255);
 
 const AdminUsers = () => {
-  const { isSuperAdmin, loading } = useAuth();
+  const { isSuperAdmin, loading } = useAdminAuth();
   const [rows, setRows] = useState<AdminRow[]>([]);
   const [busy, setBusy] = useState(false);
   const [fetching, setFetching] = useState(true);

@@ -7,14 +7,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2, ShieldAlert } from "lucide-react";
 import { toast } from "sonner";
-import { useAuth } from "@/hooks/useAuth";
+import { useAdminAuth } from "@/context/AdminAuthProvider";
 import { z } from "zod";
 
 const passwordSchema = z.string().min(8, "Password must be 8+ characters").max(72);
 
 const ChangePassword = () => {
   const navigate = useNavigate();
-  const { user, loading, mustChangePassword } = useAuth();
+  const { user, loading, mustChangePassword } = useAdminAuth();
   const [busy, setBusy] = useState(false);
   const [pw, setPw] = useState("");
   const [pw2, setPw2] = useState("");
