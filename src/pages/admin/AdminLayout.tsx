@@ -5,7 +5,9 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import logo from "@/assets/logo.png";
 
-const navItems = [
+type AdminNavItem = { to: string; label: string; icon: typeof ShoppingBag; end?: boolean; superOnly?: boolean };
+
+const navItems: AdminNavItem[] = [
   { to: "/admin", end: true, label: "Orders", icon: ShoppingBag },
   { to: "/admin/menu", label: "Menu", icon: UtensilsCrossed },
   { to: "/admin/specials", label: "Specials & Calendar", icon: Sparkles },
