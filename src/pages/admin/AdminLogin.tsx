@@ -44,35 +44,15 @@ const AdminLogin = () => {
       return;
     }
     setBusy(true);
-    const { data, error: signInError } = await supabase.auth.signInWithPassword({
-      email: parsed.data,
-      password: form.password,
-    });
-    if (signInError || !data.user) {
-      setBusy(false);
-      const msg = signInError?.message ?? "Sign in failed";
-      setError(msg);
-      return toast.error(msg);
-    }
-
-    const { data: adminRow } = await supabase
-      .from("admin_users")
-      .select("role, is_active")
-      .eq("user_id", data.user.id)
-      .eq("is_active", true)
-      .maybeSingle();
-
-    if (!adminRow) {
-      await supabase.auth.signOut();
-      setBusy(false);
-      setError(DENIED);
-      return toast.error(DENIED);
-    }
-
+    const result = await signIn(parsed.data, form.password);
     setBusy(false);
-    toast.success(adminRow.role === "super_admin" ? "Welcome back, Super Admin." : "Welcome back.");
+    if (!result.ok) {
+      setError(result.error ?? "Sign in failed");
+      return;
+    }
     navigate("/admin", { replace: true });
   };
+
 
   const resetPassword = async () => {
     const parsed = emailSchema.safeParse(form.email);
