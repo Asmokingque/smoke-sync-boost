@@ -8,7 +8,7 @@ import { motion } from "framer-motion";
 import { Award, Flame, Clock } from "lucide-react";
 import { PremiumCard } from "@/components/shared/PremiumCard";
 import { PremiumButton } from "@/components/shared/PremiumButton";
-import { siteContent } from "@/data/siteContent";
+import { useSiteContent } from "@/hooks/useEditableContent";
 
 /** Icon lookup — copy lives in src/data/siteContent.ts */
 const icons = { flame: Flame, clock: Clock, award: Award } as const;

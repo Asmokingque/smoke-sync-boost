@@ -10,7 +10,7 @@ import { PremiumButton } from "@/components/shared/PremiumButton";
 import { useSpecials } from "@/hooks/useSpecials";
 import { isVisibleNow } from "@/lib/specials";
 import { specialsCopy } from "@/data/specialsData";
-import { siteContent } from "@/data/siteContent";
+import { useSiteContent } from "@/hooks/useEditableContent";
 
 export function LunchSpecialsSection() {
   const { specials } = useSpecials({ activeOnly: true });

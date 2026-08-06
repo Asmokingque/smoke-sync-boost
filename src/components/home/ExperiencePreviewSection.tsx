@@ -10,7 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { SectionHeader } from "@/components/shared/SectionHeader";
 import { PremiumCard } from "@/components/shared/PremiumCard";
 import { PremiumButton } from "@/components/shared/PremiumButton";
-import { siteContent } from "@/data/siteContent";
+import { useSiteContent } from "@/hooks/useEditableContent";
 
 type Review = { id: string; author_name: string; rating: number; title: string | null; body: string };
 
