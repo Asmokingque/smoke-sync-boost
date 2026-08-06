@@ -8,7 +8,25 @@ with Supabase (Lovable Cloud) for database, auth, storage and edge functions.
 
 ---
 
-## Run it locally
+## 1. Anderson's Smoking Que Website Overview
+
+This project is the public website for **Anderson's Smoking Que**, a premium
+Southern smokehouse. It includes:
+
+- A branded homepage with editable sections
+- A full online menu with categories, photos, prices and search
+- A shopping cart with delivery/pickup options
+- Stripe checkout for online orders
+- Admin dashboard for menu, specials, catering requests and orders
+- Email receipts and admin notifications
+- SEO optimization with structured data and sitemaps
+
+The site is designed to be fully editable outside of Lovable through modular
+data files and components.
+
+---
+
+## 2. How to Run Locally
 
 ```bash
 npm install
@@ -26,17 +44,27 @@ npm run preview    # preview the production build
 
 ---
 
-## Where to edit things
+## 3. How to Export from Lovable
 
-### 1. Global text (business name, hero copy, footer, buttons)
+You can export the full codebase from Lovable at any time:
 
-`src/data/siteContent.ts`
+1. In Lovable, open the project.
+2. Go to **Settings → Git** or use the **Export** option.
+3. Connect to GitHub to create a synced repository, or download the project as a ZIP.
 
-Contains `businessName`, `tagline`, `email`, `heroTitle`, `heroSubtitle`,
-`heroDescription`, `serviceAreaText`, `footerText`, `socialLinks` and all
-`callToAction` button labels.
+Once exported, all files in this structure remain editable:
 
-### 2. Homepage sections
+- `src/data/` — all editable content
+- `src/components/home/` — homepage sections
+- `src/components/menu/` — menu layout
+- `src/components/cart/` — cart and checkout
+- `src/pages/admin/` — admin dashboard
+
+The site will still work locally using fallback data if Supabase is not connected.
+
+---
+
+## 4. How to Edit Homepage Sections
 
 `src/pages/Home.tsx` is only a list of sections. Reorder, remove or add lines:
 
@@ -67,10 +95,14 @@ homepage:
 | `CateringPreviewSection.tsx` | Catering call-to-action |
 | `ExperiencePreviewSection.tsx` | Guest review teaser |
 
-### 3. Menu items
+Global homepage text lives in `src/data/siteContent.ts`.
+
+---
+
+## 5. How to Edit Menu Items
 
 - **Live menu (what customers see in production):** edited in the Admin
-  dashboard at `/admin/menu`, stored in the database.
+dashboard at `/admin/menu`, stored in the database.
 - **Fallback / local development menu:** `src/data/menuData.ts`.
 
 Loading logic lives in `src/hooks/useMenuData.ts`:
@@ -79,66 +111,65 @@ Loading logic lives in `src/hooks/useMenuData.ts`:
 2. If it's not connected, errors, or returns no rows → use `menuData.ts`.
 3. Admin edits stream in live via realtime.
 
-### 4. Colors, fonts, spacing, buttons, cards
+Menu layout and presentation components live in `src/components/menu/` and
+`src/components/retina/`.
 
-- **Color values:** `src/index.css` (the locked `--bbq-*` brand palette) and
-  `tailwind.config.ts`.
-- **Reusable style tokens:** `src/data/theme.ts` (button classes, section
-  spacing, radius, card presets, type styles).
-- **Shared UI building blocks:** `src/components/shared/`
-  (`SectionHeader`, `PremiumCard`, `PremiumButton`, `SmokeDivider`,
-  `StatusBadge`). Use these instead of repeating classes.
+---
 
-> Always use semantic tokens (`text-gold`, `bg-primary`, `text-foreground`).
-> Never hardcode hex values or `text-white` / `bg-black` in components.
-
-### 5. Service area text
-
-`src/data/serviceAreaData.ts` — city list, delivery fee cards, footnote.
-
-### 6. Specials
+## 6. How to Edit Specials
 
 - Copy and fallbacks: `src/data/specialsData.ts`
 - Live specials: Admin dashboard → `/admin/specials`
 - Holiday copy and fallbacks: `src/data/holidayData.ts`
 
-### 7. Catering
-
-- Copy and package tiers: `src/data/cateringData.ts`
-- Packages grid component: `src/components/catering/CateringPackages.tsx`
-- Page: `src/pages/Catering.tsx`, inquiries land in `/admin/catering`
+Special cards and display logic live in `src/components/specials/`.
 
 ---
 
-## Folder map
+## 7. How to Edit Service Area Text
 
-```
-src/
-  assets/                 images bundled with the app
-  components/
-    layout/               Header, Footer, SiteLayout
-    home/                 one file per homepage section
-    menu/                 menu-specific UI (options picker, callouts)
-    retina/               menu cards, carousel, category bar, floating cart
-    cart/                 cart drawer, cart controls, checkout buttons
-    checkout/             Stripe embedded checkout, safety block
-    specials/             special cards
-    orders/               order status timeline
-    seo/                  <Seo /> head-tag helper
-    shared/               SectionHeader, PremiumCard, PremiumButton, StatusBadge
-    ui/                   shadcn/ui primitives (rarely edited directly)
-  data/                   EDITABLE CONTENT FILES (start here)
-  hooks/                  data loading (useMenuData, useSpecials, useAuth, ...)
-  lib/                    helpers (specials logic, promos, stripe, utils)
-  pages/                  one file per route
-    admin/                admin dashboard screens
-  integrations/supabase/  auto-generated client + types (do not edit)
-supabase/functions/       edge functions (checkout, webhooks, email, health)
-```
+`src/data/serviceAreaData.ts` — city list, delivery fee cards, footnote.
+
+Current default wording:
+
+> "Serving Lake City and surrounding areas."
+
+Change the `cities`, `details`, and `footnote` values in that file to update
+the "Where We Serve" section on the homepage.
 
 ---
 
-## Connecting the backend (Supabase)
+## 8. How to Edit Colors and Theme
+
+- **Color values:** `src/index.css` (the locked `--bbq-*` brand palette) and
+`tailwind.config.ts`.
+- **Reusable style tokens:** `src/data/theme.ts` (button classes, section
+spacing, radius, card presets, type styles).
+- **Shared UI building blocks:** `src/components/shared/`
+(`SectionHeader`, `PremiumCard`, `PremiumButton`, `SmokeDivider`,
+`StatusBadge`). Use these instead of repeating classes.
+
+> Always use semantic tokens (`text-gold`, `bg-primary`, `text-foreground`).
+> Never hardcode hex values or `text-white` / `bg-black` in components.
+
+---
+
+## 9. How Supabase Is Used
+
+Supabase (via Lovable Cloud) powers the backend:
+
+- **Database:** menu items, categories, specials, orders, catering requests,
+reviews, and admin data
+- **Auth:** admin login and protected dashboard routes
+- **Storage:** menu item photos and other uploaded assets
+- **Edge Functions:** checkout sessions, payment webhooks, email sending,
+health checks
+
+Client import:
+
+```ts
+import { supabase } from "@/integrations/supabase/client";
+```
 
 Environment variables live in `.env`:
 
@@ -155,27 +186,36 @@ fallback data files.
 Server-side secrets (Stripe key, email keys, service role) are configured as
 backend secrets, not in the repo.
 
-## Connecting Stripe
+---
+
+## 10. How Stripe Checkout Is Used
+
+Stripe Embedded Checkout is used for online orders:
 
 - Checkout session creation: `supabase/functions/create-checkout-session/`
 - Payment webhook (marks orders paid, triggers receipts):
-  `supabase/functions/payments-webhook/`
+`supabase/functions/payments-webhook/`
 - Client-side embedded checkout: `src/components/checkout/StripeEmbeddedCheckout.tsx`
-  and `src/lib/stripe.ts`
-- Publishable key: `VITE_STRIPE_PUBLISHABLE_KEY` in `.env`
+and `src/lib/stripe.ts`
+- Publishable key: `VITE_PAYMENTS_CLIENT_TOKEN` in `.env`
 - Secret key: stored as a backend secret (`STRIPE_SECRET_KEY`), never in code
+
+The checkout flow:
+
+1. Customer adds items to cart and chooses delivery or pickup.
+2. On checkout, the app sends the cart and order type to the Edge Function.
+3. The Edge Function creates a Stripe Checkout session and returns a
+`clientSecret`.
+4. The embedded Stripe form is displayed inline for the customer to pay.
+5. After payment, Stripe redirects to the return page and the webhook marks
+the order as paid.
+6. Email receipts and admin notifications are sent automatically.
 
 Test card: `4242 4242 4242 4242`, any future expiry, any CVC, any ZIP.
 
-## Emails
-
-Order receipts and admin notifications are sent from
-`supabase/functions/send-order-emails/` using templates in
-`supabase/functions/_shared/transactional-email-templates/`.
-
 ---
 
-## Deployment
+## 11. How to Deploy
 
 **From Lovable:** click Publish. Custom domains are managed in project settings.
 
@@ -189,7 +229,21 @@ Order receipts and admin notifications are sent from
 
 ---
 
-## Editing conventions
+## Editing Quick Reference
+
+| What to change | Where to edit |
+| --- | --- |
+| Business name, hero text, footer, CTAs | `src/data/siteContent.ts` |
+| Fallback menu items | `src/data/menuData.ts` |
+| Colors and theme tokens | `src/data/theme.ts` and `src/index.css` |
+| Homepage sections | `src/components/home/` |
+| Menu layout | `src/components/menu/` and `src/components/retina/` |
+| Cart and checkout | `src/components/cart/` and `src/components/checkout/` |
+| Admin dashboard | `src/pages/admin/` |
+
+---
+
+## Editing Conventions
 
 - One component = one job. Keep files small.
 - Put text in `src/data/`, not inside JSX, whenever practical.
