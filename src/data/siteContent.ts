@@ -23,9 +23,19 @@ export const siteContent = {
   heroDescription:
     "Slow-smoked meats, Southern dinners, handcrafted sides, and catering prepared with bold flavor, patience, and hometown pride.",
 
+  /** Hero "signature favorite" card (right side of the homepage hero) */
+  heroFeatured: {
+    badge: "Signature Favorite",
+    price: "$15",
+    title: "Two or Three Meat Plate",
+    description:
+      "Your choice of slow-smoked meats with classic Southern sides and house cornbread.",
+  },
+
   /** Short blurb used near the service-area map/section */
-  serviceAreaText:
-    "We proudly serve the surrounding communities with pickup and local delivery. If you don't see your city listed, reach out — we travel for catering.",
+  serviceAreaText: "Serving Lake City and surrounding areas.",
+
+
 
   /** Footer */
   footerText:
