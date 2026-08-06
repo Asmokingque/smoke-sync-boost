@@ -13,6 +13,7 @@ const AdminOrders = () => {
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<string>("all");
+  const [search, setSearch] = useState("");
 
   const fetchOrders = async () => {
     let query = supabase.from("orders").select("*, order_items(*)").order("created_at", { ascending: false });
@@ -23,6 +24,35 @@ const AdminOrders = () => {
   };
 
   useEffect(() => { fetchOrders(); }, [filter]);
+
+  const q = search.trim().toLowerCase();
+  const visibleOrders = q
+    ? orders.filter((o) =>
+        [o.order_number, o.customer_name, o.customer_email, o.customer_phone, o.id]
+          .filter(Boolean)
+          .some((v: string) => String(v).toLowerCase().includes(q))
+      )
+    : orders;
+
+  const printTicket = (o: any) => {
+    const w = window.open("", "_blank", "width=420,height=640");
+    if (!w) return toast.error("Allow pop-ups to print tickets.");
+    const items = (o.order_items ?? [])
+      .map((i: any) => `<li>${i.quantity}× ${i.item_name} — $${(i.unit_price * i.quantity).toFixed(2)}</li>`)
+      .join("");
+    w.document.write(`<html><head><title>Order ${o.order_number ?? o.id.slice(0, 8)}</title>
+      <style>body{font-family:monospace;padding:16px}h1{font-size:18px}ul{padding-left:18px}</style></head>
+      <body><h1>Anderson's Smoking Que</h1>
+      <p>#${o.order_number ?? o.id.slice(0, 8).toUpperCase()}<br/>${new Date(o.created_at).toLocaleString()}</p>
+      <p>${o.customer_name}<br/>${o.customer_phone}<br/>${o.order_type ?? "pickup"}</p>
+      <ul>${items}</ul>
+      <p><strong>Total: $${Number(o.total).toFixed(2)}</strong></p>
+      ${o.notes ? `<p>Note: ${o.notes}</p>` : ""}
+      </body></html>`);
+    w.document.close();
+    w.print();
+  };
+
 
   const updateStatus = async (id: string, status: string) => {
     const { error } = await supabase.from("orders").update({ status: status as any }).eq("id", id);
