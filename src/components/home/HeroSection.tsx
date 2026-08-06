@@ -12,7 +12,7 @@ import { useSiteContent } from "@/hooks/useEditableContent";
 import hero from "@/assets/hero-bbq.jpg";
 
 export function HeroSection() {
-  const c = siteContent;
+  const c = useSiteContent();
   return (
     <section className="relative overflow-hidden">
       <div className="absolute inset-0">

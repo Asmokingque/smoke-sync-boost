@@ -14,10 +14,9 @@ import { useSiteContent } from "@/hooks/useEditableContent";
 
 type Review = { id: string; author_name: string; rating: number; title: string | null; body: string };
 
-/** Copy lives in src/data/siteContent.ts */
-const experienceCopy = siteContent.experience;
-
 export function ExperiencePreviewSection() {
+  const siteContent = useSiteContent();
+  const experienceCopy = siteContent.experience;
   const [reviews, setReviews] = useState<Review[]>([]);
 
   useEffect(() => {

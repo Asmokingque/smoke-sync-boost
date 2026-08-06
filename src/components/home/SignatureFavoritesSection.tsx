@@ -13,14 +13,14 @@ import { useSiteContent } from "@/hooks/useEditableContent";
 /** Icon lookup — copy lives in src/data/siteContent.ts */
 const icons = { flame: Flame, clock: Clock, award: Award } as const;
 
-const highlights = siteContent.highlights.map((h) => ({
-  ...h,
-  icon: icons[h.icon as keyof typeof icons] ?? Flame,
-}));
-
-const favorites = siteContent.favorites;
-
 export function SignatureFavoritesSection() {
+  const siteContent = useSiteContent();
+  const highlights = siteContent.highlights.map((h) => ({
+    ...h,
+    icon: icons[h.icon as keyof typeof icons] ?? Flame,
+  }));
+  const favorites = siteContent.favorites;
+
   return (
     <>
       <section className="container py-24 md:py-28">
