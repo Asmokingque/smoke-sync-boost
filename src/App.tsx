@@ -27,6 +27,8 @@ import HolidayCalendar from "./pages/HolidayCalendar";
 import AdminSpecials from "./pages/admin/AdminSpecials";
 import AdminSOP from "./pages/admin/AdminSOP";
 import AdminContent from "./pages/admin/AdminContent";
+import AdminSettings from "./pages/admin/AdminSettings";
+import AdminPayments from "./pages/admin/AdminPayments";
 import ChangePassword from "./pages/ChangePassword";
 import CheckoutSuccess from "./pages/CheckoutSuccess";
 import CheckoutCancel from "./pages/CheckoutCancel";
@@ -69,6 +71,8 @@ const App = () => (
             <Route path="contact" element={<AdminContact />} />
             <Route path="sop" element={<AdminSOP />} />
             <Route path="content" element={<AdminContent />} />
+            <Route path="settings" element={<AdminSettings />} />
+            <Route path="payments" element={<AdminPayments />} />
             <Route path="users" element={<AdminUsers />} />
           </Route>
           <Route path="*" element={<NotFound />} />

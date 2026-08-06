@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Loader2, Plus, Trash2, Calendar as CalendarIcon, ArrowUp, ArrowDown, Eye, EyeOff, Package, Heart } from "lucide-react";
 import { toast } from "sonner";
+import { useAuth } from "@/hooks/useAuth";
 import type { Special, SpecialType } from "@/lib/specials";
 import { SPECIAL_TYPE_LABEL } from "@/lib/specials";
 
@@ -398,7 +399,7 @@ const AdminSpecials = () => {
                       </Button>
                       <Button size="sm" variant="outline" onClick={() => toggleSoldOut(s)}>{s.sold_out ? "Mark In Stock" : "Mark Sold Out"}</Button>
                       <Button size="sm" variant="outline" onClick={() => setEditing(s)}>Edit</Button>
-                      <Button size="sm" variant="ghost" onClick={() => removeSpecial(s.id)}><Trash2 className="h-4 w-4" /></Button>
+                      {isSuperAdmin && <Button size="sm" variant="ghost" onClick={() => removeSpecial(s.id)}><Trash2 className="h-4 w-4" /></Button>}
                     </div>
                   </div>
                 ))}
@@ -432,7 +433,7 @@ const AdminSpecials = () => {
                         </div>
                       </div>
                       <Button size="sm" variant="outline" onClick={() => setEditingHoliday(h)}>Edit</Button>
-                      <Button size="sm" variant="ghost" onClick={() => removeHoliday(h.id)}><Trash2 className="h-4 w-4" /></Button>
+                      {isSuperAdmin && <Button size="sm" variant="ghost" onClick={() => removeHoliday(h.id)}><Trash2 className="h-4 w-4" /></Button>}
                     </li>
                   );
                 })}
@@ -468,7 +469,7 @@ const AdminSpecials = () => {
                       {d.is_active ? <><EyeOff className="h-3.5 w-3.5 mr-1" />Disable</> : <><Eye className="h-3.5 w-3.5 mr-1" />Enable</>}
                     </Button>
                     <Button size="sm" variant="outline" onClick={() => setEditingDiscount(d)}>Edit</Button>
-                    <Button size="sm" variant="ghost" onClick={() => removeDiscount(d.id)}><Trash2 className="h-4 w-4" /></Button>
+                    {isSuperAdmin && <Button size="sm" variant="ghost" onClick={() => removeDiscount(d.id)}><Trash2 className="h-4 w-4" /></Button>}
                   </li>
                 ))}
               </ul>
@@ -638,7 +639,7 @@ const AdminSpecials = () => {
                             {it.is_active ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
                           </Button>
                           <Button size="sm" variant="outline" onClick={() => setEditingItem(it)}>Edit</Button>
-                          <Button size="sm" variant="ghost" onClick={() => removeItem(it.id)}><Trash2 className="h-4 w-4" /></Button>
+                          {isSuperAdmin && <Button size="sm" variant="ghost" onClick={() => removeItem(it.id)}><Trash2 className="h-4 w-4" /></Button>}
                         </div>
                       </li>
                     ))}

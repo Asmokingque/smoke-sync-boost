@@ -3,8 +3,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { Loader2, Star, Check, Trash2, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { useAuth } from "@/hooks/useAuth";
 
 const AdminReviews = () => {
+  const { isSuperAdmin } = useAuth();
   const [reviews, setReviews] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -61,7 +63,9 @@ const AdminReviews = () => {
                 ) : (
                   <Button size="sm" variant="outline" onClick={() => hide(r.id)}><EyeOff className="h-3.5 w-3.5" /> Hide</Button>
                 )}
-                <Button size="sm" variant="outline" onClick={() => remove(r.id)}><Trash2 className="h-3.5 w-3.5" /> Delete</Button>
+                {isSuperAdmin && (
+                  <Button size="sm" variant="outline" onClick={() => remove(r.id)}><Trash2 className="h-3.5 w-3.5" /> Delete</Button>
+                )}
               </div>
             </div>
           ))}
