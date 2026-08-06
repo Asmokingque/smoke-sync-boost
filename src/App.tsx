@@ -59,6 +59,7 @@ const App = () => (
           <Route path="/account" element={<Account />} />
           <Route path="/change-password" element={<ChangePassword />} />
           <Route path="/unsubscribe" element={<Unsubscribe />} />
+          <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<AdminOrders />} />
             <Route path="menu" element={<AdminMenu />} />
@@ -68,6 +69,7 @@ const App = () => (
             <Route path="contact" element={<AdminContact />} />
             <Route path="sop" element={<AdminSOP />} />
             <Route path="content" element={<AdminContent />} />
+            <Route path="users" element={<AdminUsers />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
