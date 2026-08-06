@@ -1,6 +1,8 @@
 /**
  * siteContent.ts
  * ---------------------------------------------------------------------------
+ * Edit this file to change the homepage text.
+ *
  * ALL global website copy lives here (business info, hero text, footer, CTAs).
  * Edit the strings below to change wording across the site. No JSX required.
  * ---------------------------------------------------------------------------
