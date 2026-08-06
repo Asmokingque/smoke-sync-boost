@@ -1,6 +1,8 @@
 /**
  * specialsData.ts
  * ---------------------------------------------------------------------------
+ * Edit this file to change fallback specials and specials section text.
+ *
  * Fallback specials + the copy used by specials sections.
  * Live specials come from the database; these render when it's unavailable.
  * ---------------------------------------------------------------------------
