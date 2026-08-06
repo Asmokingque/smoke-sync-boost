@@ -98,22 +98,30 @@ const AdminOrders = () => {
     <div>
       <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
         <h1 className="font-display text-3xl tracking-wider">Orders</h1>
-        <Select value={filter} onValueChange={setFilter}>
-          <SelectTrigger className="w-44"><SelectValue /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Statuses</SelectItem>
-            {STATUSES.map((s) => <SelectItem key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</SelectItem>)}
-          </SelectContent>
-        </Select>
+        <div className="flex flex-wrap items-center gap-2">
+          <Input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search name, email, phone, order #"
+            className="h-10 w-64"
+          />
+          <Select value={filter} onValueChange={setFilter}>
+            <SelectTrigger className="w-44"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Statuses</SelectItem>
+              {STATUSES.map((s) => <SelectItem key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</SelectItem>)}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       {loading ? (
         <Loader2 className="h-6 w-6 animate-spin text-primary" />
-      ) : orders.length === 0 ? (
+      ) : visibleOrders.length === 0 ? (
         <p className="text-muted-foreground">No orders.</p>
       ) : (
         <div className="space-y-3">
-          {orders.map((o) => (
+          {visibleOrders.map((o) => (
             <div key={o.id} className="bg-gradient-card border border-border rounded-lg p-5">
               <div className="flex flex-wrap justify-between gap-3 mb-3">
                 <div>
