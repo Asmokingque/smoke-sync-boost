@@ -1,7 +1,8 @@
 import { Navigate, NavLink, Outlet, useLocation, Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { Loader2, ShoppingBag, MessageSquareText, UtensilsCrossed, Mail, LogOut, Home, Sparkles, BookOpen, FileText, Users } from "lucide-react";
+import { Loader2, ShoppingBag, MessageSquareText, UtensilsCrossed, Mail, LogOut, Home, Sparkles, BookOpen, FileText, Users, Settings, CreditCard } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import logo from "@/assets/logo.png";
 
@@ -9,15 +10,18 @@ type AdminNavItem = { to: string; label: string; icon: typeof ShoppingBag; end?:
 
 const navItems: AdminNavItem[] = [
   { to: "/admin", end: true, label: "Orders", icon: ShoppingBag },
-  { to: "/admin/menu", label: "Menu", icon: UtensilsCrossed },
+  { to: "/admin/menu", label: "Menu Manager", icon: UtensilsCrossed },
   { to: "/admin/specials", label: "Specials & Calendar", icon: Sparkles },
   { to: "/admin/reviews", label: "Reviews", icon: MessageSquareText },
   { to: "/admin/catering", label: "Catering", icon: Mail },
   { to: "/admin/contact", label: "Contact", icon: MessageSquareText },
+  { to: "/admin/settings", label: "Business Settings", icon: Settings },
+  { to: "/admin/payments", label: "Payment Settings", icon: CreditCard, superOnly: true },
   { to: "/admin/content", label: "Site Content", icon: FileText, superOnly: true },
   { to: "/admin/users", label: "Users & Admins", icon: Users, superOnly: true },
   { to: "/admin/sop", label: "Website SOP", icon: BookOpen },
 ];
+
 
 const AdminLayout = () => {
   const { user, isAdmin, isSuperAdmin, mustChangePassword, loading } = useAuth();
@@ -40,7 +44,7 @@ const AdminLayout = () => {
   }
 
   if (!isAdmin) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/admin/login" replace state={{ denied: true }} />;
   }
 
 
@@ -52,10 +56,11 @@ const AdminLayout = () => {
           <img src={logo} alt="" className="h-10 w-10 object-contain" width={40} height={40} />
           <div className="leading-tight">
             <div className="font-serif text-2xl tracking-tight">Admin</div>
-            <div className="font-stencil text-[10px] text-gold tracking-[0.32em] mt-0.5">
+            <Badge variant={isSuperAdmin ? "default" : "secondary"} className="font-stencil text-[10px] tracking-[0.2em] mt-1">
               {isSuperAdmin ? "Super Admin" : "Admin"}
-            </div>
+            </Badge>
           </div>
+
         </div>
         <nav className="flex md:flex-col gap-1 p-2 overflow-x-auto">
           {navItems.filter((n) => !n.superOnly || isSuperAdmin).map((n) => (

@@ -32,6 +32,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
+import { useAuth } from "@/hooks/useAuth";
 import { useCartUI } from "@/store/cartUi";
 
 type Category = { id: string; name: string; slug: string; display_order: number; description?: string | null };
@@ -86,6 +87,7 @@ const emptyForm = (categoryId = ""): FormState => ({
 });
 
 const AdminMenu = () => {
+  const { isSuperAdmin } = useAuth();
   const [items, setItems] = useState<Item[]>([]);
   const [cats, setCats] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
@@ -369,9 +371,11 @@ const AdminMenu = () => {
                   <Button size="icon" variant="ghost" onClick={() => openCatEdit(cat)}>
                     <Pencil className="h-4 w-4" />
                   </Button>
-                  <Button size="icon" variant="ghost" onClick={() => setDeleteCatId(cat.id)} className="text-destructive hover:text-destructive">
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
+                  {isSuperAdmin && (
+                    <Button size="icon" variant="ghost" onClick={() => setDeleteCatId(cat.id)} className="text-destructive hover:text-destructive">
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  )}
                 </div>
               </div>
               <div className="space-y-2">
@@ -457,14 +461,16 @@ const AdminMenu = () => {
                         <Button size="icon" variant="ghost" onClick={() => openEdit(item)}>
                           <Pencil className="h-4 w-4" />
                         </Button>
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          onClick={() => setDeleteId(item.id)}
-                          className="text-destructive hover:text-destructive"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                        {isSuperAdmin && (
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            onClick={() => setDeleteId(item.id)}
+                            className="text-destructive hover:text-destructive"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        )}
                       </div>
                     </div>
                   ))}

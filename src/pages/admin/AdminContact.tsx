@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Loader2, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { useAuth } from "@/hooks/useAuth";
 
 type Msg = {
   id: string;
@@ -15,6 +16,7 @@ type Msg = {
 };
 
 const AdminContact = () => {
+  const { isSuperAdmin } = useAuth();
   const [items, setItems] = useState<Msg[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -74,9 +76,11 @@ const AdminContact = () => {
                 {m.status !== "replied" && (
                   <Button size="sm" variant="outline" onClick={() => setStatus(m.id, "replied")}>Mark Replied</Button>
                 )}
-                <Button size="sm" variant="ghost" onClick={() => remove(m.id)}>
-                  <Trash2 className="h-4 w-4" /> Delete
-                </Button>
+                {isSuperAdmin && (
+                  <Button size="sm" variant="ghost" onClick={() => remove(m.id)}>
+                    <Trash2 className="h-4 w-4" /> Delete
+                  </Button>
+                )}
               </div>
             </div>
           ))}
