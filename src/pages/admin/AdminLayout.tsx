@@ -44,7 +44,7 @@ const AdminLayout = () => {
   }
 
   if (!isAdmin) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/admin/login" replace state={{ denied: true }} />;
   }
 
 
@@ -56,10 +56,11 @@ const AdminLayout = () => {
           <img src={logo} alt="" className="h-10 w-10 object-contain" width={40} height={40} />
           <div className="leading-tight">
             <div className="font-serif text-2xl tracking-tight">Admin</div>
-            <div className="font-stencil text-[10px] text-gold tracking-[0.32em] mt-0.5">
+            <Badge variant={isSuperAdmin ? "default" : "secondary"} className="font-stencil text-[10px] tracking-[0.2em] mt-1">
               {isSuperAdmin ? "Super Admin" : "Admin"}
-            </div>
+            </Badge>
           </div>
+
         </div>
         <nav className="flex md:flex-col gap-1 p-2 overflow-x-auto">
           {navItems.filter((n) => !n.superOnly || isSuperAdmin).map((n) => (
