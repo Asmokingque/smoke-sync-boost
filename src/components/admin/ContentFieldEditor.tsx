@@ -86,7 +86,7 @@ function Node({
   }
 
   if (node === null || typeof node === "string") {
-    const str: string = node ?? "";
+    const str: string = (node as string | null) ?? "";
     const long = str.length > 70;
     return (
       <div className="space-y-1.5 py-1">
