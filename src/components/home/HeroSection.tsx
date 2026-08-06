@@ -90,15 +90,15 @@ export function HeroSection() {
             <div className="luxury-card p-8">
               <div className="flex items-center justify-between mb-5">
                 <span className="luxury-badge inline-flex items-center gap-1">
-                  <Award className="h-3 w-3" /> Signature Favorite
+                  <Award className="h-3 w-3" /> {c.heroFeatured.badge}
                 </span>
-                <span className="luxury-price font-serif text-xl">$15</span>
+                <span className="luxury-price font-serif text-xl">{c.heroFeatured.price}</span>
               </div>
               <h3 className="luxury-menu-title text-3xl mb-3 leading-tight">
-                Two or Three Meat Plate
+                {c.heroFeatured.title}
               </h3>
               <p className="luxury-subtitle text-sm mb-6">
-                Your choice of slow-smoked meats with classic Southern sides and house cornbread.
+                {c.heroFeatured.description}
               </p>
               <div className="luxury-divider mb-6" />
               <Link to="/menu" className="block">
