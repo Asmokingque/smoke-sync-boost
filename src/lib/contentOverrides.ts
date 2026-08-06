@@ -94,7 +94,7 @@ export async function saveOverride(key: ContentKey, value: Record<string, unknow
   const { error } = await supabase
     .from("content_overrides")
     .upsert(
-      { content_key: key, content_value: value, updated_by: userData.user?.id ?? null },
+      [{ content_key: key, content_value: value as never, updated_by: userData.user?.id }],
       { onConflict: "content_key" }
     );
   if (error) throw error;
