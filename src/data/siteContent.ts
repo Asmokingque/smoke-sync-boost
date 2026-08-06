@@ -35,6 +35,26 @@ export const siteContent = {
   /** Short blurb used near the service-area map/section */
   serviceAreaText: "Serving Lake City and surrounding areas.",
 
+  /** Trust row above the signature favorites (icon names map in the component) */
+  highlights: [
+    { icon: "flame", title: "Wood-Fired", body: "Slow-smoked over hardwood for that deep, signature bark and smoke ring." },
+    { icon: "clock", title: "Made Daily", body: "Cooked fresh every morning. When it's gone, it's gone — get yours early." },
+    { icon: "award", title: "Catering Ready", body: "From small gatherings to large events, we bring the smokehouse to you." },
+  ],
+
+  /** The three featured dishes on the homepage */
+  favorites: [
+    { name: "Two Meat Plate", desc: "Your choice of two slow-smoked meats with two Southern sides and cornbread.", price: "$15" },
+    { name: "Smoked Brisket by the Pound", desc: "Hardwood-smoked brisket, sliced fresh and sold by the pound.", price: "$28" },
+    { name: "St. Louis Pork Ribs", desc: "Half or full slab — hand-rubbed and smoked low until tender.", price: "$22" },
+  ],
+
+  /** Guest reviews teaser section */
+  experience: {
+    badge: "Guest Experience",
+    title: "From the Table",
+    subtitle: "Real words from real guests who came hungry and left happy.",
+  },
 
 
   /** Footer */
