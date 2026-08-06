@@ -14,12 +14,8 @@
  */
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import {
-  fallbackCategories,
-  fallbackMenuItems,
-  type FallbackCategory,
-  type FallbackMenuItem,
-} from "@/data/menuData";
+import { type FallbackCategory, type FallbackMenuItem } from "@/data/menuData";
+import { useFallbackMenu } from "@/hooks/useEditableContent";
 
 export type MenuCategory = FallbackCategory;
 export type MenuItem = FallbackMenuItem;
@@ -29,14 +25,15 @@ export function useMenuData() {
   const [items, setItems] = useState<MenuItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [usingFallback, setUsingFallback] = useState(false);
+  const fallback = useFallbackMenu();
 
   useEffect(() => {
     let active = true;
 
     const useFallback = () => {
       if (!active) return;
-      setCategories(fallbackCategories);
-      setItems(fallbackMenuItems);
+      setCategories(fallback.categories);
+      setItems(fallback.items);
       setUsingFallback(true);
       setLoading(false);
     };
@@ -98,7 +95,7 @@ export function useMenuData() {
       active = false;
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [fallback]);
 
   return { categories, items, loading, usingFallback };
 }
