@@ -1,6 +1,6 @@
 import { Navigate, NavLink, Outlet, useLocation, Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { Loader2, ShoppingBag, MessageSquareText, UtensilsCrossed, Mail, LogOut, Home, ShieldAlert, Sparkles, BookOpen, FileText } from "lucide-react";
+import { Loader2, ShoppingBag, MessageSquareText, UtensilsCrossed, Mail, LogOut, Home, ShieldAlert, Sparkles, BookOpen, FileText, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import logo from "@/assets/logo.png";
@@ -12,12 +12,13 @@ const navItems = [
   { to: "/admin/reviews", label: "Reviews", icon: MessageSquareText },
   { to: "/admin/catering", label: "Catering", icon: Mail },
   { to: "/admin/contact", label: "Contact", icon: MessageSquareText },
-  { to: "/admin/content", label: "Site Content", icon: FileText },
+  { to: "/admin/content", label: "Site Content", icon: FileText, superOnly: true },
+  { to: "/admin/users", label: "Users & Admins", icon: Users, superOnly: true },
   { to: "/admin/sop", label: "Website SOP", icon: BookOpen },
 ];
 
 const AdminLayout = () => {
-  const { user, isAdmin, mustChangePassword, loading } = useAuth();
+  const { user, isAdmin, isSuperAdmin, mustChangePassword, loading } = useAuth();
   const location = useLocation();
 
   if (!loading && user && mustChangePassword && location.pathname !== "/change-password") {
@@ -33,7 +34,7 @@ const AdminLayout = () => {
   }
 
   if (!user) {
-    return <Navigate to={`/auth?redirect=${encodeURIComponent(location.pathname)}`} replace />;
+    return <Navigate to="/admin/login" replace state={{ from: location.pathname }} />;
   }
 
   if (!isAdmin) {
@@ -44,7 +45,7 @@ const AdminLayout = () => {
           <h1 className="font-serif text-4xl mb-2">Access Denied</h1>
           <span className="gold-rule-short mx-auto block mb-4" />
           <p className="text-muted-foreground mb-6 text-sm">
-            This area is restricted to Anderson's Smoking Que admins. If you believe this is a mistake, sign in with the admin account.
+            Access denied. This account is not authorized for the admin dashboard.
           </p>
           <div className="flex gap-2 justify-center flex-wrap">
             <Button asChild variant="outline" className="font-stencil"><Link to="/">Back to site</Link></Button>
@@ -56,6 +57,7 @@ const AdminLayout = () => {
       </div>
     );
   }
+
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-background">
