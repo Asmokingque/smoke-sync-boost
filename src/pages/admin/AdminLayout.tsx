@@ -1,6 +1,6 @@
 import { Navigate, NavLink, Outlet, useLocation, Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { Loader2, ShoppingBag, MessageSquareText, UtensilsCrossed, Mail, LogOut, Home, ShieldAlert, Sparkles, BookOpen, FileText, Users } from "lucide-react";
+import { Loader2, ShoppingBag, MessageSquareText, UtensilsCrossed, Mail, LogOut, Home, Sparkles, BookOpen, FileText, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import logo from "@/assets/logo.png";
@@ -40,24 +40,7 @@ const AdminLayout = () => {
   }
 
   if (!isAdmin) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background p-4">
-        <div className="max-w-md text-center retina-menu-card ring-gold-soft p-8">
-          <ShieldAlert className="h-12 w-12 text-gold mx-auto mb-4" />
-          <h1 className="font-serif text-4xl mb-2">Access Denied</h1>
-          <span className="gold-rule-short mx-auto block mb-4" />
-          <p className="text-muted-foreground mb-6 text-sm">
-            Access denied. This account is not authorized for the admin dashboard.
-          </p>
-          <div className="flex gap-2 justify-center flex-wrap">
-            <Button asChild variant="outline" className="font-stencil"><Link to="/">Back to site</Link></Button>
-            <Button onClick={() => supabase.auth.signOut()} className="bg-primary hover:bg-primary/90 font-stencil">
-              Switch account
-            </Button>
-          </div>
-        </div>
-      </div>
-    );
+    return <Navigate to="/" replace />;
   }
 
 
