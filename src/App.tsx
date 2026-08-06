@@ -16,6 +16,8 @@ import Account from "./pages/Account";
 import AdminLayout from "./pages/admin/AdminLayout";
 import AdminLogin from "./pages/admin/AdminLogin";
 import AdminUsers from "./pages/admin/AdminUsers";
+import { RequireSuperAdmin } from "./components/admin/RequireSuperAdmin";
+
 import AdminOrders from "./pages/admin/AdminOrders";
 import AdminMenu from "./pages/admin/AdminMenu";
 import AdminReviews from "./pages/admin/AdminReviews";
