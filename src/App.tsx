@@ -25,6 +25,9 @@ import NotFound from "./pages/NotFound";
 import Specials from "./pages/Specials";
 import HolidayCalendar from "./pages/HolidayCalendar";
 import AdminSpecials from "./pages/admin/AdminSpecials";
+import AdminLunchSpecials from "./pages/admin/AdminLunchSpecials";
+import AdminHolidayCalendar from "./pages/admin/AdminHolidayCalendar";
+import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminSOP from "./pages/admin/AdminSOP";
 import AdminContent from "./pages/admin/AdminContent";
 import AdminSettings from "./pages/admin/AdminSettings";
@@ -63,9 +66,12 @@ const App = () => (
           <Route path="/unsubscribe" element={<Unsubscribe />} />
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin" element={<AdminLayout />}>
-            <Route index element={<AdminOrders />} />
+            <Route index element={<AdminDashboard />} />
+            <Route path="orders" element={<AdminOrders />} />
             <Route path="menu" element={<AdminMenu />} />
             <Route path="specials" element={<AdminSpecials />} />
+            <Route path="lunch-specials" element={<AdminLunchSpecials />} />
+            <Route path="holiday-calendar" element={<AdminHolidayCalendar />} />
             <Route path="reviews" element={<AdminReviews />} />
             <Route path="catering" element={<AdminCatering />} />
             <Route path="contact" element={<AdminContact />} />

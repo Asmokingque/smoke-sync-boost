@@ -86,7 +86,9 @@ type CommunityDisc = {
   terms: string | null;
 };
 
-const AdminSpecials = () => {
+type AdminSpecialsFocus = "all" | "lunch" | "holiday";
+
+const AdminSpecials = ({ focus = "all" }: { focus?: AdminSpecialsFocus }) => {
   const { isSuperAdmin } = useAuth();
   const [specials, setSpecials] = useState<Special[]>([]);
   const [loading, setLoading] = useState(true);
@@ -357,25 +359,35 @@ const AdminSpecials = () => {
     });
   };
 
+  const visibleSpecials = focus === "lunch" ? specials.filter((s) => s.type === "lunch") : specials;
+  const pageTitle =
+    focus === "lunch" ? "Lunch Specials" : focus === "holiday" ? "Holiday Calendar" : "Specials & Calendar";
+
   return (
     <div className="space-y-10">
       <div className="flex items-center justify-between flex-wrap gap-4">
-        <h1 className="font-display text-3xl tracking-wider">Specials &amp; Calendar</h1>
-        <Button onClick={() => setEditing(blank())} className="luxury-primary-btn h-10 font-stencil text-xs">
-          <Plus className="h-4 w-4" /> New Special
-        </Button>
+        <h1 className="font-display text-3xl tracking-wider">{pageTitle}</h1>
+        {focus !== "holiday" && (
+          <Button
+            onClick={() => setEditing({ ...blank(), type: focus === "lunch" ? "lunch" : "daily" })}
+            className="luxury-primary-btn h-10 font-stencil text-xs"
+          >
+            <Plus className="h-4 w-4" /> New Special
+          </Button>
+        )}
       </div>
 
       {loading ? <Loader2 className="h-6 w-6 animate-spin text-primary" /> : (
         <>
           {/* Specials list */}
+          {focus !== "holiday" && (
           <section>
-            <h2 className="font-display text-2xl mb-3">All Specials</h2>
-            {specials.length === 0 ? (
+            <h2 className="font-display text-2xl mb-3">{focus === "lunch" ? "Lunch Specials" : "All Specials"}</h2>
+            {visibleSpecials.length === 0 ? (
               <p className="text-muted-foreground text-sm">No specials yet.</p>
             ) : (
               <div className="space-y-3">
-                {[...specials].sort((a, b) => a.display_order - b.display_order).map((s, i, arr) => (
+                {[...visibleSpecials].sort((a, b) => a.display_order - b.display_order).map((s, i, arr) => (
                   <div key={s.id} className="luxury-card p-5 flex flex-wrap items-center gap-4">
                     <div className="flex flex-col gap-1">
                       <Button size="icon" variant="ghost" className="h-7 w-7" disabled={i === 0} onClick={() => reorderSpecial(s, -1)}>
@@ -407,8 +419,10 @@ const AdminSpecials = () => {
               </div>
             )}
           </section>
+          )}
 
           {/* Holiday Events */}
+          {focus !== "lunch" && (
           <section>
             <div className="flex items-center justify-between mb-3">
               <h2 className="font-display text-2xl">Holiday Calendar</h2>
@@ -441,8 +455,10 @@ const AdminSpecials = () => {
               </ul>
             )}
           </section>
+          )}
 
           {/* Community Discounts */}
+          {focus === "all" && (
           <section>
             <div className="flex items-center justify-between mb-3">
               <h2 className="font-display text-2xl flex items-center gap-2"><Heart className="h-5 w-5 text-gold" /> Community Heroes Deals</h2>
@@ -476,8 +492,10 @@ const AdminSpecials = () => {
               </ul>
             )}
           </section>
+          )}
 
           {/* Discount orders */}
+          {focus === "all" && (
           <section>
             <h2 className="font-display text-2xl mb-3">Recent Orders Using a Discount</h2>
             {discountOrders.length === 0 ? (
@@ -501,6 +519,7 @@ const AdminSpecials = () => {
               </ul>
             )}
           </section>
+          )}
         </>
       )}
 

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Heart, ShieldCheck, X as XIcon } from "lucide-react";
+import { Loader2, Heart, ShieldCheck, X as XIcon, Printer } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,6 +13,7 @@ const AdminOrders = () => {
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<string>("all");
+  const [search, setSearch] = useState("");
 
   const fetchOrders = async () => {
     let query = supabase.from("orders").select("*, order_items(*)").order("created_at", { ascending: false });
@@ -23,6 +24,35 @@ const AdminOrders = () => {
   };
 
   useEffect(() => { fetchOrders(); }, [filter]);
+
+  const q = search.trim().toLowerCase();
+  const visibleOrders = q
+    ? orders.filter((o) =>
+        [o.order_number, o.customer_name, o.customer_email, o.customer_phone, o.id]
+          .filter(Boolean)
+          .some((v: string) => String(v).toLowerCase().includes(q))
+      )
+    : orders;
+
+  const printTicket = (o: any) => {
+    const w = window.open("", "_blank", "width=420,height=640");
+    if (!w) return toast.error("Allow pop-ups to print tickets.");
+    const items = (o.order_items ?? [])
+      .map((i: any) => `<li>${i.quantity}× ${i.item_name} — $${(i.unit_price * i.quantity).toFixed(2)}</li>`)
+      .join("");
+    w.document.write(`<html><head><title>Order ${o.order_number ?? o.id.slice(0, 8)}</title>
+      <style>body{font-family:monospace;padding:16px}h1{font-size:18px}ul{padding-left:18px}</style></head>
+      <body><h1>Anderson's Smoking Que</h1>
+      <p>#${o.order_number ?? o.id.slice(0, 8).toUpperCase()}<br/>${new Date(o.created_at).toLocaleString()}</p>
+      <p>${o.customer_name}<br/>${o.customer_phone}<br/>${o.order_type ?? "pickup"}</p>
+      <ul>${items}</ul>
+      <p><strong>Total: $${Number(o.total).toFixed(2)}</strong></p>
+      ${o.notes ? `<p>Note: ${o.notes}</p>` : ""}
+      </body></html>`);
+    w.document.close();
+    w.print();
+  };
+
 
   const updateStatus = async (id: string, status: string) => {
     const { error } = await supabase.from("orders").update({ status: status as any }).eq("id", id);
@@ -68,22 +98,30 @@ const AdminOrders = () => {
     <div>
       <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
         <h1 className="font-display text-3xl tracking-wider">Orders</h1>
-        <Select value={filter} onValueChange={setFilter}>
-          <SelectTrigger className="w-44"><SelectValue /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Statuses</SelectItem>
-            {STATUSES.map((s) => <SelectItem key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</SelectItem>)}
-          </SelectContent>
-        </Select>
+        <div className="flex flex-wrap items-center gap-2">
+          <Input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search name, email, phone, order #"
+            className="h-10 w-64"
+          />
+          <Select value={filter} onValueChange={setFilter}>
+            <SelectTrigger className="w-44"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Statuses</SelectItem>
+              {STATUSES.map((s) => <SelectItem key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</SelectItem>)}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       {loading ? (
         <Loader2 className="h-6 w-6 animate-spin text-primary" />
-      ) : orders.length === 0 ? (
+      ) : visibleOrders.length === 0 ? (
         <p className="text-muted-foreground">No orders.</p>
       ) : (
         <div className="space-y-3">
-          {orders.map((o) => (
+          {visibleOrders.map((o) => (
             <div key={o.id} className="bg-gradient-card border border-border rounded-lg p-5">
               <div className="flex flex-wrap justify-between gap-3 mb-3">
                 <div>
@@ -142,6 +180,9 @@ const AdminOrders = () => {
                       {STATUSES.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
                     </SelectContent>
                   </Select>
+                  <Button size="sm" variant="outline" className="h-8 text-[11px] font-stencil" onClick={() => printTicket(o)}>
+                    <Printer className="h-3.5 w-3.5 mr-1" /> Print Ticket
+                  </Button>
                 </div>
               </div>
               <ul className="text-sm border-t border-border/50 pt-3 space-y-1.5">
