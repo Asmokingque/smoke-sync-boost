@@ -1,7 +1,8 @@
 import { Navigate, NavLink, Outlet, useLocation, Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { Loader2, ShoppingBag, MessageSquareText, UtensilsCrossed, Mail, LogOut, Home, Sparkles, BookOpen, FileText, Users } from "lucide-react";
+import { Loader2, ShoppingBag, MessageSquareText, UtensilsCrossed, Mail, LogOut, Home, Sparkles, BookOpen, FileText, Users, Settings, CreditCard } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import logo from "@/assets/logo.png";
 
@@ -9,15 +10,18 @@ type AdminNavItem = { to: string; label: string; icon: typeof ShoppingBag; end?:
 
 const navItems: AdminNavItem[] = [
   { to: "/admin", end: true, label: "Orders", icon: ShoppingBag },
-  { to: "/admin/menu", label: "Menu", icon: UtensilsCrossed },
+  { to: "/admin/menu", label: "Menu Manager", icon: UtensilsCrossed },
   { to: "/admin/specials", label: "Specials & Calendar", icon: Sparkles },
   { to: "/admin/reviews", label: "Reviews", icon: MessageSquareText },
   { to: "/admin/catering", label: "Catering", icon: Mail },
   { to: "/admin/contact", label: "Contact", icon: MessageSquareText },
+  { to: "/admin/settings", label: "Business Settings", icon: Settings },
+  { to: "/admin/payments", label: "Payment Settings", icon: CreditCard, superOnly: true },
   { to: "/admin/content", label: "Site Content", icon: FileText, superOnly: true },
   { to: "/admin/users", label: "Users & Admins", icon: Users, superOnly: true },
   { to: "/admin/sop", label: "Website SOP", icon: BookOpen },
 ];
+
 
 const AdminLayout = () => {
   const { user, isAdmin, isSuperAdmin, mustChangePassword, loading } = useAuth();
