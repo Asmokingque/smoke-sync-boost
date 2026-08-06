@@ -2,10 +2,12 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { Session, User } from "@supabase/supabase-js";
 
+export type AdminLevel = "super_admin" | "admin" | null;
+
 export function useAuth() {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [adminLevel, setAdminLevel] = useState<AdminLevel>(null);
   const [mustChangePassword, setMustChangePassword] = useState(false);
   const [loading, setLoading] = useState(true);
   const [roleLoading, setRoleLoading] = useState(true);
@@ -13,11 +15,17 @@ export function useAuth() {
   useEffect(() => {
     const checkRoleAndProfile = async (uid: string) => {
       setRoleLoading(true);
-      const [{ data: roleData }, { data: profileData }] = await Promise.all([
-        supabase.from("user_roles").select("role").eq("user_id", uid).eq("role", "admin").maybeSingle(),
+      const [{ data: adminRow }, { data: profileData }] = await Promise.all([
+        supabase
+          .from("admin_users")
+          .select("role, is_active")
+          .eq("user_id", uid)
+          .eq("is_active", true)
+          .maybeSingle(),
         supabase.from("profiles").select("must_change_password").eq("user_id", uid).maybeSingle(),
       ]);
-      setIsAdmin(!!roleData);
+      const role = adminRow?.role;
+      setAdminLevel(role === "super_admin" ? "super_admin" : role === "admin" ? "admin" : null);
       setMustChangePassword(!!profileData?.must_change_password);
       setRoleLoading(false);
     };
@@ -28,7 +36,7 @@ export function useAuth() {
       if (sess?.user) {
         setTimeout(() => checkRoleAndProfile(sess.user.id), 0);
       } else {
-        setIsAdmin(false);
+        setAdminLevel(null);
         setMustChangePassword(false);
         setRoleLoading(false);
       }
@@ -48,5 +56,13 @@ export function useAuth() {
     return () => subscription.unsubscribe();
   }, []);
 
-  return { session, user, isAdmin, mustChangePassword, loading: loading || roleLoading };
+  return {
+    session,
+    user,
+    adminLevel,
+    isAdmin: adminLevel !== null,
+    isSuperAdmin: adminLevel === "super_admin",
+    mustChangePassword,
+    loading: loading || roleLoading,
+  };
 }
