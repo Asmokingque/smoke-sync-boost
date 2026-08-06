@@ -5,7 +5,7 @@
  */
 import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
-import { theme } from "@/data/theme";
+import { useTheme } from "@/hooks/useEditableContent";
 
 type Props = {
   children: ReactNode;
@@ -30,6 +30,7 @@ export function PremiumButton({
   fullWidth,
   className = "",
 }: Props) {
+  const theme = useTheme();
   const classes = `${theme.buttons[variant]} ${fullWidth ? "w-full" : ""} ${className}`;
 
   if (to) {

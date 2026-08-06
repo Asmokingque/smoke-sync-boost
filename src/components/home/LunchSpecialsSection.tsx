@@ -13,6 +13,7 @@ import { specialsCopy } from "@/data/specialsData";
 import { useSiteContent } from "@/hooks/useEditableContent";
 
 export function LunchSpecialsSection() {
+  const siteContent = useSiteContent();
   const { specials } = useSpecials({ activeOnly: true });
   const lunchSpecials = specials.filter((s) => s.type === "lunch" && isVisibleNow(s)).slice(0, 3);
 

@@ -4,7 +4,7 @@
  * specials, packages and info tiles. Use this instead of repeating classes.
  */
 import type { ReactNode } from "react";
-import { theme } from "@/data/theme";
+import { useTheme } from "@/hooks/useEditableContent";
 
 type Props = {
   children: ReactNode;
@@ -16,6 +16,7 @@ type Props = {
 };
 
 export function PremiumCard({ children, size = "base", hover = false, className = "" }: Props) {
+  const theme = useTheme();
   const sizeClass = size === "compact" ? theme.cards.compact : theme.cards.base;
   return (
     <div className={`${sizeClass} ${hover ? theme.cards.hoverLift : ""} ${className}`}>

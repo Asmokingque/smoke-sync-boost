@@ -22,6 +22,7 @@ const quickLinks = [
 ];
 
 export function FeaturedSpecialSection() {
+  const siteContent = useSiteContent();
   const { specials } = useSpecials({ activeOnly: true });
   const todaysSpecial = specials.find((s) => s.type === "daily" && isVisibleNow(s));
 
