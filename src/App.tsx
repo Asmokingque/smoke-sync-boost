@@ -16,6 +16,8 @@ import Account from "./pages/Account";
 import AdminLayout from "./pages/admin/AdminLayout";
 import AdminLogin from "./pages/admin/AdminLogin";
 import AdminUsers from "./pages/admin/AdminUsers";
+import { RequireSuperAdmin } from "./components/admin/RequireSuperAdmin";
+
 import AdminOrders from "./pages/admin/AdminOrders";
 import AdminMenu from "./pages/admin/AdminMenu";
 import AdminReviews from "./pages/admin/AdminReviews";
@@ -77,10 +79,11 @@ const App = () => (
             <Route path="catering" element={<AdminCatering />} />
             <Route path="contact" element={<AdminContact />} />
             <Route path="sop" element={<AdminSOP />} />
-            <Route path="content" element={<AdminContent />} />
+            <Route path="content" element={<RequireSuperAdmin><AdminContent /></RequireSuperAdmin>} />
             <Route path="settings" element={<AdminSettings />} />
-            <Route path="payments" element={<AdminPayments />} />
-            <Route path="users" element={<AdminUsers />} />
+            <Route path="payments" element={<RequireSuperAdmin><AdminPayments /></RequireSuperAdmin>} />
+            <Route path="users" element={<RequireSuperAdmin><AdminUsers /></RequireSuperAdmin>} />
+
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
