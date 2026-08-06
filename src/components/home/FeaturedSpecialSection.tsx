@@ -12,7 +12,7 @@ import { PremiumButton } from "@/components/shared/PremiumButton";
 import { useSpecials } from "@/hooks/useSpecials";
 import { isVisibleNow } from "@/lib/specials";
 import { specialsCopy } from "@/data/specialsData";
-import { siteContent } from "@/data/siteContent";
+import { useSiteContent } from "@/hooks/useEditableContent";
 
 const quickLinks = [
   { to: "/specials", label: "Today's Special", icon: Flame },
@@ -22,6 +22,7 @@ const quickLinks = [
 ];
 
 export function FeaturedSpecialSection() {
+  const siteContent = useSiteContent();
   const { specials } = useSpecials({ activeOnly: true });
   const todaysSpecial = specials.find((s) => s.type === "daily" && isVisibleNow(s));
 

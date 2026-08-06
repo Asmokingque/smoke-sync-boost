@@ -249,3 +249,20 @@ Test card: `4242 4242 4242 4242`, any future expiry, any CVC, any ZIP.
 - Put text in `src/data/`, not inside JSX, whenever practical.
 - Reuse `shared/` components rather than copying class strings.
 - Every major component has a comment header explaining what it controls.
+
+## Editing Content from the Admin Dashboard
+
+Admins can edit `src/data/siteContent.ts`, `src/data/menuData.ts`, and
+`src/data/theme.ts` from a web UI at **/admin/content** (admin role required).
+
+- **Save & Publish** stores the values as live overrides in the backend
+  (`content_overrides` table) — the site updates instantly, no redeploy.
+- **Download** regenerates the matching `.ts` file so an exported codebase can
+  be kept in sync (drop the file back into `src/data/`).
+- **Reset to file defaults** deletes the override and restores the `.ts` file values.
+- **Raw JSON** mode is available for bulk edits.
+
+Components read this content through `src/hooks/useEditableContent.tsx`
+(`useSiteContent()`, `useTheme()`, `useFallbackMenu()`), which deep-merges
+overrides on top of the static files and falls back to the files if the backend
+is unavailable.

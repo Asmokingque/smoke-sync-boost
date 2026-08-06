@@ -11,9 +11,10 @@ import { PremiumButton } from "@/components/shared/PremiumButton";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { useHolidayEvents } from "@/hooks/useHolidayEvents";
 import { holidayCopy, fallbackHolidays } from "@/data/holidayData";
-import { siteContent } from "@/data/siteContent";
+import { useSiteContent } from "@/hooks/useEditableContent";
 
 export function UpcomingHolidaysSection() {
+  const siteContent = useSiteContent();
   const { events } = useHolidayEvents({ upcomingOnly: true });
   const live = events.slice(0, 3);
   const holidays = live.length > 0 ? live : fallbackHolidays.slice(0, 3);

@@ -24,10 +24,12 @@ import Specials from "./pages/Specials";
 import HolidayCalendar from "./pages/HolidayCalendar";
 import AdminSpecials from "./pages/admin/AdminSpecials";
 import AdminSOP from "./pages/admin/AdminSOP";
+import AdminContent from "./pages/admin/AdminContent";
 import ChangePassword from "./pages/ChangePassword";
 import CheckoutSuccess from "./pages/CheckoutSuccess";
 import CheckoutCancel from "./pages/CheckoutCancel";
 import Unsubscribe from "./pages/Unsubscribe";
+import { ContentProvider } from "@/hooks/useEditableContent";
 
 const queryClient = new QueryClient();
 
@@ -36,6 +38,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
+      <ContentProvider>
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Home />} />
@@ -62,10 +65,12 @@ const App = () => (
             <Route path="catering" element={<AdminCatering />} />
             <Route path="contact" element={<AdminContact />} />
             <Route path="sop" element={<AdminSOP />} />
+            <Route path="content" element={<AdminContent />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
+      </ContentProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );

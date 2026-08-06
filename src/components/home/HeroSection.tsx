@@ -8,11 +8,11 @@ import { motion } from "framer-motion";
 import { Flame, ChevronRight, Plus, Award } from "lucide-react";
 import { Link } from "react-router-dom";
 import { SmokeBackground } from "@/components/ui/SmokeBackground";
-import { siteContent } from "@/data/siteContent";
+import { useSiteContent } from "@/hooks/useEditableContent";
 import hero from "@/assets/hero-bbq.jpg";
 
 export function HeroSection() {
-  const c = siteContent;
+  const c = useSiteContent();
   return (
     <section className="relative overflow-hidden">
       <div className="absolute inset-0">
