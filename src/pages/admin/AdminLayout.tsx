@@ -67,11 +67,13 @@ const AdminLayout = () => {
           <img src={logo} alt="" className="h-10 w-10 object-contain" width={40} height={40} />
           <div className="leading-tight">
             <div className="font-serif text-2xl tracking-tight">Admin</div>
-            <div className="font-stencil text-[10px] text-gold tracking-[0.32em] mt-0.5">Anderson's Smoking Que</div>
+            <div className="font-stencil text-[10px] text-gold tracking-[0.32em] mt-0.5">
+              {isSuperAdmin ? "Super Admin" : "Admin"}
+            </div>
           </div>
         </div>
         <nav className="flex md:flex-col gap-1 p-2 overflow-x-auto">
-          {navItems.map((n) => (
+          {navItems.filter((n) => !n.superOnly || isSuperAdmin).map((n) => (
             <NavLink
               key={n.to}
               to={n.to}
