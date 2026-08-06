@@ -6,13 +6,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2, Lock, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
-import { useAdminAuth } from "@/context/AdminAuthProvider";
+import { useAdminAuth, ACCESS_DENIED_MESSAGE, INACTIVE_MESSAGE } from "@/context/AdminAuthProvider";
 import { z } from "zod";
 import logo from "@/assets/logo.png";
 
 const emailSchema = z.string().trim().email("Enter a valid email").max(255);
 
-const DENIED = "Access denied. This account is not authorized for the admin dashboard.";
+
 
 const AdminLogin = () => {
   const navigate = useNavigate();
@@ -24,10 +24,12 @@ const AdminLogin = () => {
   const deniedShown = useRef(false);
 
   useEffect(() => {
-    if ((location.state as { denied?: boolean } | null)?.denied && !deniedShown.current) {
+    const state = location.state as { denied?: boolean; inactive?: boolean } | null;
+    if (state?.denied && !deniedShown.current) {
       deniedShown.current = true;
-      setError(DENIED);
-      toast.error(DENIED);
+      const msg = state.inactive ? INACTIVE_MESSAGE : ACCESS_DENIED_MESSAGE;
+      setError(msg);
+      toast.error(msg);
     }
   }, [location.state]);
 
