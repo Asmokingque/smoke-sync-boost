@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Heart, ShieldCheck, X as XIcon } from "lucide-react";
+import { Loader2, Heart, ShieldCheck, X as XIcon, Printer } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -180,6 +180,9 @@ const AdminOrders = () => {
                       {STATUSES.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
                     </SelectContent>
                   </Select>
+                  <Button size="sm" variant="outline" className="h-8 text-[11px] font-stencil" onClick={() => printTicket(o)}>
+                    <Printer className="h-3.5 w-3.5 mr-1" /> Print Ticket
+                  </Button>
                 </div>
               </div>
               <ul className="text-sm border-t border-border/50 pt-3 space-y-1.5">
