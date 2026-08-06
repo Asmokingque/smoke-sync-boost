@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Navigate, useNavigate, Link } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { Navigate, useNavigate, useLocation, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,13 +16,23 @@ const DENIED = "Access denied. This account is not authorized for the admin dash
 
 const AdminLogin = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, isAdmin, mustChangePassword, loading } = useAuth();
   const [busy, setBusy] = useState(false);
   const [form, setForm] = useState({ email: "", password: "" });
+  const deniedShown = useRef(false);
+
+  useEffect(() => {
+    if ((location.state as { denied?: boolean } | null)?.denied && !deniedShown.current) {
+      deniedShown.current = true;
+      toast.error(DENIED);
+    }
+  }, [location.state]);
 
   if (!loading && user && isAdmin) {
     return <Navigate to={mustChangePassword ? "/change-password" : "/admin"} replace />;
   }
+
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
