@@ -87,6 +87,7 @@ type CommunityDisc = {
 };
 
 const AdminSpecials = () => {
+  const { isSuperAdmin } = useAuth();
   const [specials, setSpecials] = useState<Special[]>([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<Partial<Special> | null>(null);
