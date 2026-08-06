@@ -13,6 +13,7 @@ const DAYS = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday"
 type Settings = Record<string, any>;
 
 const AdminSettings = () => {
+  const { isSuperAdmin } = useAdminAuth();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [taxRate, setTaxRate] = useState("8.25");
