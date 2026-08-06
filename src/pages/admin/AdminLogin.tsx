@@ -6,28 +6,30 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2, Lock, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
-import { useAuth } from "@/hooks/useAuth";
+import { useAdminAuth, ACCESS_DENIED_MESSAGE, INACTIVE_MESSAGE } from "@/context/AdminAuthProvider";
 import { z } from "zod";
 import logo from "@/assets/logo.png";
 
 const emailSchema = z.string().trim().email("Enter a valid email").max(255);
 
-const DENIED = "Access denied. This account is not authorized for the admin dashboard.";
+
 
 const AdminLogin = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, isAdmin, mustChangePassword, loading } = useAuth();
+  const { user, isAdmin, mustChangePassword, loading, signIn } = useAdminAuth();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [form, setForm] = useState({ email: "", password: "" });
   const deniedShown = useRef(false);
 
   useEffect(() => {
-    if ((location.state as { denied?: boolean } | null)?.denied && !deniedShown.current) {
+    const state = location.state as { denied?: boolean; inactive?: boolean } | null;
+    if (state?.denied && !deniedShown.current) {
       deniedShown.current = true;
-      setError(DENIED);
-      toast.error(DENIED);
+      const msg = state.inactive ? INACTIVE_MESSAGE : ACCESS_DENIED_MESSAGE;
+      setError(msg);
+      toast.error(msg);
     }
   }, [location.state]);
 
@@ -44,35 +46,15 @@ const AdminLogin = () => {
       return;
     }
     setBusy(true);
-    const { data, error: signInError } = await supabase.auth.signInWithPassword({
-      email: parsed.data,
-      password: form.password,
-    });
-    if (signInError || !data.user) {
-      setBusy(false);
-      const msg = signInError?.message ?? "Sign in failed";
-      setError(msg);
-      return toast.error(msg);
-    }
-
-    const { data: adminRow } = await supabase
-      .from("admin_users")
-      .select("role, is_active")
-      .eq("user_id", data.user.id)
-      .eq("is_active", true)
-      .maybeSingle();
-
-    if (!adminRow) {
-      await supabase.auth.signOut();
-      setBusy(false);
-      setError(DENIED);
-      return toast.error(DENIED);
-    }
-
+    const result = await signIn(parsed.data, form.password);
     setBusy(false);
-    toast.success(adminRow.role === "super_admin" ? "Welcome back, Super Admin." : "Welcome back.");
+    if (!result.ok) {
+      setError(result.error ?? "Sign in failed");
+      return;
+    }
     navigate("/admin", { replace: true });
   };
+
 
   const resetPassword = async () => {
     const parsed = emailSchema.safeParse(form.email);

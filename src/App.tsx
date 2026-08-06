@@ -37,6 +37,7 @@ import CheckoutSuccess from "./pages/CheckoutSuccess";
 import CheckoutCancel from "./pages/CheckoutCancel";
 import Unsubscribe from "./pages/Unsubscribe";
 import { ContentProvider } from "@/hooks/useEditableContent";
+import { AdminAuthProvider } from "@/context/AdminAuthProvider";
 
 const queryClient = new QueryClient();
 
@@ -62,10 +63,10 @@ const App = () => (
           <Route path="/contact" element={<Contact />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/account" element={<Account />} />
-          <Route path="/change-password" element={<ChangePassword />} />
+          <Route path="/change-password" element={<AdminAuthProvider><ChangePassword /></AdminAuthProvider>} />
           <Route path="/unsubscribe" element={<Unsubscribe />} />
-          <Route path="/admin/login" element={<AdminLogin />} />
-          <Route path="/admin" element={<AdminLayout />}>
+          <Route path="/admin/login" element={<AdminAuthProvider><AdminLogin /></AdminAuthProvider>} />
+          <Route path="/admin" element={<AdminAuthProvider><AdminLayout /></AdminAuthProvider>}>
             <Route index element={<AdminDashboard />} />
             <Route path="orders" element={<AdminOrders />} />
             <Route path="menu" element={<AdminMenu />} />

@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Loader2, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { useAuth } from "@/hooks/useAuth";
+import { useAdminAuth } from "@/context/AdminAuthProvider";
 
 type Msg = {
   id: string;
@@ -16,7 +16,7 @@ type Msg = {
 };
 
 const AdminContact = () => {
-  const { isSuperAdmin } = useAuth();
+  const { isSuperAdmin } = useAdminAuth();
   const [items, setItems] = useState<Msg[]>([]);
   const [loading, setLoading] = useState(true);
 

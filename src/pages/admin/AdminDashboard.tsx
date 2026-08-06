@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { StatCard } from "@/components/admin/StatCard";
 import { RoleBadge } from "@/components/admin/RoleBadge";
-import { useAuth } from "@/hooks/useAuth";
+import { useAdminAuth } from "@/context/AdminAuthProvider";
 import { ShoppingBag, DollarSign, MessageSquareText, Mail, PackageX, Sparkles, Loader2 } from "lucide-react";
 
 type Stats = {
@@ -19,7 +19,7 @@ type Stats = {
 };
 
 const AdminDashboard = () => {
-  const { isSuperAdmin, user } = useAuth();
+  const { isSuperAdmin, user } = useAdminAuth();
   const [stats, setStats] = useState<Stats | null>(null);
 
   useEffect(() => {
