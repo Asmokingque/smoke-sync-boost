@@ -8,7 +8,6 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { RoleBadge } from "@/components/admin/RoleBadge";
-import { supabase } from "@/integrations/supabase/client";
 import logo from "@/assets/logo.png";
 
 type AdminNavItem = { to: string; label: string; icon: typeof ShoppingBag; end?: boolean; superOnly?: boolean };
@@ -31,18 +30,19 @@ const navItems: AdminNavItem[] = [
 ];
 
 const AdminLayout = () => {
-  const { user, isAdmin, isSuperAdmin, mustChangePassword, loading } = useAdminAuth();
+  const { user, adminProfile, isAdmin, isSuperAdmin, mustChangePassword, loading, signOut } = useAdminAuth();
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => { setMobileOpen(false); }, [location.pathname]);
 
-  // Signed in but not an active admin → force sign-out, then show Access Denied on login.
+  // Signed in but not an active admin → force sign-out, then show the reason on login.
+  const inactive = !!adminProfile && !adminProfile.is_active;
   useEffect(() => {
     if (!loading && user && !isAdmin) {
-      supabase.auth.signOut();
+      signOut({ silent: true });
     }
-  }, [loading, user, isAdmin]);
+  }, [loading, user, isAdmin, signOut]);
 
   if (!loading && user && isAdmin && mustChangePassword && location.pathname !== "/change-password") {
     return <Navigate to="/change-password" replace />;
@@ -50,8 +50,11 @@ const AdminLayout = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-background">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <p className="font-stencil text-[11px] uppercase tracking-[0.3em] text-muted-foreground">
+          Verifying admin access
+        </p>
       </div>
     );
   }
@@ -61,7 +64,7 @@ const AdminLayout = () => {
   }
 
   if (!isAdmin) {
-    return <Navigate to="/admin/login" replace state={{ denied: true }} />;
+    return <Navigate to="/admin/login" replace state={{ denied: true, inactive }} />;
   }
 
   const links = navItems.filter((n) => !n.superOnly || isSuperAdmin);
@@ -91,7 +94,7 @@ const AdminLayout = () => {
       <Button asChild variant="ghost" className="w-full justify-start font-stencil text-sm">
         <Link to="/"><Home className="h-4 w-4" /> Back to site</Link>
       </Button>
-      <Button onClick={() => supabase.auth.signOut()} variant="ghost" className="w-full justify-start font-stencil text-sm">
+      <Button onClick={() => signOut()} variant="ghost" className="w-full justify-start font-stencil text-sm">
         <LogOut className="h-4 w-4" /> Sign Out
       </Button>
     </div>
