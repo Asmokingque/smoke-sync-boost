@@ -78,9 +78,20 @@ const AdminSettings = () => {
         <h2 className="font-stencil text-sm tracking-[0.2em] text-gold">Tax</h2>
         <div className="space-y-2 max-w-[200px]">
           <Label htmlFor="tax-rate">Sales tax (%)</Label>
-          <Input id="tax-rate" value={taxRate} onChange={(e) => setTaxRate(e.target.value)} className="h-11" inputMode="decimal" />
+          <Input
+            id="tax-rate"
+            value={taxRate}
+            onChange={(e) => setTaxRate(e.target.value)}
+            className="h-11"
+            inputMode="decimal"
+            disabled={!isSuperAdmin}
+          />
+          {!isSuperAdmin && (
+            <p className="text-xs text-muted-foreground">Only a Super Admin can change the tax rate.</p>
+          )}
         </div>
       </section>
+
 
       <section className="retina-menu-card p-5 space-y-4">
         <h2 className="font-stencil text-sm tracking-[0.2em] text-gold">Pickup Hours</h2>
