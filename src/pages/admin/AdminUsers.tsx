@@ -335,6 +335,12 @@ const AdminUsers = () => {
         confirmLabel="Remove admin"
         onConfirm={confirmRemove}
       />
+
+      <SetPasswordDialog
+        open={!!pendingPassword}
+        onOpenChange={(open) => !open && setPendingPassword(null)}
+        admin={pendingPassword}
+      />
     </div>
   );
 };
