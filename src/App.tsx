@@ -34,6 +34,9 @@ import AdminSOP from "./pages/admin/AdminSOP";
 import AdminContent from "./pages/admin/AdminContent";
 import AdminSettings from "./pages/admin/AdminSettings";
 import AdminPayments from "./pages/admin/AdminPayments";
+import AdminHomepage from "./pages/admin/AdminHomepage";
+import AdminServiceArea from "./pages/admin/AdminServiceArea";
+
 import ChangePassword from "./pages/ChangePassword";
 import CheckoutSuccess from "./pages/CheckoutSuccess";
 import CheckoutCancel from "./pages/CheckoutCancel";
@@ -81,8 +84,9 @@ const App = () => (
             <Route path="sop" element={<AdminSOP />} />
             <Route path="homepage" element={<AdminHomepage />} />
             <Route path="service-area" element={<AdminServiceArea />} />
-
+            <Route path="content" element={<RequireSuperAdmin><AdminContent /></RequireSuperAdmin>} />
             <Route path="settings" element={<AdminSettings />} />
+
             <Route path="payments" element={<RequireSuperAdmin><AdminPayments /></RequireSuperAdmin>} />
             <Route path="users" element={<RequireSuperAdmin><AdminUsers /></RequireSuperAdmin>} />
 
