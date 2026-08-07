@@ -5,7 +5,7 @@ import { logAdminDenial } from "@/lib/adminAccessLog";
 import {
   Loader2, ShoppingBag, MessageSquareText, UtensilsCrossed, Mail, LogOut, Home,
   Sparkles, BookOpen, FileText, Users, Settings, CreditCard, LayoutDashboard,
-  CalendarDays, Sandwich, Menu as MenuIcon, X, PanelsTopLeft, MapPin,
+  CalendarDays, Sandwich, Menu as MenuIcon, X, PanelsTopLeft, MapPin, FolderTree, Image as ImageIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { RoleBadge } from "@/components/admin/RoleBadge";
