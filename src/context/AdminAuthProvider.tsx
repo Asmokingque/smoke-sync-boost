@@ -25,7 +25,7 @@ export const ACCESS_DENIED_MESSAGE =
   "Access denied. This account is not authorized for the admin dashboard.";
 export const INACTIVE_MESSAGE = "This admin account is inactive.";
 
-type SignInResult = { ok: boolean; error?: string; role?: AdminRole };
+type SignInResult = { ok: boolean; error?: string; role?: AdminRole; eventId?: string };
 
 type AdminAuthValue = {
   session: Session | null;
