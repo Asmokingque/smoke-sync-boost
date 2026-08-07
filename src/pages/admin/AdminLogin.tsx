@@ -130,6 +130,11 @@ const AdminLogin = () => {
           </div>
         )}
 
+        <DevAdminSignIn
+          onFill={(email, password) => setForm({ email, password })}
+          onSignIn={devSignIn}
+        />
+
 
         <form onSubmit={submit} className="space-y-4">
           <div className="space-y-2">
