@@ -34,24 +34,31 @@ const AdminOrders = () => {
       )
     : orders;
 
+  const esc = (v: unknown) =>
+    String(v ?? "").replace(/[&<>"']/g, (c) =>
+      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c] as string)
+    );
+
   const printTicket = (o: any) => {
-    const w = window.open("", "_blank", "width=420,height=640");
+    const w = window.open("", "_blank", "width=420,height=640,noopener");
     if (!w) return toast.error("Allow pop-ups to print tickets.");
+    try { (w as any).opener = null; } catch { /* noop */ }
     const items = (o.order_items ?? [])
-      .map((i: any) => `<li>${i.quantity}× ${i.item_name} — $${(i.unit_price * i.quantity).toFixed(2)}</li>`)
+      .map((i: any) => `<li>${esc(i.quantity)}× ${esc(i.item_name)} — $${(i.unit_price * i.quantity).toFixed(2)}</li>`)
       .join("");
-    w.document.write(`<html><head><title>Order ${o.order_number ?? o.id.slice(0, 8)}</title>
+    w.document.write(`<html><head><title>Order ${esc(o.order_number ?? o.id.slice(0, 8))}</title>
       <style>body{font-family:monospace;padding:16px}h1{font-size:18px}ul{padding-left:18px}</style></head>
       <body><h1>Anderson's Smoking Que</h1>
-      <p>#${o.order_number ?? o.id.slice(0, 8).toUpperCase()}<br/>${new Date(o.created_at).toLocaleString()}</p>
-      <p>${o.customer_name}<br/>${o.customer_phone}<br/>${o.order_type ?? "pickup"}</p>
+      <p>#${esc(o.order_number ?? o.id.slice(0, 8).toUpperCase())}<br/>${esc(new Date(o.created_at).toLocaleString())}</p>
+      <p>${esc(o.customer_name)}<br/>${esc(o.customer_phone)}<br/>${esc(o.order_type ?? "pickup")}</p>
       <ul>${items}</ul>
       <p><strong>Total: $${Number(o.total).toFixed(2)}</strong></p>
-      ${o.notes ? `<p>Note: ${o.notes}</p>` : ""}
+      ${o.notes ? `<p>Note: ${esc(o.notes)}</p>` : ""}
       </body></html>`);
     w.document.close();
     w.print();
   };
+
 
 
   const updateStatus = async (id: string, status: string) => {
