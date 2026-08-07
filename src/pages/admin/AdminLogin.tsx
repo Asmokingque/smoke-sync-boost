@@ -96,9 +96,25 @@ const AdminLogin = () => {
             className="mb-4 flex items-start gap-2 rounded-md border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive"
           >
             <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />
-            <span>{error}</span>
+            <div className="space-y-1">
+              <span className="block">{error}</span>
+              {eventId && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigator.clipboard?.writeText(eventId);
+                    toast.success("Event ID copied.");
+                  }}
+                  title={eventId}
+                  className="font-stencil text-[10px] uppercase tracking-[0.2em] text-muted-foreground hover:text-gold underline-offset-4 hover:underline"
+                >
+                  Event ID: {shortEventId(eventId)} — tap to copy
+                </button>
+              )}
+            </div>
           </div>
         )}
+
 
         <form onSubmit={submit} className="space-y-4">
           <div className="space-y-2">
