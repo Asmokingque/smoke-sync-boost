@@ -12,6 +12,11 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, t
 import { siteContent as defaultSiteContent, type SiteContent } from "@/data/siteContent";
 import { theme as defaultTheme, type Theme } from "@/data/theme";
 import { fallbackCategories, fallbackMenuItems } from "@/data/menuData";
+import { serviceArea as defaultServiceArea, type ServiceArea } from "@/data/serviceAreaData";
+import {
+  homepageLayout as defaultHomepageLayout,
+  type HomepageSection,
+} from "@/data/homepageLayout";
 import {
   contentDefaults,
   deepMerge,
@@ -26,6 +31,8 @@ type ContentContextValue = {
   siteContent: SiteContent;
   theme: Theme;
   menuData: MenuDataShape;
+  serviceArea: ServiceArea;
+  homepageSections: HomepageSection[];
   loading: boolean;
   /** Re-read overrides from the backend (used by the admin dashboard). */
   refresh: () => Promise<void>;
@@ -34,6 +41,23 @@ type ContentContextValue = {
 };
 
 const ContentContext = createContext<ContentContextValue | null>(null);
+
+/**
+ * Keeps admin-saved section order/visibility, but guarantees every known
+ * section still exists (so a new section added in code never disappears).
+ */
+function mergeSections(saved?: HomepageSection[]): HomepageSection[] {
+  const defaults = defaultHomepageLayout.sections;
+  if (!saved?.length) return defaults;
+  const known = new Map(defaults.map((s) => [s.id, s]));
+  const ordered = saved
+    .filter((s) => known.has(s.id))
+    .map((s) => ({ ...known.get(s.id)!, visible: s.visible !== false }));
+  const seen = new Set(ordered.map((s) => s.id));
+  return [...ordered, ...defaults.filter((s) => !seen.has(s.id))];
+}
+
+
 
 export function ContentProvider({ children }: { children: ReactNode }) {
   const [overrides, setOverrides] = useState<OverrideMap>({});
@@ -62,9 +86,14 @@ export function ContentProvider({ children }: { children: ReactNode }) {
         categories: menuOverride?.categories?.length ? menuOverride.categories : menuDefaults.categories,
         items: menuOverride?.items?.length ? menuOverride.items : menuDefaults.items,
       },
+      serviceArea: deepMerge(defaultServiceArea, overrides.serviceArea) as ServiceArea,
+      homepageSections: mergeSections(
+        (overrides.homepageLayout as { sections?: HomepageSection[] } | undefined)?.sections
+      ),
       merged: (key: ContentKey) =>
         deepMerge(contentDefaults[key], overrides[key]) as Record<string, unknown>,
     };
+
   }, [overrides, loading, refresh]);
 
   return <ContentContext.Provider value={value}>{children}</ContentContext.Provider>;
@@ -83,6 +112,17 @@ export function useSiteContent(): SiteContent {
 export function useTheme(): Theme {
   return useContentContext()?.theme ?? defaultTheme;
 }
+
+/** Merged service-area copy — falls back to the static file outside the provider. */
+export function useServiceArea(): ServiceArea {
+  return useContentContext()?.serviceArea ?? defaultServiceArea;
+}
+
+/** Homepage section order + visibility. */
+export function useHomepageSections(): HomepageSection[] {
+  return useContentContext()?.homepageSections ?? defaultHomepageLayout.sections;
+}
+
 
 /** Merged fallback menu (used when the live database is empty). */
 export function useFallbackMenu(): MenuDataShape {

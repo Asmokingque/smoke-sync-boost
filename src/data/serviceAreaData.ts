@@ -1,11 +1,11 @@
 /**
  * serviceAreaData.ts
  * ---------------------------------------------------------------------------
- * Edit this file to change the service area text and city list.
+ * Defaults for the "Where We Serve" section (src/components/home/ServiceAreaSection.tsx)
+ * and the footer service-area wording.
  *
- * Controls the "Where We Serve" section on the homepage
- * (src/components/home/ServiceAreaSection.tsx).
- * Add or remove cities here — the section updates automatically.
+ * These are DEFAULTS only — the live site reads admin edits from the backend
+ * (/admin/service-area) and merges them on top of this file.
  * ---------------------------------------------------------------------------
  */
 
@@ -13,6 +13,15 @@ export const serviceArea = {
   badge: "Where We Serve",
   title: "Pickup & Local Delivery",
   subtitle: "Serving Lake City and surrounding areas.",
+
+  /** Primary location */
+  city: "Lake City",
+  state: "FL",
+
+  /** Map center + zoom (used by any map embed) */
+  mapLat: 30.1897,
+  mapLng: -82.6393,
+  mapZoom: 11,
 
   /** Cities shown as chips */
   cities: [
@@ -34,4 +43,9 @@ export const serviceArea = {
   ],
 
   footnote: "Catering is available beyond this radius — ask us about your event.",
+
+  /** Short line shown in the site footer */
+  footerText: "Serving Lake City and surrounding areas.",
 };
+
+export type ServiceArea = typeof serviceArea;
