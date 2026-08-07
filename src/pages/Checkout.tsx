@@ -17,6 +17,7 @@ import { SafetyCommitmentBlock } from "@/components/checkout/SafetyCommitmentBlo
 import { computeDiscount, buildSafeOrderTotals, type Promo } from "@/lib/promo";
 import { useCommunityDiscount, computeCommunityDiscountAmount } from "@/hooks/useCommunityDiscount";
 import { StripeEmbeddedCheckout, type CheckoutCartItem, type CheckoutCustomerInfo } from "@/components/checkout/StripeEmbeddedCheckout";
+import { CheckoutPaymentSelector } from "@/components/payments/CheckoutPaymentSelector";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 const schema = z.object({
@@ -187,6 +188,7 @@ const Checkout = () => {
     payment_method: "pay_later" as "pay_later" | "cod",
   });
   const [touched, setTouched] = useState<{ name?: boolean; phone?: boolean }>({});
+  const [paymentMethodKey, setPaymentMethodKey] = useState<string | null>(null);
 
   const validateName = (v: string): string | null => {
     const t = v.trim();
