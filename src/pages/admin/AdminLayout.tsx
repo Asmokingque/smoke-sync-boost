@@ -5,7 +5,7 @@ import { logAdminDenial } from "@/lib/adminAccessLog";
 import {
   Loader2, ShoppingBag, MessageSquareText, UtensilsCrossed, Mail, LogOut, Home,
   Sparkles, BookOpen, FileText, Users, Settings, CreditCard, LayoutDashboard,
-  CalendarDays, Sandwich, Menu as MenuIcon, X,
+  CalendarDays, Sandwich, Menu as MenuIcon, X, PanelsTopLeft, MapPin,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { RoleBadge } from "@/components/admin/RoleBadge";
@@ -23,7 +23,10 @@ const navItems: AdminNavItem[] = [
   { to: "/admin/catering", label: "Catering Requests", icon: Mail },
   { to: "/admin/reviews", label: "Reviews", icon: MessageSquareText },
   { to: "/admin/contact", label: "Contact", icon: MessageSquareText },
+  { to: "/admin/homepage", label: "Homepage Editor", icon: PanelsTopLeft },
+  { to: "/admin/service-area", label: "Service Area", icon: MapPin },
   { to: "/admin/settings", label: "Business Settings", icon: Settings },
+
   { to: "/admin/payments", label: "Payment Settings", icon: CreditCard, superOnly: true },
   { to: "/admin/content", label: "Site Content", icon: FileText, superOnly: true },
   { to: "/admin/users", label: "Admin Users", icon: Users, superOnly: true },
