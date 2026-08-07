@@ -113,6 +113,17 @@ export function useTheme(): Theme {
   return useContentContext()?.theme ?? defaultTheme;
 }
 
+/** Merged service-area copy — falls back to the static file outside the provider. */
+export function useServiceArea(): ServiceArea {
+  return useContentContext()?.serviceArea ?? defaultServiceArea;
+}
+
+/** Homepage section order + visibility. */
+export function useHomepageSections(): HomepageSection[] {
+  return useContentContext()?.homepageSections ?? defaultHomepageLayout.sections;
+}
+
+
 /** Merged fallback menu (used when the live database is empty). */
 export function useFallbackMenu(): MenuDataShape {
   return useContentContext()?.menuData ?? { categories: fallbackCategories, items: fallbackMenuItems };
