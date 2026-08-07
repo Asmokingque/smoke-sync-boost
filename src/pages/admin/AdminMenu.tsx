@@ -675,6 +675,30 @@ const AdminMenu = () => {
                 <Label>Allow notes</Label>
               </div>
             </div>
+
+            <div className="grid sm:grid-cols-3 gap-3">
+              <div className="flex items-center gap-3">
+                <Switch
+                  checked={form.is_sold_out}
+                  onCheckedChange={(v) => setForm({ ...form, is_sold_out: v })}
+                />
+                <Label>Sold out</Label>
+              </div>
+              <div className="flex items-center gap-3">
+                <Switch
+                  checked={form.is_popular}
+                  onCheckedChange={(v) => setForm({ ...form, is_popular: v })}
+                />
+                <Label>Popular</Label>
+              </div>
+              <div className="flex items-center gap-3">
+                <Switch
+                  checked={form.online_ordering_enabled}
+                  onCheckedChange={(v) => setForm({ ...form, online_ordering_enabled: v })}
+                />
+                <Label>Online ordering</Label>
+              </div>
+            </div>
           </div>
 
           <DialogFooter>
