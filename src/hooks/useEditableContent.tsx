@@ -12,6 +12,11 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, t
 import { siteContent as defaultSiteContent, type SiteContent } from "@/data/siteContent";
 import { theme as defaultTheme, type Theme } from "@/data/theme";
 import { fallbackCategories, fallbackMenuItems } from "@/data/menuData";
+import { serviceArea as defaultServiceArea, type ServiceArea } from "@/data/serviceAreaData";
+import {
+  homepageLayout as defaultHomepageLayout,
+  type HomepageSection,
+} from "@/data/homepageLayout";
 import {
   contentDefaults,
   deepMerge,
@@ -26,6 +31,8 @@ type ContentContextValue = {
   siteContent: SiteContent;
   theme: Theme;
   menuData: MenuDataShape;
+  serviceArea: ServiceArea;
+  homepageSections: HomepageSection[];
   loading: boolean;
   /** Re-read overrides from the backend (used by the admin dashboard). */
   refresh: () => Promise<void>;
@@ -34,6 +41,7 @@ type ContentContextValue = {
 };
 
 const ContentContext = createContext<ContentContextValue | null>(null);
+
 
 export function ContentProvider({ children }: { children: ReactNode }) {
   const [overrides, setOverrides] = useState<OverrideMap>({});
