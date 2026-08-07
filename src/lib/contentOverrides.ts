@@ -173,7 +173,32 @@ export type Theme = typeof theme;
 `;
   }
 
+  if (key === "serviceArea") {
+    return `/**
+ * serviceAreaData.ts
+ * Generated from the admin dashboard (/admin/service-area).
+ */
+
+export const serviceArea = ${literal(value)};
+
+export type ServiceArea = typeof serviceArea;
+`;
+  }
+
+  if (key === "homepageLayout") {
+    return `/**
+ * homepageLayout.ts
+ * Generated from the admin dashboard (/admin/homepage).
+ */
+
+export const homepageLayout = ${literal(value)};
+
+export type HomepageLayout = typeof homepageLayout;
+`;
+  }
+
   const menu = value as unknown as MenuDataShape;
+
   return `/**
  * menuData.ts
  * ---------------------------------------------------------------------------
