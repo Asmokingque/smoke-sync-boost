@@ -36,6 +36,7 @@ import AdminSOP from "./pages/admin/AdminSOP";
 import AdminContent from "./pages/admin/AdminContent";
 import AdminSettings from "./pages/admin/AdminSettings";
 import AdminPayments from "./pages/admin/AdminPayments";
+import PaymentConnectorsPage from "./pages/admin/PaymentConnectorsPage";
 import AdminHomepage from "./pages/admin/AdminHomepage";
 import AdminServiceArea from "./pages/admin/AdminServiceArea";
 
@@ -92,6 +93,7 @@ const App = () => (
             <Route path="settings" element={<AdminSettings />} />
 
             <Route path="payments" element={<RequireSuperAdmin><AdminPayments /></RequireSuperAdmin>} />
+            <Route path="payment-connectors" element={<RequireSuperAdmin><PaymentConnectorsPage /></RequireSuperAdmin>} />
             <Route path="users" element={<RequireSuperAdmin><AdminUsers /></RequireSuperAdmin>} />
 
           </Route>
