@@ -79,7 +79,9 @@ const App = () => (
             <Route path="catering" element={<AdminCatering />} />
             <Route path="contact" element={<AdminContact />} />
             <Route path="sop" element={<AdminSOP />} />
-            <Route path="content" element={<RequireSuperAdmin><AdminContent /></RequireSuperAdmin>} />
+            <Route path="homepage" element={<AdminHomepage />} />
+            <Route path="service-area" element={<AdminServiceArea />} />
+
             <Route path="settings" element={<AdminSettings />} />
             <Route path="payments" element={<RequireSuperAdmin><AdminPayments /></RequireSuperAdmin>} />
             <Route path="users" element={<RequireSuperAdmin><AdminUsers /></RequireSuperAdmin>} />
