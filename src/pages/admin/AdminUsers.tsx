@@ -9,13 +9,14 @@ import { useAdminAuth } from "@/context/AdminAuthProvider";
 import { AdminFormCard } from "@/components/admin/AdminFormCard";
 import { ConfirmDeleteDialog } from "@/components/admin/ConfirmDeleteDialog";
 import { RoleBadge } from "@/components/admin/RoleBadge";
+import { SetPasswordDialog } from "@/components/admin/SetPasswordDialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Check, Loader2, Search, ShieldAlert, Trash2, UserPlus, X } from "lucide-react";
+import { Check, KeyRound, Loader2, Search, ShieldAlert, Trash2, UserPlus, X } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 
