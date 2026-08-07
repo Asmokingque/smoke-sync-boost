@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Star, Loader2, Camera } from "lucide-react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
-import { getVisitorId } from "@/lib/visitorId";
+import { getVisitorId, getLikedReviewIds, setLikedReviewIds } from "@/lib/visitorId";
 import { ReviewPhotoCard } from "@/components/retina/ReviewPhotoCard";
 
 type Review = {
