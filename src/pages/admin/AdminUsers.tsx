@@ -9,13 +9,14 @@ import { useAdminAuth } from "@/context/AdminAuthProvider";
 import { AdminFormCard } from "@/components/admin/AdminFormCard";
 import { ConfirmDeleteDialog } from "@/components/admin/ConfirmDeleteDialog";
 import { RoleBadge } from "@/components/admin/RoleBadge";
+import { SetPasswordDialog } from "@/components/admin/SetPasswordDialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Check, Loader2, Search, ShieldAlert, Trash2, UserPlus, X } from "lucide-react";
+import { Check, KeyRound, Loader2, Search, ShieldAlert, Trash2, UserPlus, X } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 
@@ -40,6 +41,7 @@ const PERMISSIONS: { area: string; superAdmin: boolean; admin: boolean }[] = [
   { area: "Site content editor", superAdmin: true, admin: false },
   { area: "Payment & checkout settings", superAdmin: true, admin: false },
   { area: "Manage admin users & roles", superAdmin: true, admin: false },
+  { area: "Force-set another admin's password", superAdmin: true, admin: false },
 ];
 
 const AdminUsers = () => {
@@ -49,6 +51,7 @@ const AdminUsers = () => {
   const [fetching, setFetching] = useState(true);
   const [query, setQuery] = useState("");
   const [pendingDelete, setPendingDelete] = useState<AdminRow | null>(null);
+  const [pendingPassword, setPendingPassword] = useState<AdminRow | null>(null);
   const [form, setForm] = useState<{ email: string; role: AdminRole; notes: string }>({
     email: "",
     role: "admin",
@@ -268,6 +271,16 @@ const AdminUsers = () => {
                 <Button
                   variant="ghost"
                   size="sm"
+                  disabled={!row.user_id}
+                  title={row.user_id ? "Set a new password" : "They haven't signed up yet"}
+                  onClick={() => setPendingPassword(row)}
+                >
+                  <KeyRound className="h-4 w-4" />
+                </Button>
+
+                <Button
+                  variant="ghost"
+                  size="sm"
                   disabled={isSelf(row)}
                   title={isSelf(row) ? "You can't remove your own account" : "Remove admin"}
                   onClick={() => setPendingDelete(row)}
@@ -322,6 +335,12 @@ const AdminUsers = () => {
         description={`${pendingDelete?.email ?? ""} will lose access to the dashboard immediately. This can't be undone.`}
         confirmLabel="Remove admin"
         onConfirm={confirmRemove}
+      />
+
+      <SetPasswordDialog
+        open={!!pendingPassword}
+        onOpenChange={(open) => !open && setPendingPassword(null)}
+        admin={pendingPassword}
       />
     </div>
   );

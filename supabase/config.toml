@@ -29,3 +29,6 @@ verify_jwt = false
 
 [functions.handle-email-suppression]
 verify_jwt = false
+
+[functions.admin-set-password]
+verify_jwt = true
