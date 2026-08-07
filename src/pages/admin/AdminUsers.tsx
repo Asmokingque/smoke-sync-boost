@@ -270,6 +270,16 @@ const AdminUsers = () => {
                 <Button
                   variant="ghost"
                   size="sm"
+                  disabled={!row.user_id}
+                  title={row.user_id ? "Set a new password" : "They haven't signed up yet"}
+                  onClick={() => setPendingPassword(row)}
+                >
+                  <KeyRound className="h-4 w-4" />
+                </Button>
+
+                <Button
+                  variant="ghost"
+                  size="sm"
                   disabled={isSelf(row)}
                   title={isSelf(row) ? "You can't remove your own account" : "Remove admin"}
                   onClick={() => setPendingDelete(row)}
