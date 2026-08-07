@@ -8,6 +8,7 @@ import { Loader2, Lock, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 import { useAdminAuth, ACCESS_DENIED_MESSAGE, INACTIVE_MESSAGE } from "@/context/AdminAuthProvider";
 import { shortEventId } from "@/lib/adminAccessLog";
+import { DevAdminSignIn } from "@/components/admin/DevAdminSignIn";
 import { z } from "zod";
 import logo from "@/assets/logo.png";
 
