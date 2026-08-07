@@ -13,7 +13,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
-import { Loader2, Upload, Trash2, ImageIcon, X } from "lucide-react";
+import { Loader2, Upload, Trash2, ImageIcon, X, MousePointer2 } from "lucide-react";
 import { toast } from "sonner";
 import {
   folderPath,
@@ -64,11 +64,28 @@ export function ImageUploader({
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [preview, setPreview] = useState<string | null>(null);
+  const [dragActive, setDragActive] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const dropRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => () => { if (preview) URL.revokeObjectURL(preview); }, [preview]);
 
   const pick = () => inputRef.current?.click();
+
+  const handleDrag = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") setDragActive(true);
+    if (e.type === "dragleave") setDragActive(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) upload(file);
+  };
 
   const buildPath = (fileName: string) => {
     if (bucket === "menu-images" && (menu?.categorySlug || menu?.itemSlug)) {
@@ -150,15 +167,30 @@ export function ImageUploader({
     <div className={`space-y-3 ${className}`}>
       <div className="flex items-start gap-4">
         <button
+          ref={dropRef}
           type="button"
           onClick={pick}
-          title="Upload or replace photo"
-          className="relative h-24 w-24 shrink-0 overflow-hidden rounded-md border border-gold/30 bg-muted/40 flex items-center justify-center"
+          onDragEnter={handleDrag}
+          onDragLeave={handleDrag}
+          onDragOver={handleDrag}
+          onDrop={handleDrop}
+          title="Upload, replace, or drop a photo here"
+          className={`relative h-24 w-24 shrink-0 overflow-hidden rounded-md border bg-muted/40 flex items-center justify-center transition-colors ${
+            dragActive ? "border-gold border-2 bg-gold/10" : "border-gold/30"
+          }`}
         >
           {shown ? (
             <img src={shown} alt={label} className="h-full w-full object-cover" loading="lazy" />
           ) : (
-            <ImageIcon className="h-6 w-6 text-muted-foreground" aria-hidden />
+            <div className="flex flex-col items-center gap-1 text-muted-foreground">
+              <ImageIcon className="h-6 w-6" aria-hidden />
+              {dragActive && <MousePointer2 className="h-3 w-3" />}
+            </div>
+          )}
+          {dragActive && shown && (
+            <span className="absolute inset-0 flex flex-col items-center justify-center bg-background/80 text-xs font-stencil uppercase tracking-wider text-gold gap-1">
+              <Upload className="h-5 w-5" /> Drop to replace
+            </span>
           )}
           {uploading && (
             <span className="absolute inset-0 flex items-center justify-center bg-background/70">
@@ -195,7 +227,11 @@ export function ImageUploader({
               </Button>
             )}
           </div>
-          <p className="text-xs text-muted-foreground">JPG, PNG or WEBP · up to 5 MB</p>
+          <p className="text-xs text-muted-foreground">
+            JPG, PNG or WEBP · up to 5 MB
+            <br />
+            <span className="text-gold/80">Or drag and drop onto the preview</span>
+          </p>
         </div>
       </div>
 
