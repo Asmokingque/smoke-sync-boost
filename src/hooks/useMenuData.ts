@@ -52,8 +52,22 @@ export function useMenuData() {
           return;
         }
 
-        setCategories(cats.data as MenuCategory[]);
-        setItems(its.data as unknown as MenuItem[]);
+        // Admin-controlled visibility: hidden categories and sold-out /
+        // ordering-disabled items never reach the customer menu as orderable.
+        const visibleCats = (cats.data as unknown as Array<Record<string, unknown>>).filter(
+          (c) => c.is_visible !== false,
+        );
+        const visibleCatIds = new Set(visibleCats.map((c) => c.id as string));
+        const liveItems = (its.data as unknown as Array<Record<string, unknown>>)
+          .filter((i) => visibleCatIds.has(i.category_id as string))
+          .map((i) => ({
+            ...i,
+            is_available:
+              i.is_available !== false && i.is_sold_out !== true && i.online_ordering_enabled !== false,
+          }));
+
+        setCategories(visibleCats as unknown as MenuCategory[]);
+        setItems(liveItems as unknown as MenuItem[]);
         setUsingFallback(false);
         setLoading(false);
       } catch {
