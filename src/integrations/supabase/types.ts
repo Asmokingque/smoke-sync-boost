@@ -770,6 +770,108 @@ export type Database = {
         }
         Relationships: []
       }
+      payment_connectors: {
+        Row: {
+          connection_status: string
+          created_at: string
+          display_name: string
+          display_order: number
+          enabled: boolean
+          id: string
+          last_test_result: string | null
+          last_tested_at: string | null
+          notes: string | null
+          provider: string
+          public_config: Json
+          secret_refs: Json
+          supported_methods: Json
+          test_mode: boolean
+          updated_at: string
+          webhook_status: string
+        }
+        Insert: {
+          connection_status?: string
+          created_at?: string
+          display_name: string
+          display_order?: number
+          enabled?: boolean
+          id?: string
+          last_test_result?: string | null
+          last_tested_at?: string | null
+          notes?: string | null
+          provider: string
+          public_config?: Json
+          secret_refs?: Json
+          supported_methods?: Json
+          test_mode?: boolean
+          updated_at?: string
+          webhook_status?: string
+        }
+        Update: {
+          connection_status?: string
+          created_at?: string
+          display_name?: string
+          display_order?: number
+          enabled?: boolean
+          id?: string
+          last_test_result?: string | null
+          last_tested_at?: string | null
+          notes?: string | null
+          provider?: string
+          public_config?: Json
+          secret_refs?: Json
+          supported_methods?: Json
+          test_mode?: boolean
+          updated_at?: string
+          webhook_status?: string
+        }
+        Relationships: []
+      }
+      payment_methods: {
+        Row: {
+          category: string
+          created_at: string
+          description: string | null
+          display_order: number
+          enabled: boolean
+          id: string
+          instructions: string | null
+          is_manual: boolean
+          label: string
+          method_key: string
+          provider: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          enabled?: boolean
+          id?: string
+          instructions?: string | null
+          is_manual?: boolean
+          label: string
+          method_key: string
+          provider: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          enabled?: boolean
+          id?: string
+          instructions?: string | null
+          is_manual?: boolean
+          label?: string
+          method_key?: string
+          provider?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
