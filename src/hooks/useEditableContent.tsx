@@ -70,9 +70,14 @@ export function ContentProvider({ children }: { children: ReactNode }) {
         categories: menuOverride?.categories?.length ? menuOverride.categories : menuDefaults.categories,
         items: menuOverride?.items?.length ? menuOverride.items : menuDefaults.items,
       },
+      serviceArea: deepMerge(defaultServiceArea, overrides.serviceArea) as ServiceArea,
+      homepageSections: mergeSections(
+        (overrides.homepageLayout as { sections?: HomepageSection[] } | undefined)?.sections
+      ),
       merged: (key: ContentKey) =>
         deepMerge(contentDefaults[key], overrides[key]) as Record<string, unknown>,
     };
+
   }, [overrides, loading, refresh]);
 
   return <ContentContext.Provider value={value}>{children}</ContentContext.Provider>;
