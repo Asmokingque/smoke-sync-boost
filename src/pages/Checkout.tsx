@@ -17,6 +17,7 @@ import { SafetyCommitmentBlock } from "@/components/checkout/SafetyCommitmentBlo
 import { computeDiscount, buildSafeOrderTotals, type Promo } from "@/lib/promo";
 import { useCommunityDiscount, computeCommunityDiscountAmount } from "@/hooks/useCommunityDiscount";
 import { StripeEmbeddedCheckout, type CheckoutCartItem, type CheckoutCustomerInfo } from "@/components/checkout/StripeEmbeddedCheckout";
+import { CheckoutPaymentSelector } from "@/components/payments/CheckoutPaymentSelector";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 const schema = z.object({
@@ -187,6 +188,7 @@ const Checkout = () => {
     payment_method: "pay_later" as "pay_later" | "cod",
   });
   const [touched, setTouched] = useState<{ name?: boolean; phone?: boolean }>({});
+  const [paymentMethodKey, setPaymentMethodKey] = useState<string | null>(null);
 
   const validateName = (v: string): string | null => {
     const t = v.trim();
@@ -641,57 +643,13 @@ const Checkout = () => {
               </div>
             )}
 
-            {form.order_type === "Delivery" ? (
-              <div className="space-y-3">
-                <div className="flex items-center gap-2">
-                  <span className="luxury-eyebrow">Payment Method</span>
-                  <span className="luxury-gold-line flex-1" />
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {[
-                    { value: "cod" as const, title: "Cash on Delivery", sub: "Pay the driver in cash when your order arrives" },
-                    { value: "pay_later" as const, title: "Pay Later (Confirm by Phone)", sub: "We'll call to confirm payment details" },
-                  ].map((opt) => {
-                    const active = form.payment_method === opt.value;
-                    return (
-                      <button
-                        key={opt.value}
-                        type="button"
-                        onClick={() => setForm({ ...form, payment_method: opt.value })}
-                        className={[
-                          "rounded-2xl border p-4 text-left transition-all",
-                          active
-                            ? "border-gold/70 bg-gradient-to-br from-primary/15 to-background/40 ring-gold-soft"
-                            : "border-border/60 bg-background/40 hover:border-gold/40",
-                        ].join(" ")}
-                      >
-                        <div className={`font-stencil text-sm tracking-wider ${active ? "text-gold" : "text-foreground"}`}>{opt.title}</div>
-                        <div className="text-[11px] text-muted-foreground mt-1">{opt.sub}</div>
-                      </button>
-                    );
-                  })}
-                </div>
-                {form.payment_method === "cod" && (
-                  <div className="rounded-md border border-gold/30 bg-gradient-to-r from-primary/5 via-gold/5 to-primary/5 p-4 text-sm flex gap-3">
-                    <Sparkles className="h-4 w-4 text-gold shrink-0 mt-0.5" />
-                    <div>
-                      <strong className="text-gold font-stencil tracking-wider text-xs uppercase block mb-1">
-                        Cash on Delivery — ${total.toFixed(2)}
-                      </strong>
-                      <span className="text-muted-foreground">Please have exact cash ready when your driver arrives. A receipt will be provided.</span>
-                    </div>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div className="rounded-md border border-gold/30 bg-gradient-to-r from-primary/5 via-gold/5 to-primary/5 p-4 text-sm flex gap-3">
-                <Sparkles className="h-4 w-4 text-gold shrink-0 mt-0.5" />
-                <div>
-                  <strong className="text-gold font-stencil tracking-wider text-xs uppercase block mb-1">Pay at Pickup</strong>
-                  <span className="text-muted-foreground">We'll confirm your order by phone or email. Online card payment is coming soon.</span>
-                </div>
-              </div>
-            )}
+            <CheckoutPaymentSelector
+              value={paymentMethodKey}
+              onChange={(m) => {
+                setPaymentMethodKey(m.method_key);
+                setForm((f) => ({ ...f, payment_method: m.method_key === "manual_cash" ? "cod" : "pay_later" }));
+              }}
+            />
 
             <SafetyCommitmentBlock />
 
