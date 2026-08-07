@@ -32,3 +32,21 @@ verify_jwt = false
 
 [functions.admin-set-password]
 verify_jwt = true
+
+[functions.create-payment-session]
+verify_jwt = false
+
+[functions.stripe-create-checkout-session]
+verify_jwt = false
+
+[functions.square-create-payment]
+verify_jwt = false
+
+[functions.paypal-create-order]
+verify_jwt = false
+
+[functions.paypal-capture-order]
+verify_jwt = false
+
+[functions.payment-webhook-router]
+verify_jwt = false
