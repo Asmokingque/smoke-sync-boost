@@ -13,7 +13,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
-import { Loader2, Upload, Trash2, ImageIcon, X } from "lucide-react";
+import { Loader2, Upload, Trash2, ImageIcon, X, MousePointer2 } from "lucide-react";
 import { toast } from "sonner";
 import {
   folderPath,
