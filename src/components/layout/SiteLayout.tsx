@@ -16,7 +16,7 @@ export function SiteLayout({ children }: { children: ReactNode }) {
   const cartTotal = useCart((s) => s.subtotal());
   return (
     <div className="luxury-page-bg min-h-screen flex flex-col">
-      <PaymentTestModeBanner />
+      
       <Header onCartClick={() => setCartOpen(true)} />
       <main className="flex-1">{children}</main>
       <Footer />
