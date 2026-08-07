@@ -65,6 +65,20 @@ const AdminLogin = () => {
     navigate("/admin", { replace: true });
   };
 
+  const devSignIn = async (email: string, password: string) => {
+    setError(null);
+    setEventId(null);
+    const result = await signIn(email, password);
+    if (!result.ok) {
+      setError(result.error ?? "Sign in failed");
+      setEventId(result.eventId ?? null);
+      return;
+    }
+    navigate("/admin", { replace: true });
+  };
+
+
+
 
 
   const resetPassword = async () => {
