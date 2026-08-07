@@ -50,6 +50,7 @@ const AdminUsers = () => {
   const [fetching, setFetching] = useState(true);
   const [query, setQuery] = useState("");
   const [pendingDelete, setPendingDelete] = useState<AdminRow | null>(null);
+  const [pendingPassword, setPendingPassword] = useState<AdminRow | null>(null);
   const [form, setForm] = useState<{ email: string; role: AdminRole; notes: string }>({
     email: "",
     role: "admin",
