@@ -20,7 +20,9 @@ const ChangePassword = () => {
   const [pw2, setPw2] = useState("");
 
   if (loading) return null;
-  if (!user) return <Navigate to="/auth" replace />;
+  if (!user) return <Navigate to="/admin/login" replace />;
+  // Not required to change a password → don't strand the user on this screen.
+  if (!mustChangePassword) return <Navigate to="/admin" replace />;
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();

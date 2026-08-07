@@ -460,24 +460,33 @@ export type Database = {
           description: string | null
           display_order: number
           id: string
+          image_url: string | null
+          is_visible: boolean
           name: string
           slug: string
+          updated_at: string
         }
         Insert: {
           created_at?: string
           description?: string | null
           display_order?: number
           id?: string
+          image_url?: string | null
+          is_visible?: boolean
           name: string
           slug: string
+          updated_at?: string
         }
         Update: {
           created_at?: string
           description?: string | null
           display_order?: number
           id?: string
+          image_url?: string | null
+          is_visible?: boolean
           name?: string
           slug?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -533,7 +542,10 @@ export type Database = {
           image_url: string | null
           is_available: boolean
           is_featured: boolean
+          is_popular: boolean
+          is_sold_out: boolean
           name: string
+          online_ordering_enabled: boolean
           price: number | null
           price_alt: number | null
           price_label: string | null
@@ -550,7 +562,10 @@ export type Database = {
           image_url?: string | null
           is_available?: boolean
           is_featured?: boolean
+          is_popular?: boolean
+          is_sold_out?: boolean
           name: string
+          online_ordering_enabled?: boolean
           price?: number | null
           price_alt?: number | null
           price_label?: string | null
@@ -567,7 +582,10 @@ export type Database = {
           image_url?: string | null
           is_available?: boolean
           is_featured?: boolean
+          is_popular?: boolean
+          is_sold_out?: boolean
           name?: string
+          online_ordering_enabled?: boolean
           price?: number | null
           price_alt?: number | null
           price_label?: string | null
@@ -1074,11 +1092,14 @@ export type Database = {
       hours_override_status: "open" | "closed" | "special_hours"
       order_status:
         | "pending"
+        | "pending_payment"
         | "confirmed"
         | "preparing"
         | "ready"
+        | "out_for_delivery"
         | "completed"
         | "cancelled"
+        | "refunded"
       special_type: "daily" | "lunch" | "holiday" | "featured" | "catering"
     }
     CompositeTypes: {
@@ -1212,11 +1233,14 @@ export const Constants = {
       hours_override_status: ["open", "closed", "special_hours"],
       order_status: [
         "pending",
+        "pending_payment",
         "confirmed",
         "preparing",
         "ready",
+        "out_for_delivery",
         "completed",
         "cancelled",
+        "refunded",
       ],
       special_type: ["daily", "lunch", "holiday", "featured", "catering"],
     },

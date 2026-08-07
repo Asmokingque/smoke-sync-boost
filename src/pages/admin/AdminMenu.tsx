@@ -51,6 +51,9 @@ type Item = {
   image_url: string | null;
   is_available: boolean;
   is_featured: boolean;
+  is_sold_out: boolean;
+  is_popular: boolean;
+  online_ordering_enabled: boolean;
   display_order: number;
   requires_options: boolean;
   allow_notes: boolean;
@@ -66,6 +69,9 @@ type FormState = {
   image_url: string;
   is_available: boolean;
   is_featured: boolean;
+  is_sold_out: boolean;
+  is_popular: boolean;
+  online_ordering_enabled: boolean;
   display_order: string;
   requires_options: boolean;
   allow_notes: boolean;
@@ -81,6 +87,9 @@ const emptyForm = (categoryId = ""): FormState => ({
   image_url: "",
   is_available: true,
   is_featured: false,
+  is_sold_out: false,
+  is_popular: false,
+  online_ordering_enabled: true,
   display_order: "0",
   requires_options: false,
   allow_notes: true,
@@ -138,6 +147,9 @@ const AdminMenu = () => {
       image_url: item.image_url ?? "",
       is_available: item.is_available,
       is_featured: item.is_featured,
+      is_sold_out: !!item.is_sold_out,
+      is_popular: !!item.is_popular,
+      online_ordering_enabled: item.online_ordering_enabled !== false,
       display_order: String(item.display_order ?? 0),
       requires_options: item.requires_options,
       allow_notes: item.allow_notes,
@@ -178,6 +190,9 @@ const AdminMenu = () => {
       image_url: form.image_url.trim() || null,
       is_available: form.is_available,
       is_featured: form.is_featured,
+      is_sold_out: form.is_sold_out,
+      is_popular: form.is_popular,
+      online_ordering_enabled: form.online_ordering_enabled,
       display_order: Number(form.display_order) || 0,
       requires_options: form.requires_options,
       allow_notes: form.allow_notes,
@@ -658,6 +673,30 @@ const AdminMenu = () => {
                   onCheckedChange={(v) => setForm({ ...form, allow_notes: v })}
                 />
                 <Label>Allow notes</Label>
+              </div>
+            </div>
+
+            <div className="grid sm:grid-cols-3 gap-3">
+              <div className="flex items-center gap-3">
+                <Switch
+                  checked={form.is_sold_out}
+                  onCheckedChange={(v) => setForm({ ...form, is_sold_out: v })}
+                />
+                <Label>Sold out</Label>
+              </div>
+              <div className="flex items-center gap-3">
+                <Switch
+                  checked={form.is_popular}
+                  onCheckedChange={(v) => setForm({ ...form, is_popular: v })}
+                />
+                <Label>Popular</Label>
+              </div>
+              <div className="flex items-center gap-3">
+                <Switch
+                  checked={form.online_ordering_enabled}
+                  onCheckedChange={(v) => setForm({ ...form, online_ordering_enabled: v })}
+                />
+                <Label>Online ordering</Label>
               </div>
             </div>
           </div>
