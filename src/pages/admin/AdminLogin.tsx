@@ -8,6 +8,7 @@ import { Loader2, Lock, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 import { useAdminAuth, ACCESS_DENIED_MESSAGE, INACTIVE_MESSAGE } from "@/context/AdminAuthProvider";
 import { shortEventId } from "@/lib/adminAccessLog";
+import { DevAdminSignIn } from "@/components/admin/DevAdminSignIn";
 import { z } from "zod";
 import logo from "@/assets/logo.png";
 
@@ -64,6 +65,20 @@ const AdminLogin = () => {
     navigate("/admin", { replace: true });
   };
 
+  const devSignIn = async (email: string, password: string) => {
+    setError(null);
+    setEventId(null);
+    const result = await signIn(email, password);
+    if (!result.ok) {
+      setError(result.error ?? "Sign in failed");
+      setEventId(result.eventId ?? null);
+      return;
+    }
+    navigate("/admin", { replace: true });
+  };
+
+
+
 
 
   const resetPassword = async () => {
@@ -114,6 +129,11 @@ const AdminLogin = () => {
             </div>
           </div>
         )}
+
+        <DevAdminSignIn
+          onFill={(email, password) => setForm({ email, password })}
+          onSignIn={devSignIn}
+        />
 
 
         <form onSubmit={submit} className="space-y-4">
