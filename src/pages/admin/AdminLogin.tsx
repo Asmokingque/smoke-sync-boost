@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Loader2, Lock, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 import { useAdminAuth, ACCESS_DENIED_MESSAGE, INACTIVE_MESSAGE } from "@/context/AdminAuthProvider";
+import { shortEventId } from "@/lib/adminAccessLog";
 import { z } from "zod";
 import logo from "@/assets/logo.png";
 
@@ -20,16 +21,22 @@ const AdminLogin = () => {
   const { user, isAdmin, mustChangePassword, loading, signIn } = useAdminAuth();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [eventId, setEventId] = useState<string | null>(null);
   const [form, setForm] = useState({ email: "", password: "" });
   const deniedShown = useRef(false);
 
   useEffect(() => {
-    const state = location.state as { denied?: boolean; inactive?: boolean } | null;
+    const state = location.state as
+      | { denied?: boolean; inactive?: boolean; eventId?: string | null }
+      | null;
     if (state?.denied && !deniedShown.current) {
       deniedShown.current = true;
       const msg = state.inactive ? INACTIVE_MESSAGE : ACCESS_DENIED_MESSAGE;
       setError(msg);
-      toast.error(msg);
+      if (state.eventId) setEventId(state.eventId);
+      toast.error(msg, {
+        description: state.eventId ? `Event ID: ${shortEventId(state.eventId)}` : undefined,
+      });
     }
   }, [location.state]);
 
@@ -40,6 +47,7 @@ const AdminLogin = () => {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setEventId(null);
     const parsed = emailSchema.safeParse(form.email);
     if (!parsed.success) {
       setError(parsed.error.issues[0].message);
@@ -50,10 +58,12 @@ const AdminLogin = () => {
     setBusy(false);
     if (!result.ok) {
       setError(result.error ?? "Sign in failed");
+      setEventId(result.eventId ?? null);
       return;
     }
     navigate("/admin", { replace: true });
   };
+
 
 
   const resetPassword = async () => {
