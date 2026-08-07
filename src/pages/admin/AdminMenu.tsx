@@ -69,6 +69,9 @@ type FormState = {
   image_url: string;
   is_available: boolean;
   is_featured: boolean;
+  is_sold_out: boolean;
+  is_popular: boolean;
+  online_ordering_enabled: boolean;
   display_order: string;
   requires_options: boolean;
   allow_notes: boolean;
