@@ -159,24 +159,6 @@ const AdminMenu = () => {
     setDialogOpen(true);
   };
 
-  const handleUpload = async (file: File) => {
-    setUploading(true);
-    try {
-      const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
-      const path = `uploads/${crypto.randomUUID()}.${ext}`;
-      const { error } = await supabase.storage
-        .from("menu-images")
-        .upload(path, file, { cacheControl: "3600", upsert: false });
-      if (error) throw error;
-      const { data } = supabase.storage.from("menu-images").getPublicUrl(path);
-      setForm((f) => ({ ...f, image_url: data.publicUrl }));
-      toast.success("Image uploaded");
-    } catch (e: any) {
-      toast.error(e.message ?? "Upload failed");
-    } finally {
-      setUploading(false);
-    }
-  };
 
   const handleSave = async () => {
     if (!form.name.trim()) return toast.error("Name is required");
