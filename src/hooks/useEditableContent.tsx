@@ -42,6 +42,22 @@ type ContentContextValue = {
 
 const ContentContext = createContext<ContentContextValue | null>(null);
 
+/**
+ * Keeps admin-saved section order/visibility, but guarantees every known
+ * section still exists (so a new section added in code never disappears).
+ */
+function mergeSections(saved?: HomepageSection[]): HomepageSection[] {
+  const defaults = defaultHomepageLayout.sections;
+  if (!saved?.length) return defaults;
+  const known = new Map(defaults.map((s) => [s.id, s]));
+  const ordered = saved
+    .filter((s) => known.has(s.id))
+    .map((s) => ({ ...known.get(s.id)!, visible: s.visible !== false }));
+  const seen = new Set(ordered.map((s) => s.id));
+  return [...ordered, ...defaults.filter((s) => !seen.has(s.id))];
+}
+
+
 
 export function ContentProvider({ children }: { children: ReactNode }) {
   const [overrides, setOverrides] = useState<OverrideMap>({});
