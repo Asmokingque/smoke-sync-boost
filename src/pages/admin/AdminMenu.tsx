@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { ImageUploader } from "@/components/admin/ImageUploader";
+
 import {
   Select,
   SelectContent,
@@ -105,9 +107,7 @@ const AdminMenu = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<FormState>(emptyForm());
   const [saving, setSaving] = useState(false);
-  const [uploading, setUploading] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Category management
   const [catDialogOpen, setCatDialogOpen] = useState(false);
@@ -157,24 +157,6 @@ const AdminMenu = () => {
     setDialogOpen(true);
   };
 
-  const handleUpload = async (file: File) => {
-    setUploading(true);
-    try {
-      const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
-      const path = `uploads/${crypto.randomUUID()}.${ext}`;
-      const { error } = await supabase.storage
-        .from("menu-images")
-        .upload(path, file, { cacheControl: "3600", upsert: false });
-      if (error) throw error;
-      const { data } = supabase.storage.from("menu-images").getPublicUrl(path);
-      setForm((f) => ({ ...f, image_url: data.publicUrl }));
-      toast.success("Image uploaded");
-    } catch (e: any) {
-      toast.error(e.message ?? "Upload failed");
-    } finally {
-      setUploading(false);
-    }
-  };
 
   const handleSave = async () => {
     if (!form.name.trim()) return toast.error("Name is required");
@@ -511,60 +493,18 @@ const AdminMenu = () => {
             {/* Image */}
             <div className="space-y-2">
               <Label>Image</Label>
-              <div className="flex items-center gap-4">
-                <div className="h-24 w-24 rounded border border-border bg-muted flex items-center justify-center overflow-hidden shrink-0">
-                  {form.image_url ? (
-                    <img src={form.image_url} alt="" className="h-full w-full object-cover" />
-                  ) : (
-                    <ImageIcon className="h-8 w-8 text-muted-foreground" />
-                  )}
-                </div>
-                <div className="flex-1 space-y-2">
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={(e) => {
-                      const f = e.target.files?.[0];
-                      if (f) handleUpload(f);
-                      e.target.value = "";
-                    }}
-                  />
-                  <div className="flex gap-2">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => fileInputRef.current?.click()}
-                      disabled={uploading}
-                    >
-                      {uploading ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      ) : (
-                        <Upload className="h-4 w-4" />
-                      )}
-                      Upload
-                    </Button>
-                    {form.image_url && (
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setForm((f) => ({ ...f, image_url: "" }))}
-                      >
-                        Remove
-                      </Button>
-                    )}
-                  </div>
-                  <Input
-                    placeholder="…or paste an image URL"
-                    value={form.image_url}
-                    onChange={(e) => setForm({ ...form, image_url: e.target.value })}
-                  />
-                </div>
-              </div>
+              <ImageUploader
+                value={form.image_url}
+                onChange={(url) => setForm((f) => ({ ...f, image_url: url }))}
+                bucket="menu-images"
+                label="Menu item photo"
+                menu={{
+                  categorySlug: cats.find((c) => c.id === form.category_id)?.slug || "uncategorized",
+                  itemSlug: slugify(form.name) || "item",
+                }}
+              />
             </div>
+
 
             <div className="grid sm:grid-cols-2 gap-3">
               <div className="space-y-2">

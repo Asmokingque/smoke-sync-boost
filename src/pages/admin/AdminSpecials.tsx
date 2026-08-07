@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { ImageUploader } from "@/components/admin/ImageUploader";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Loader2, Plus, Trash2, Calendar as CalendarIcon, ArrowUp, ArrowDown, Eye, EyeOff, Package, Heart } from "lucide-react";
@@ -552,6 +553,17 @@ const AdminSpecials = ({ focus = "all" }: { focus?: AdminSpecialsFocus }) => {
                 <Label>Description</Label>
                 <Textarea rows={3} value={editing.description ?? ""} onChange={(e) => setEditing({ ...editing, description: e.target.value })} className="luxury-input" />
               </div>
+              <div className="space-y-2">
+                <Label>Image</Label>
+                <ImageUploader
+                  value={editing.image_url ?? ""}
+                  onChange={(url) => setEditing({ ...editing, image_url: url })}
+                  bucket="specials-images"
+                  label="Special photo"
+                  special={{ type: editing.type ?? "featured", slug: editing.title ?? "special" }}
+                />
+              </div>
+
               <div className="grid sm:grid-cols-2 gap-3">
                 <div className="space-y-2">
                   <Label>Special Price *</Label>
