@@ -54,12 +54,7 @@ const Reviews = () => {
   };
 
   const fetchMyLikes = async () => {
-    const visitor = getVisitorId();
-    const { data } = await supabase
-      .from("review_likes")
-      .select("review_id")
-      .eq("visitor_id", visitor);
-    setLikedIds(new Set((data ?? []).map((r: any) => r.review_id)));
+    setLikedIds(new Set(getLikedReviewIds()));
   };
 
   useEffect(() => { fetchReviews(); fetchMyLikes(); }, []);
@@ -71,6 +66,7 @@ const Reviews = () => {
     setLikedIds((prev) => {
       const next = new Set(prev);
       liked ? next.delete(reviewId) : next.add(reviewId);
+      setLikedReviewIds([...next]);
       return next;
     });
     setReviews((prev) => prev.map((r) =>
@@ -86,6 +82,7 @@ const Reviews = () => {
       if (error) { toast.error("Could not like"); fetchReviews(); fetchMyLikes(); }
     }
   };
+
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
