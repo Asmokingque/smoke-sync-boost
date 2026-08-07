@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Loader2, Lock, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 import { useAdminAuth, ACCESS_DENIED_MESSAGE, INACTIVE_MESSAGE } from "@/context/AdminAuthProvider";
+import { shortEventId } from "@/lib/adminAccessLog";
 import { z } from "zod";
 import logo from "@/assets/logo.png";
 
@@ -20,16 +21,22 @@ const AdminLogin = () => {
   const { user, isAdmin, mustChangePassword, loading, signIn } = useAdminAuth();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [eventId, setEventId] = useState<string | null>(null);
   const [form, setForm] = useState({ email: "", password: "" });
   const deniedShown = useRef(false);
 
   useEffect(() => {
-    const state = location.state as { denied?: boolean; inactive?: boolean } | null;
+    const state = location.state as
+      | { denied?: boolean; inactive?: boolean; eventId?: string | null }
+      | null;
     if (state?.denied && !deniedShown.current) {
       deniedShown.current = true;
       const msg = state.inactive ? INACTIVE_MESSAGE : ACCESS_DENIED_MESSAGE;
       setError(msg);
-      toast.error(msg);
+      if (state.eventId) setEventId(state.eventId);
+      toast.error(msg, {
+        description: state.eventId ? `Event ID: ${shortEventId(state.eventId)}` : undefined,
+      });
     }
   }, [location.state]);
 
@@ -40,6 +47,7 @@ const AdminLogin = () => {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setEventId(null);
     const parsed = emailSchema.safeParse(form.email);
     if (!parsed.success) {
       setError(parsed.error.issues[0].message);
@@ -50,10 +58,12 @@ const AdminLogin = () => {
     setBusy(false);
     if (!result.ok) {
       setError(result.error ?? "Sign in failed");
+      setEventId(result.eventId ?? null);
       return;
     }
     navigate("/admin", { replace: true });
   };
+
 
 
   const resetPassword = async () => {
@@ -86,9 +96,25 @@ const AdminLogin = () => {
             className="mb-4 flex items-start gap-2 rounded-md border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive"
           >
             <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />
-            <span>{error}</span>
+            <div className="space-y-1">
+              <span className="block">{error}</span>
+              {eventId && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigator.clipboard?.writeText(eventId);
+                    toast.success("Event ID copied.");
+                  }}
+                  title={eventId}
+                  className="font-stencil text-[10px] uppercase tracking-[0.2em] text-muted-foreground hover:text-gold underline-offset-4 hover:underline"
+                >
+                  Event ID: {shortEventId(eventId)} — tap to copy
+                </button>
+              )}
+            </div>
           </div>
         )}
+
 
         <form onSubmit={submit} className="space-y-4">
           <div className="space-y-2">

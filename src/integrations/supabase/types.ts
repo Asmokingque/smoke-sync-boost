@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_access_denials: {
+        Row: {
+          admin_role: string | null
+          attempted_email: string | null
+          created_at: string
+          id: string
+          path: string | null
+          reason: string
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          admin_role?: string | null
+          attempted_email?: string | null
+          created_at?: string
+          id?: string
+          path?: string | null
+          reason: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          admin_role?: string | null
+          attempted_email?: string | null
+          created_at?: string
+          id?: string
+          path?: string | null
+          reason?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       admin_users: {
         Row: {
           created_at: string

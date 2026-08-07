@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Navigate, NavLink, Outlet, useLocation, Link } from "react-router-dom";
 import { useAdminAuth } from "@/context/AdminAuthProvider";
+import { logAdminDenial } from "@/lib/adminAccessLog";
 import {
   Loader2, ShoppingBag, MessageSquareText, UtensilsCrossed, Mail, LogOut, Home,
   Sparkles, BookOpen, FileText, Users, Settings, CreditCard, LayoutDashboard,
@@ -36,13 +37,28 @@ const AdminLayout = () => {
 
   useEffect(() => { setMobileOpen(false); }, [location.pathname]);
 
-  // Signed in but not an active admin → force sign-out, then show the reason on login.
+  // Signed in but not an active admin → log the denial, force sign-out, then
+  // show the reason (and event ID) on the login page.
   const inactive = !!adminProfile && !adminProfile.is_active;
+  const [denialEventId, setDenialEventId] = useState<string | null>(null);
+  const denialLogged = useRef(false);
   useEffect(() => {
     if (!loading && user && !isAdmin) {
-      signOut({ silent: true });
+      if (denialLogged.current) return;
+      denialLogged.current = true;
+      const wasInactive = !!adminProfile && !adminProfile.is_active;
+      logAdminDenial({
+        reason: wasInactive ? "inactive" : "unauthorized",
+        email: user.email,
+        userId: user.id,
+        role: adminProfile?.role ?? null,
+        path: location.pathname,
+      }).then((id) => {
+        setDenialEventId(id);
+        signOut({ silent: true });
+      });
     }
-  }, [loading, user, isAdmin, signOut]);
+  }, [loading, user, isAdmin, adminProfile, location.pathname, signOut]);
 
   if (!loading && user && isAdmin && mustChangePassword && location.pathname !== "/change-password") {
     return <Navigate to="/change-password" replace />;
@@ -64,7 +80,13 @@ const AdminLayout = () => {
   }
 
   if (!isAdmin) {
-    return <Navigate to="/admin/login" replace state={{ denied: true, inactive }} />;
+    return (
+      <Navigate
+        to="/admin/login"
+        replace
+        state={{ denied: true, inactive, eventId: denialEventId }}
+      />
+    );
   }
 
   const links = navItems.filter((n) => !n.superOnly || isSuperAdmin);

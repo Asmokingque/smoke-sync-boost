@@ -10,6 +10,7 @@ import { createContext, useCallback, useContext, useEffect, useRef, useState } f
 import { supabase } from "@/integrations/supabase/client";
 import type { Session, User } from "@supabase/supabase-js";
 import { toast } from "sonner";
+import { logAdminDenial, shortEventId } from "@/lib/adminAccessLog";
 
 export type AdminRole = "super_admin" | "admin" | null;
 
@@ -25,7 +26,7 @@ export const ACCESS_DENIED_MESSAGE =
   "Access denied. This account is not authorized for the admin dashboard.";
 export const INACTIVE_MESSAGE = "This admin account is inactive.";
 
-type SignInResult = { ok: boolean; error?: string; role?: AdminRole };
+type SignInResult = { ok: boolean; error?: string; role?: AdminRole; eventId?: string };
 
 type AdminAuthValue = {
   session: Session | null;
@@ -129,15 +130,28 @@ export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
       const adminRow = await fetchAdminRow(data.user.id);
 
       if (!adminRow) {
+        // Log while the session is still valid (RLS requires auth.uid()).
+        const eventId = await logAdminDenial({
+          reason: "unauthorized",
+          email,
+          userId: data.user.id,
+        });
         await signOut({ silent: true });
-        toast.error(ACCESS_DENIED_MESSAGE);
-        return { ok: false, error: ACCESS_DENIED_MESSAGE };
+        toast.error(ACCESS_DENIED_MESSAGE, { description: `Event ID: ${shortEventId(eventId)}` });
+        return { ok: false, error: ACCESS_DENIED_MESSAGE, eventId };
       }
       if (!adminRow.is_active) {
+        const eventId = await logAdminDenial({
+          reason: "inactive",
+          email,
+          userId: data.user.id,
+          role: adminRow.role,
+        });
         await signOut({ silent: true });
-        toast.error(INACTIVE_MESSAGE);
-        return { ok: false, error: INACTIVE_MESSAGE };
+        toast.error(INACTIVE_MESSAGE, { description: `Event ID: ${shortEventId(eventId)}` });
+        return { ok: false, error: INACTIVE_MESSAGE, eventId };
       }
+
 
       setAdminProfile(adminRow);
       toast.success(
