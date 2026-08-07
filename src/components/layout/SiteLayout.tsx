@@ -6,7 +6,7 @@ import { FloatingCartButton } from "@/components/retina/FloatingCartButton";
 import { FlyingCartLayer } from "@/components/cart/FlyingCartLayer";
 import { useCartUI } from "@/store/cartUi";
 import { useCart } from "@/store/cart";
-import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
+
 
 export function SiteLayout({ children }: { children: ReactNode }) {
   const cartOpen = useCartUI((s) => s.drawerOpen);
@@ -16,7 +16,7 @@ export function SiteLayout({ children }: { children: ReactNode }) {
   const cartTotal = useCart((s) => s.subtotal());
   return (
     <div className="luxury-page-bg min-h-screen flex flex-col">
-      <PaymentTestModeBanner />
+      
       <Header onCartClick={() => setCartOpen(true)} />
       <main className="flex-1">{children}</main>
       <Footer />
