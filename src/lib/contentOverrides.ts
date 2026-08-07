@@ -17,8 +17,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { siteContent } from "@/data/siteContent";
 import { theme } from "@/data/theme";
 import { fallbackCategories, fallbackMenuItems } from "@/data/menuData";
+import { serviceArea } from "@/data/serviceAreaData";
+import { homepageLayout } from "@/data/homepageLayout";
 
-export const CONTENT_KEYS = ["siteContent", "menuData", "theme"] as const;
+export const CONTENT_KEYS = ["siteContent", "menuData", "theme", "serviceArea", "homepageLayout"] as const;
 export type ContentKey = (typeof CONTENT_KEYS)[number];
 
 export type MenuDataShape = {
@@ -34,6 +36,8 @@ export const contentDefaults = {
     items: JSON.parse(JSON.stringify(fallbackMenuItems)),
   } as unknown as Record<string, unknown>,
   theme: JSON.parse(JSON.stringify(theme)) as Record<string, unknown>,
+  serviceArea: JSON.parse(JSON.stringify(serviceArea)) as Record<string, unknown>,
+  homepageLayout: JSON.parse(JSON.stringify(homepageLayout)) as Record<string, unknown>,
 };
 
 export const contentMeta: Record<ContentKey, { label: string; file: string; hint: string }> = {
@@ -52,7 +56,18 @@ export const contentMeta: Record<ContentKey, { label: string; file: string; hint
     file: "src/data/theme.ts",
     hint: "Shared class tokens for fonts, buttons, spacing, radius and cards.",
   },
+  serviceArea: {
+    label: "Service Area",
+    file: "src/data/serviceAreaData.ts",
+    hint: "Cities served, delivery details, map center and footer wording.",
+  },
+  homepageLayout: {
+    label: "Homepage Layout",
+    file: "src/data/homepageLayout.ts",
+    hint: "Which homepage sections are visible and in what order.",
+  },
 };
+
 
 const isPlainObject = (v: unknown): v is Record<string, unknown> =>
   typeof v === "object" && v !== null && !Array.isArray(v);
