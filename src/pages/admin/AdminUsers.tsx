@@ -41,6 +41,7 @@ const PERMISSIONS: { area: string; superAdmin: boolean; admin: boolean }[] = [
   { area: "Site content editor", superAdmin: true, admin: false },
   { area: "Payment & checkout settings", superAdmin: true, admin: false },
   { area: "Manage admin users & roles", superAdmin: true, admin: false },
+  { area: "Force-set another admin's password", superAdmin: true, admin: false },
 ];
 
 const AdminUsers = () => {
