@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAdminAuth } from "@/context/AdminAuthProvider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,6 +14,7 @@ const DAYS = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday"
 type Settings = Record<string, any>;
 
 const AdminSettings = () => {
+  const { isSuperAdmin } = useAdminAuth();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [taxRate, setTaxRate] = useState("8.25");
@@ -78,9 +80,20 @@ const AdminSettings = () => {
         <h2 className="font-stencil text-sm tracking-[0.2em] text-gold">Tax</h2>
         <div className="space-y-2 max-w-[200px]">
           <Label htmlFor="tax-rate">Sales tax (%)</Label>
-          <Input id="tax-rate" value={taxRate} onChange={(e) => setTaxRate(e.target.value)} className="h-11" inputMode="decimal" />
+          <Input
+            id="tax-rate"
+            value={taxRate}
+            onChange={(e) => setTaxRate(e.target.value)}
+            className="h-11"
+            inputMode="decimal"
+            disabled={!isSuperAdmin}
+          />
+          {!isSuperAdmin && (
+            <p className="text-xs text-muted-foreground">Only a Super Admin can change the tax rate.</p>
+          )}
         </div>
       </section>
+
 
       <section className="retina-menu-card p-5 space-y-4">
         <h2 className="font-stencil text-sm tracking-[0.2em] text-gold">Pickup Hours</h2>
