@@ -6,7 +6,7 @@ import { FloatingCartButton } from "@/components/retina/FloatingCartButton";
 import { FlyingCartLayer } from "@/components/cart/FlyingCartLayer";
 import { useCartUI } from "@/store/cartUi";
 import { useCart } from "@/store/cart";
-import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
+
 
 export function SiteLayout({ children }: { children: ReactNode }) {
   const cartOpen = useCartUI((s) => s.drawerOpen);
