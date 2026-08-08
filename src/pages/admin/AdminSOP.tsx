@@ -59,28 +59,6 @@ const QUICK_START = [
   },
 ];
 
-const SOP_INDEX = [
-  "Logging into the Admin Dashboard",
-  "Reviewing New Orders",
-  "Updating Order Status",
-  "Verifying Manual Payments",
-  "Managing Stripe Payments",
-  "Managing Zelle Payments",
-  "Managing Venmo Payments",
-  "Managing Cash App Payments",
-  "Editing Menu Items",
-  "Marking Items Sold Out",
-  "Managing Special of the Day",
-  "Managing Lunch Specials",
-  "Managing Community Heroes Deal",
-  "Managing Holiday Calendar",
-  "Managing Catering Requests",
-  "Approving Reviews",
-  "Managing Customer Photos",
-  "Daily Opening Checklist",
-  "Daily Closing Checklist",
-  "Troubleshooting Common Issues",
-];
 
 const AdminSOP = () => {
   const [sopUrl, setSopUrl] = useState<string | null>(null);
