@@ -20,6 +20,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { toast } from "sonner";
+import { SopFunctionIndex } from "@/components/admin/SopFunctionIndex";
 
 // Placeholder constant — populated dynamically from Storage when uploaded
 const SOP_FILE_NAME = "Andersons_Smoking_Que_Admin_Website_SOP.pdf";
@@ -145,8 +146,6 @@ const AdminSOP = () => {
     const w = window.open(sopUrl, "_blank");
     if (w) setTimeout(() => w.print(), 1000);
   };
-
-  const filteredIndex = SOP_INDEX.filter((t) => t.toLowerCase().includes(query.toLowerCase()));
 
   return (
     <div className="space-y-8 max-w-6xl">
