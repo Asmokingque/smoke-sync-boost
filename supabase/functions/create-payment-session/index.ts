@@ -3,23 +3,13 @@
 // status the Admin Dashboard persists. No customer is ever charged here.
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
+import { runConnectorChecks, type ConnectorRow } from "../_shared/connectorChecks.ts";
 
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), {
     status,
     headers: { ...corsHeaders, "Content-Type": "application/json" },
   });
-
-type Check = { label: string; ok: boolean; detail: string };
-
-/** Public config keys each provider needs before it can go live. */
-const REQUIRED_CONFIG: Record<string, string[]> = {
-  stripe: ["publishable_key"],
-  square: ["application_id", "location_id"],
-  paypal: ["client_id"],
-  manual: [],
-  catering: [],
-};
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
@@ -50,65 +40,10 @@ Deno.serve(async (req) => {
       });
     }
 
-    const secretRefs = (connector.secret_refs as string[] | null) ?? [];
-    const missingSecrets = secretRefs.filter((n) => !Deno.env.get(n));
-    const publicConfig = (connector.public_config ?? {}) as Record<string, string>;
-    const requiredKeys = REQUIRED_CONFIG[provider] ?? [];
-    const missingConfig = requiredKeys.filter((k) => !publicConfig[k]?.trim());
-
-    const { count: methodCount } = await supabase
-      .from("payment_methods")
-      .select("id", { count: "exact", head: true })
-      .eq("provider", provider)
-      .eq("enabled", true);
-
-    const checks: Check[] = [
-      {
-        label: "Connector enabled",
-        ok: !!connector.enabled,
-        detail: connector.enabled ? "Enabled in the dashboard." : "Connector is switched off.",
-      },
-      {
-        label: "Backend secrets",
-        ok: missingSecrets.length === 0,
-        detail: secretRefs.length === 0
-          ? "No secrets required for this provider."
-          : missingSecrets.length === 0
-            ? `All ${secretRefs.length} secret(s) present.`
-            : `Missing: ${missingSecrets.join(", ")}`,
-      },
-      {
-        label: "Public configuration",
-        ok: missingConfig.length === 0,
-        detail: requiredKeys.length === 0
-          ? "No public config required."
-          : missingConfig.length === 0
-            ? `All required keys set (${requiredKeys.join(", ")}).`
-            : `Missing: ${missingConfig.join(", ")}`,
-      },
-      {
-        label: "Webhook endpoint",
-        ok: connector.webhook_status === "verified" || secretRefs.length === 0,
-        detail: `Webhook status: ${connector.webhook_status ?? "unknown"}.`,
-      },
-      {
-        label: "Enabled payment methods",
-        ok: (methodCount ?? 0) > 0,
-        detail: `${methodCount ?? 0} method(s) enabled for this provider.`,
-      },
-    ];
-
-    const blocking = checks.filter((c) => !c.ok);
-    const ok = blocking.length === 0;
-    const status = !connector.enabled
-      ? (missingSecrets.length > 0 || missingConfig.length > 0 ? "not_configured" : "disabled")
-      : ok
-        ? (connector.test_mode ? "test_mode" : "active")
-        : (missingSecrets.length > 0 || missingConfig.length > 0 ? "not_configured" : "error");
-
-    const message = ok
-      ? `${connector.display_name} passed all ${checks.length} checks (${connector.test_mode ? "test mode" : "live mode"}).`
-      : `${connector.display_name}: ${blocking.length} of ${checks.length} checks failed — ${blocking.map((c) => c.label).join(", ")}.`;
+    const { ok, status, message, checks } = await runConnectorChecks(
+      supabase,
+      connector as unknown as ConnectorRow,
+    );
 
     if (dryRun) return json({ ok, provider, status, test_mode: connector.test_mode, message, checks });
 
