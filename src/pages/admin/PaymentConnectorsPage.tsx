@@ -109,7 +109,10 @@ const PaymentConnectorsPage = () => {
         ))}
       </div>
 
+      <ConnectorAutoTestCard onTested={reload} />
+
       <PaymentTestPanel connectors={connectors} />
+
 
       <PaymentConnectorSettingsModal
         connector={editing}
