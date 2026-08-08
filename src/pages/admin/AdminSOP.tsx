@@ -20,6 +20,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { toast } from "sonner";
+import { SopFunctionIndex } from "@/components/admin/SopFunctionIndex";
 
 // Placeholder constant — populated dynamically from Storage when uploaded
 const SOP_FILE_NAME = "Andersons_Smoking_Que_Admin_Website_SOP.pdf";
@@ -58,28 +59,6 @@ const QUICK_START = [
   },
 ];
 
-const SOP_INDEX = [
-  "Logging into the Admin Dashboard",
-  "Reviewing New Orders",
-  "Updating Order Status",
-  "Verifying Manual Payments",
-  "Managing Stripe Payments",
-  "Managing Zelle Payments",
-  "Managing Venmo Payments",
-  "Managing Cash App Payments",
-  "Editing Menu Items",
-  "Marking Items Sold Out",
-  "Managing Special of the Day",
-  "Managing Lunch Specials",
-  "Managing Community Heroes Deal",
-  "Managing Holiday Calendar",
-  "Managing Catering Requests",
-  "Approving Reviews",
-  "Managing Customer Photos",
-  "Daily Opening Checklist",
-  "Daily Closing Checklist",
-  "Troubleshooting Common Issues",
-];
 
 const AdminSOP = () => {
   const [sopUrl, setSopUrl] = useState<string | null>(null);
@@ -145,8 +124,6 @@ const AdminSOP = () => {
     const w = window.open(sopUrl, "_blank");
     if (w) setTimeout(() => w.print(), 1000);
   };
-
-  const filteredIndex = SOP_INDEX.filter((t) => t.toLowerCase().includes(query.toLowerCase()));
 
   return (
     <div className="space-y-8 max-w-6xl">
@@ -237,10 +214,13 @@ const AdminSOP = () => {
 
       {/* Searchable Index */}
       <section>
-        <h2 className="font-serif text-2xl mb-4 flex items-center gap-2">
-          <Search className="h-5 w-5 text-gold" /> SOP Index
+        <h2 className="font-serif text-2xl mb-1 flex items-center gap-2">
+          <Search className="h-5 w-5 text-gold" /> SOP Index — How to Use Each Function
         </h2>
-        <div className="relative max-w-md mb-4">
+        <p className="text-sm text-muted-foreground mb-4">
+          Expand any topic for step-by-step instructions, then jump straight to that admin page.
+        </p>
+        <div className="relative max-w-md mb-6">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Search SOP topics..."
@@ -249,21 +229,9 @@ const AdminSOP = () => {
             className="pl-9 bg-charcoal-light border-border"
           />
         </div>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-2">
-          {filteredIndex.map((topic) => (
-            <div
-              key={topic}
-              className="flex items-center gap-2 px-3 py-2.5 rounded-md bg-charcoal-light border border-border/50 hover:border-gold/40 transition-colors text-sm"
-            >
-              <span className="h-1.5 w-1.5 rounded-full bg-gold shrink-0" />
-              <span>{topic}</span>
-            </div>
-          ))}
-          {filteredIndex.length === 0 && (
-            <p className="text-sm text-muted-foreground col-span-full">No topics match "{query}".</p>
-          )}
-        </div>
+        <SopFunctionIndex query={query} />
       </section>
+
 
       {/* Document Card */}
       <section>
