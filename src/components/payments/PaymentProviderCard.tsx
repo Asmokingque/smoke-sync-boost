@@ -40,7 +40,11 @@ export function PaymentProviderCard({
           <h2 className="font-serif text-2xl">{connector.display_name}</h2>
           <p className="text-[11px] text-muted-foreground mt-1">
             Last updated {updated ? new Date(updated).toLocaleString() : "—"}
+            {connector.last_tested_at && (
+              <> · Last tested {new Date(connector.last_tested_at).toLocaleString()}</>
+            )}
           </p>
+
         </div>
         <div className="flex items-center gap-3">
           <PaymentConnectorStatusBadge status={status} />
