@@ -31,9 +31,16 @@ Deno.serve(async (req) => {
         .select("setting_value")
         .eq("setting_key", SETTING_KEY)
         .maybeSingle();
-      const enabled = (setting?.setting_value as any)?.enabled === true;
-      if (!enabled) return json({ ok: true, skipped: true, message: "Scheduled connector testing is off." });
+      const cfg = (setting?.setting_value ?? {}) as { enabled?: boolean; hour_utc?: number };
+      if (cfg.enabled !== true) {
+        return json({ ok: true, skipped: true, message: "Scheduled connector testing is off." });
+      }
+      const hour = typeof cfg.hour_utc === "number" ? cfg.hour_utc : 8;
+      if (new Date().getUTCHours() !== hour) {
+        return json({ ok: true, skipped: true, message: `Not the scheduled hour (${hour}:00 UTC).` });
+      }
     }
+
 
     const { data: connectors, error } = await supabase
       .from("payment_connectors")
