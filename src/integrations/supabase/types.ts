@@ -905,6 +905,39 @@ export type Database = {
         }
         Relationships: []
       }
+      public_payment_connectors: {
+        Row: {
+          display_name: string
+          display_order: number
+          enabled: boolean
+          id: string
+          provider: string
+          public_config: Json
+          supported_methods: Json
+          test_mode: boolean
+        }
+        Insert: {
+          display_name: string
+          display_order?: number
+          enabled?: boolean
+          id: string
+          provider: string
+          public_config?: Json
+          supported_methods?: Json
+          test_mode?: boolean
+        }
+        Update: {
+          display_name?: string
+          display_order?: number
+          enabled?: boolean
+          id?: string
+          provider?: string
+          public_config?: Json
+          supported_methods?: Json
+          test_mode?: boolean
+        }
+        Relationships: []
+      }
       review_likes: {
         Row: {
           created_at: string
@@ -1146,39 +1179,7 @@ export type Database = {
       }
     }
     Views: {
-      payment_connectors_public: {
-        Row: {
-          display_name: string | null
-          display_order: number | null
-          enabled: boolean | null
-          id: string | null
-          provider: string | null
-          public_config: Json | null
-          supported_methods: Json | null
-          test_mode: boolean | null
-        }
-        Insert: {
-          display_name?: string | null
-          display_order?: number | null
-          enabled?: boolean | null
-          id?: string | null
-          provider?: string | null
-          public_config?: Json | null
-          supported_methods?: Json | null
-          test_mode?: boolean | null
-        }
-        Update: {
-          display_name?: string | null
-          display_order?: number | null
-          enabled?: boolean | null
-          id?: string | null
-          provider?: string | null
-          public_config?: Json | null
-          supported_methods?: Json | null
-          test_mode?: boolean | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       admin_level: {
