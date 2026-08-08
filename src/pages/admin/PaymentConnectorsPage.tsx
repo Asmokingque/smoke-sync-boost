@@ -16,6 +16,7 @@ const PaymentConnectorsPage = () => {
   const { connectors, methods, loading, error, reload } = usePaymentConnectors();
   const [editing, setEditing] = useState<PaymentConnector | null>(null);
   const [testing, setTesting] = useState<string | null>(null);
+  const [results, setResults] = useState<Record<string, { ok: boolean; message: string; checks: any[] }>>({});
 
   const patchConnector = async (connector: PaymentConnector, patch: Partial<PaymentConnector>) => {
     const { error: err } = await supabase
@@ -38,16 +39,26 @@ const PaymentConnectorsPage = () => {
     const { data, error: err } = await supabase.functions.invoke("create-payment-session", {
       body: { provider: connector.provider, dryRun: true },
     });
-    const ok = !err && (data as any)?.ok === true;
-    const message = err?.message ?? (data as any)?.message ?? "Connector not configured";
-    await patchConnector(connector, {
-      last_tested_at: new Date().toISOString(),
-      last_test_result: message,
-      connection_status: ok ? (connector.test_mode ? "test_mode" : "active") : "not_configured",
-    });
+    const payload = (data ?? {}) as any;
+    const ok = !err && payload.ok === true;
+    const message = err?.message ?? payload.message ?? "Connector not configured";
+    const checks = Array.isArray(payload.checks) ? payload.checks : [];
+    const status = (payload.status as PaymentConnector["connection_status"]) ??
+      (ok ? (connector.test_mode ? "test_mode" : "active") : "not_configured");
+
+    setResults((r) => ({ ...r, [connector.provider]: { ok, message, checks } }));
+    const testedAt = new Date().toISOString();
+    const { error: saveErr } = await supabase
+      .from("payment_connectors")
+      .update({ last_tested_at: testedAt, last_test_result: message, connection_status: status })
+      .eq("id", connector.id);
+    if (saveErr) toast.error("Test ran but the result couldn't be saved.");
+    else await reload();
+
     toast[ok ? "success" : "info"](message);
     setTesting(null);
   };
+
 
   if (loading) {
     return <div className="flex justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
@@ -81,6 +92,8 @@ const PaymentConnectorsPage = () => {
             connector={c}
             methods={methods.filter((m) => m.provider === c.provider)}
             testing={testing === c.provider}
+            testResult={results[c.provider]}
+
             onConfigure={() => setEditing(c)}
             onTest={() => testConnector(c)}
             onToggleConnector={(enabled) =>
