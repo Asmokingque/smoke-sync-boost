@@ -79,6 +79,18 @@ export function PaymentProviderCard({
           <PlugZap className="h-4 w-4" /> {testing ? "Testing…" : "Test Connector"}
         </Button>
       </div>
+
+      {testResult ? (
+        <ConnectorTestResult
+          ok={testResult.ok}
+          message={testResult.message}
+          checks={testResult.checks}
+          testedAt={connector.last_tested_at}
+        />
+      ) : connector.last_test_result ? (
+        <p className="text-xs text-muted-foreground">Last result: {connector.last_test_result}</p>
+      ) : null}
     </section>
   );
 }
+
