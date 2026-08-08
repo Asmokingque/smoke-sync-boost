@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { PaymentConnectorStatusBadge } from "./PaymentConnectorStatusBadge";
 import { PaymentMethodToggle } from "./PaymentMethodToggle";
+import { ConnectorTestResult, type ConnectorCheck } from "./ConnectorTestResult";
 import { deriveStatus, type PaymentConnector, type PaymentMethod } from "@/lib/paymentConnectors";
 import { Settings2, PlugZap } from "lucide-react";
 
@@ -17,6 +18,7 @@ export function PaymentProviderCard({
   onToggleConnector,
   onToggleMethod,
   testing,
+  testResult,
 }: {
   connector: PaymentConnector;
   methods: PaymentMethod[];
@@ -25,9 +27,11 @@ export function PaymentProviderCard({
   onToggleConnector: (enabled: boolean) => void;
   onToggleMethod: (method: PaymentMethod, enabled: boolean) => void;
   testing?: boolean;
+  testResult?: { ok: boolean; message: string; checks: ConnectorCheck[] };
 }) {
   const status = deriveStatus(connector);
   const updated = connector.last_tested_at ?? connector.updated_at;
+
 
   return (
     <section className="retina-menu-card ring-gold-soft p-5 space-y-4">
