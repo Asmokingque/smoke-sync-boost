@@ -1146,7 +1146,39 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      payment_connectors_public: {
+        Row: {
+          display_name: string | null
+          display_order: number | null
+          enabled: boolean | null
+          id: string | null
+          provider: string | null
+          public_config: Json | null
+          supported_methods: Json | null
+          test_mode: boolean | null
+        }
+        Insert: {
+          display_name?: string | null
+          display_order?: number | null
+          enabled?: boolean | null
+          id?: string | null
+          provider?: string | null
+          public_config?: Json | null
+          supported_methods?: Json | null
+          test_mode?: boolean | null
+        }
+        Update: {
+          display_name?: string | null
+          display_order?: number | null
+          enabled?: boolean | null
+          id?: string | null
+          provider?: string | null
+          public_config?: Json | null
+          supported_methods?: Json | null
+          test_mode?: boolean | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       admin_level: {
@@ -1161,15 +1193,6 @@ export type Database = {
         Args: { payload: Json; queue_name: string }
         Returns: number
       }
-      has_role: {
-        Args: {
-          _role: Database["public"]["Enums"]["app_role"]
-          _user_id: string
-        }
-        Returns: boolean
-      }
-      is_active_admin: { Args: { _user_id: string }; Returns: boolean }
-      is_super_admin: { Args: { _user_id: string }; Returns: boolean }
       move_to_dlq: {
         Args: {
           dlq_name: string
