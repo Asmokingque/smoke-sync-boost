@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { SopFunctionIndex } from "@/components/admin/SopFunctionIndex";
+import { printSopIndex, downloadSopIndexHtml } from "@/lib/sopExport";
 
 // Placeholder constant — populated dynamically from Storage when uploaded
 const SOP_FILE_NAME = "Andersons_Smoking_Que_Admin_Website_SOP.pdf";
