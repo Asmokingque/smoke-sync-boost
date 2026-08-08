@@ -8,6 +8,8 @@ import { usePaymentConnectors } from "@/hooks/usePaymentConnectors";
 import { PaymentProviderCard } from "@/components/payments/PaymentProviderCard";
 import { PaymentConnectorSettingsModal } from "@/components/payments/PaymentConnectorSettingsModal";
 import { PaymentTestPanel } from "@/components/payments/PaymentTestPanel";
+import { ConnectorAutoTestCard } from "@/components/payments/ConnectorAutoTestCard";
+
 import type { PaymentConnector, PaymentMethod } from "@/lib/paymentConnectors";
 import { Loader2, ShieldAlert } from "lucide-react";
 import { toast } from "sonner";
@@ -107,7 +109,10 @@ const PaymentConnectorsPage = () => {
         ))}
       </div>
 
+      <ConnectorAutoTestCard onTested={reload} />
+
       <PaymentTestPanel connectors={connectors} />
+
 
       <PaymentConnectorSettingsModal
         connector={editing}
