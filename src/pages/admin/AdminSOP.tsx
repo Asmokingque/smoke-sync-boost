@@ -220,15 +220,38 @@ const AdminSOP = () => {
         <p className="text-sm text-muted-foreground mb-4">
           Expand any topic for step-by-step instructions, then jump straight to that admin page.
         </p>
-        <div className="relative max-w-md mb-6">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search SOP topics..."
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            className="pl-9 bg-charcoal-light border-border"
-          />
+        <div className="flex flex-wrap items-center gap-3 mb-6">
+          <div className="relative w-full max-w-md">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search SOP topics..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              className="pl-9 bg-charcoal-light border-border"
+            />
+          </div>
+          <Button
+            onClick={() => {
+              const ok = printSopIndex();
+              if (!ok) toast.error("Allow pop-ups to export the SOP index");
+            }}
+            variant="outline"
+            className="font-stencil border-gold/40 text-gold hover:bg-gold/10 hover:text-gold"
+          >
+            <Printer className="h-4 w-4" /> Export as PDF
+          </Button>
+          <Button
+            onClick={() => {
+              downloadSopIndexHtml();
+              toast.success("SOP index downloaded");
+            }}
+            variant="outline"
+            className="font-stencil"
+          >
+            <Download className="h-4 w-4" /> Download HTML
+          </Button>
         </div>
+
         <SopFunctionIndex query={query} />
       </section>
 
