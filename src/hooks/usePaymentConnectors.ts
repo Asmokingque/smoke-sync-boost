@@ -1,17 +1,20 @@
 /**
  * usePaymentConnectors.ts
  * Loads connectors + payment methods and exposes the checkout-safe list.
+ * `publicOnly` reads the safe public connector directory (no secret refs or
+ * diagnostics) — used by storefront/checkout. Admin screens pass false.
  */
 import { useCallback, useEffect, useState } from "react";
 import {
   availableMethods,
   fetchConnectors,
+  fetchPublicConnectors,
   fetchPaymentMethods,
   type PaymentConnector,
   type PaymentMethod,
 } from "@/lib/paymentConnectors";
 
-export function usePaymentConnectors(onlyEnabled = false) {
+export function usePaymentConnectors(onlyEnabled = false, publicOnly = false) {
   const [connectors, setConnectors] = useState<PaymentConnector[]>([]);
   const [methods, setMethods] = useState<PaymentMethod[]>([]);
   const [loading, setLoading] = useState(true);
@@ -20,7 +23,10 @@ export function usePaymentConnectors(onlyEnabled = false) {
   const reload = useCallback(async () => {
     try {
       setError(null);
-      const [c, m] = await Promise.all([fetchConnectors(), fetchPaymentMethods(onlyEnabled)]);
+      const [c, m] = await Promise.all([
+        publicOnly ? fetchPublicConnectors() : fetchConnectors(),
+        fetchPaymentMethods(onlyEnabled),
+      ]);
       setConnectors(c);
       setMethods(m);
     } catch (e: any) {
@@ -28,7 +34,7 @@ export function usePaymentConnectors(onlyEnabled = false) {
     } finally {
       setLoading(false);
     }
-  }, [onlyEnabled]);
+  }, [onlyEnabled, publicOnly]);
 
   useEffect(() => {
     reload();

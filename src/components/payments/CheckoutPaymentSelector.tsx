@@ -16,7 +16,7 @@ export function CheckoutPaymentSelector({
   onChange: (method: PaymentMethod) => void;
   category?: "all" | "standard" | "manual" | "catering";
 }) {
-  const { checkoutMethods, loading } = usePaymentConnectors();
+  const { checkoutMethods, loading } = usePaymentConnectors(true, true);
   const methods = checkoutMethods.filter(
     (m) => (category === "all" ? m.category !== "catering" : m.category === category),
   );

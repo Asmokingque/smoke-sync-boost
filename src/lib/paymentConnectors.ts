@@ -57,6 +57,7 @@ const asRow = (r: any): PaymentConnector => ({
   public_config: (r.public_config ?? {}) as Record<string, string>,
 });
 
+/** Full connector rows — Super Admin only (RLS enforced). */
 export async function fetchConnectors(): Promise<PaymentConnector[]> {
   const { data, error } = await supabase
     .from("payment_connectors")
@@ -64,6 +65,30 @@ export async function fetchConnectors(): Promise<PaymentConnector[]> {
     .order("display_order", { ascending: true });
   if (error) throw error;
   return (data ?? []).map(asRow);
+}
+
+/**
+ * Safe public connector directory (no secret refs, notes or diagnostics).
+ * Used by storefront/checkout so visitors never read admin-only fields.
+ */
+export async function fetchPublicConnectors(): Promise<PaymentConnector[]> {
+  const { data, error } = await supabase
+    .from("public_payment_connectors")
+    .select("*")
+    .order("display_order", { ascending: true });
+  if (error) throw error;
+  return (data ?? []).map((r: any) =>
+    asRow({
+      ...r,
+      secret_refs: [],
+      webhook_status: "",
+      connection_status: r.enabled ? (r.test_mode ? "test_mode" : "active") : "disabled",
+      last_tested_at: null,
+      last_test_result: null,
+      notes: null,
+      updated_at: "",
+    }),
+  );
 }
 
 export async function fetchPaymentMethods(onlyEnabled = false): Promise<PaymentMethod[]> {

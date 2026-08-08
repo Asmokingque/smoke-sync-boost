@@ -905,6 +905,39 @@ export type Database = {
         }
         Relationships: []
       }
+      public_payment_connectors: {
+        Row: {
+          display_name: string
+          display_order: number
+          enabled: boolean
+          id: string
+          provider: string
+          public_config: Json
+          supported_methods: Json
+          test_mode: boolean
+        }
+        Insert: {
+          display_name: string
+          display_order?: number
+          enabled?: boolean
+          id: string
+          provider: string
+          public_config?: Json
+          supported_methods?: Json
+          test_mode?: boolean
+        }
+        Update: {
+          display_name?: string
+          display_order?: number
+          enabled?: boolean
+          id?: string
+          provider?: string
+          public_config?: Json
+          supported_methods?: Json
+          test_mode?: boolean
+        }
+        Relationships: []
+      }
       review_likes: {
         Row: {
           created_at: string
@@ -1161,15 +1194,6 @@ export type Database = {
         Args: { payload: Json; queue_name: string }
         Returns: number
       }
-      has_role: {
-        Args: {
-          _role: Database["public"]["Enums"]["app_role"]
-          _user_id: string
-        }
-        Returns: boolean
-      }
-      is_active_admin: { Args: { _user_id: string }; Returns: boolean }
-      is_super_admin: { Args: { _user_id: string }; Returns: boolean }
       move_to_dlq: {
         Args: {
           dlq_name: string
