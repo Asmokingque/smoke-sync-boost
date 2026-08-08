@@ -92,6 +92,8 @@ const PaymentConnectorsPage = () => {
             connector={c}
             methods={methods.filter((m) => m.provider === c.provider)}
             testing={testing === c.provider}
+            testResult={results[c.provider]}
+
             onConfigure={() => setEditing(c)}
             onTest={() => testConnector(c)}
             onToggleConnector={(enabled) =>
