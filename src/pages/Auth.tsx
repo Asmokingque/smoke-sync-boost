@@ -30,7 +30,7 @@ const Auth = () => {
     const e1 = emailSchema.safeParse(signinForm.email);
     if (!e1.success) return toast.error(e1.error.issues[0].message);
     setBusy(true);
-    const { error } = await supabase.auth.signInWithPassword({ email: e1.data, password: signinForm.password });
+    const { error } = await supabase.auth.signInWithPassword({ email: e1.data, password: signinForm.password.trim() });
     setBusy(false);
     if (error) return toast.error(error.message);
     toast.success("Welcome back!");
