@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Loader2, Lock, AlertTriangle } from "lucide-react";
+import { Loader2, Lock, AlertTriangle, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
 import { useAdminAuth, ACCESS_DENIED_MESSAGE, INACTIVE_MESSAGE } from "@/context/AdminAuthProvider";
 import { shortEventId } from "@/lib/adminAccessLog";
@@ -24,6 +24,7 @@ const AdminLogin = () => {
   const [error, setError] = useState<string | null>(null);
   const [eventId, setEventId] = useState<string | null>(null);
   const [form, setForm] = useState({ email: "", password: "" });
+  const [showPassword, setShowPassword] = useState(false);
   const deniedShown = useRef(false);
 
   useEffect(() => {
@@ -151,18 +152,28 @@ const AdminLogin = () => {
           </div>
           <div className="space-y-2">
             <Label htmlFor="admin-password">Password</Label>
-            <Input
-              id="admin-password"
-              type="password"
-              autoComplete="current-password"
-              required
-              value={form.password}
-              onChange={(e) => setForm({ ...form, password: e.target.value })}
-              className="h-12"
-            />
+            <div className="relative">
+              <Input
+                id="admin-password"
+                type={showPassword ? "text" : "password"}
+                autoComplete="current-password"
+                required
+                value={form.password}
+                onChange={(e) => setForm({ ...form, password: e.target.value })}
+                className="h-12 pr-12"
+              />
+              <button
+                type="button"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                onClick={() => setShowPassword((v) => !v)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+              >
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
           </div>
           <Button type="submit" disabled={busy} className="w-full h-12 bg-primary hover:bg-primary/90 font-stencil">
-            {busy ? (<><Loader2 className="h-4 w-4 animate-spin" /> Signing in…</>) : (<><Lock className="h-4 w-4" /> Login</>)}
+            {busy ? (<><Loader2 className="h-4 w-4 animate-spin" /> Signing in…</>) : (<><Lock className="h-4 w-4" /> Sign In</>)}
           </Button>
         </form>
 
@@ -174,7 +185,7 @@ const AdminLogin = () => {
         </div>
 
         <p className="mt-6 text-center font-stencil text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
-          Authorized access only
+          Authorized admin access only.
         </p>
       </div>
     </main>
