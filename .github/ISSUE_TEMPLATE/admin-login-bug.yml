@@ -1,0 +1,40 @@
+name: Admin Login Bug
+description: Report a problem with admin login or dashboard access.
+title: "[Admin Login]: "
+labels: ["admin", "login", "bug"]
+body:
+  - type: dropdown
+    id: affected_user
+    attributes:
+      label: Affected role
+      options:
+        - Super Admin
+        - Admin
+        - Customer
+        - Unknown
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happened?
+      description: Describe the login or admin problem.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What should have happened?
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      value: |
+        1.
+        2.
+        3.

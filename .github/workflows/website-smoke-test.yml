@@ -1,0 +1,45 @@
+name: Website Smoke Test
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ["main", "master"]
+  schedule:
+    - cron: "0 12 * * *"
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  smoke-test:
+    name: Test Website and Admin Login
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright
+        run: npx playwright install --with-deps
+
+      - name: Build website
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+        run: npm run build
+
+      - name: Run Playwright Smoke Tests
+        env:
+          SITE_URL: ${{ secrets.SITE_URL }}
+          ADMIN_TEST_EMAIL: ${{ secrets.ADMIN_TEST_EMAIL }}
+          ADMIN_TEST_PASSWORD: ${{ secrets.ADMIN_TEST_PASSWORD }}
+        run: npx playwright test tests/smoke.spec.ts
