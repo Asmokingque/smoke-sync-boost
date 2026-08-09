@@ -42,6 +42,9 @@ npm run build      # production build into /dist
 npm run preview    # preview the production build
 ```
 
+Continuous integration runs through `.github/workflows/ci.yml` and is configured
+to use **Node.js 22**.
+
 ---
 
 ## 3. How to Export from Lovable
