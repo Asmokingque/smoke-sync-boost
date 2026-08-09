@@ -121,7 +121,7 @@ export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
       if (error || !data.user) {
         const message =
           error?.message === "Invalid login credentials"
-            ? "Incorrect email or password."
+            ? "Invalid email or password. Please check your admin credentials."
             : error?.message ?? "Sign in failed. Please try again.";
         toast.error(message);
         return { ok: false, error: message };

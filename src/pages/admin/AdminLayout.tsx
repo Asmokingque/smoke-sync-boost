@@ -18,7 +18,7 @@ const navItems: AdminNavItem[] = [
   { to: "/admin/orders", label: "Orders", icon: ShoppingBag },
   { to: "/admin/menu", label: "Menu Manager", icon: UtensilsCrossed },
   { to: "/admin/categories", label: "Categories", icon: FolderTree },
-  { to: "/admin/storage", label: "Storage / Images", icon: ImageIcon },
+  { to: "/admin/storage-images", label: "Storage / Images", icon: ImageIcon },
   { to: "/admin/specials", label: "Specials", icon: Sparkles },
   { to: "/admin/lunch-specials", label: "Lunch Specials", icon: Sandwich },
   { to: "/admin/holiday-calendar", label: "Holiday Calendar", icon: CalendarDays },
@@ -27,7 +27,7 @@ const navItems: AdminNavItem[] = [
   { to: "/admin/contact", label: "Contact", icon: MessageSquareText },
   { to: "/admin/homepage", label: "Homepage Editor", icon: PanelsTopLeft },
   { to: "/admin/service-area", label: "Service Area", icon: MapPin },
-  { to: "/admin/settings", label: "Business Settings", icon: Settings },
+  { to: "/admin/business-settings", label: "Business Settings", icon: Settings },
 
   { to: "/admin/payments", label: "Payment Settings", icon: CreditCard, superOnly: true },
   { to: "/admin/payment-connectors", label: "Payment Connectors", icon: CreditCard, superOnly: true },

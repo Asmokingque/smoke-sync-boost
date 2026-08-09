@@ -79,7 +79,7 @@ const App = () => (
             <Route path="orders" element={<AdminOrders />} />
             <Route path="menu" element={<AdminMenu />} />
             <Route path="categories" element={<AdminCategories />} />
-            <Route path="storage" element={<AdminStorage />} />
+            <Route path="storage-images" element={<AdminStorage />} />
             <Route path="specials" element={<AdminSpecials />} />
             <Route path="lunch-specials" element={<AdminLunchSpecials />} />
             <Route path="holiday-calendar" element={<AdminHolidayCalendar />} />
@@ -90,7 +90,7 @@ const App = () => (
             <Route path="homepage" element={<AdminHomepage />} />
             <Route path="service-area" element={<AdminServiceArea />} />
             <Route path="content" element={<RequireSuperAdmin><AdminContent /></RequireSuperAdmin>} />
-            <Route path="settings" element={<AdminSettings />} />
+            <Route path="business-settings" element={<AdminSettings />} />
 
             <Route path="payments" element={<RequireSuperAdmin><AdminPayments /></RequireSuperAdmin>} />
             <Route path="payment-connectors" element={<RequireSuperAdmin><PaymentConnectorsPage /></RequireSuperAdmin>} />
