@@ -117,7 +117,7 @@ export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
 
   const signIn = useCallback(
     async (email: string, password: string): Promise<SignInResult> => {
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      const { data, error } = await supabase.auth.signInWithPassword({ email: email.trim(), password: password.trim() });
       if (error || !data.user) {
         const message =
           error?.message === "Invalid login credentials"
