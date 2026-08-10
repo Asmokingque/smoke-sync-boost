@@ -30,7 +30,7 @@ export function useMenuData() {
   useEffect(() => {
     let active = true;
 
-    const useFallback = () => {
+    const applyFallback = () => {
       if (!active) return;
       setCategories(fallback.categories);
       setItems(fallback.items);
@@ -48,7 +48,7 @@ export function useMenuData() {
 
         const hasLiveData = (cats.data?.length ?? 0) > 0 && (its.data?.length ?? 0) > 0;
         if (!hasLiveData || cats.error || its.error) {
-          useFallback();
+          applyFallback();
           return;
         }
 
@@ -71,7 +71,7 @@ export function useMenuData() {
         setUsingFallback(false);
         setLoading(false);
       } catch {
-        useFallback();
+        applyFallback();
       }
     };
 
