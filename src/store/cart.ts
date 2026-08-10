@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 export type SelectedOption = {
+  id?: string;
   group: string;
   name: string;
   price_adjustment: number;

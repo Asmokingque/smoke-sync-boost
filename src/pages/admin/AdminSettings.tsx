@@ -1,3 +1,4 @@
+import { asList, asString, type ContentValue } from "@/lib/contentValues";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAdminAuth } from "@/context/AdminAuthProvider";
@@ -11,8 +12,8 @@ import { toast } from "sonner";
 
 const DAYS = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"] as const;
 
+type SettingValue = Record<string, ContentValue> | null;
 type Settings = Record<string, SettingValue>;
-type SettingValue = Record<string, unknown> | null;
 
 const AdminSettings = () => {
   const { isSuperAdmin } = useAdminAuth();
@@ -29,13 +30,13 @@ const AdminSettings = () => {
       const map: Settings = {};
       (data ?? []).forEach((r) => { map[r.setting_key] = r.setting_value as SettingValue; });
       if (map.tax_rate?.value != null) setTaxRate((Number(map.tax_rate.value) * 100).toFixed(2));
-      setHours(map.pickup_hours ?? {});
+      setHours(Object.fromEntries(Object.entries(map.pickup_hours ?? {}).map(([k, v]) => [k, asString(v)])));
       if (map.community_heroes) {
         setHeroes({
           enabled: !!map.community_heroes.enabled,
           discount_percent: Number(map.community_heroes.discount_percent ?? 10),
-          terms: map.community_heroes.terms ?? "",
-          eligible_groups: (map.community_heroes.eligible_groups ?? []).join(", "),
+          terms: asString(map.community_heroes.terms),
+          eligible_groups: asList<string>(map.community_heroes.eligible_groups).join(", "),
         });
       }
       setLoading(false);

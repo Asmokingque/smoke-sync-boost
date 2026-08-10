@@ -17,7 +17,7 @@ const LAST_RUN_KEY = "connector_auto_test_last_run";
 type Config = { enabled: boolean; hour_utc: number };
 const DEFAULT_CONFIG: Config = { enabled: false, hour_utc: 8 };
 
-type LastRun = { ran_at?: string; tested?: number; passed?: number } & Record<string, unknown>;
+type LastRun = { ran_at?: string; passed?: number; total?: number; manual?: boolean };
 type TestRunResponse = { ok?: boolean; message?: string; results?: { provider?: string; ok: boolean }[] };
 
 export function ConnectorAutoTestCard({ onTested }: { onTested: () => void }) {
