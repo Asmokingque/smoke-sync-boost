@@ -17,9 +17,12 @@ const LAST_RUN_KEY = "connector_auto_test_last_run";
 type Config = { enabled: boolean; hour_utc: number };
 const DEFAULT_CONFIG: Config = { enabled: false, hour_utc: 8 };
 
+type LastRun = { ran_at?: string; tested?: number; passed?: number } & Record<string, unknown>;
+type TestRunResponse = { ok?: boolean; message?: string; results?: { provider?: string; ok: boolean }[] };
+
 export function ConnectorAutoTestCard({ onTested }: { onTested: () => void }) {
   const [config, setConfig] = useState<Config>(DEFAULT_CONFIG);
-  const [lastRun, setLastRun] = useState<any>(null);
+  const [lastRun, setLastRun] = useState<LastRun | null>(null);
   const [saving, setSaving] = useState(false);
   const [running, setRunning] = useState(false);
 
@@ -29,8 +32,8 @@ export function ConnectorAutoTestCard({ onTested }: { onTested: () => void }) {
       .select("setting_key, setting_value")
       .in("setting_key", [SETTING_KEY, LAST_RUN_KEY]);
     for (const row of data ?? []) {
-      if (row.setting_key === SETTING_KEY) setConfig({ ...DEFAULT_CONFIG, ...(row.setting_value as any) });
-      if (row.setting_key === LAST_RUN_KEY) setLastRun(row.setting_value);
+      if (row.setting_key === SETTING_KEY) setConfig({ ...DEFAULT_CONFIG, ...(row.setting_value as Partial<Config>) });
+      if (row.setting_key === LAST_RUN_KEY) setLastRun(row.setting_value as LastRun | null);
     }
   };
 
@@ -55,11 +58,12 @@ export function ConnectorAutoTestCard({ onTested }: { onTested: () => void }) {
       body: { manual: true },
     });
     setRunning(false);
-    if (error || !(data as any)?.ok) {
-      return toast.error(error?.message ?? (data as any)?.message ?? "Test run failed.");
+    const payload = (data ?? {}) as TestRunResponse;
+    if (error || !payload.ok) {
+      return toast.error(error?.message ?? payload.message ?? "Test run failed.");
     }
-    const results = (data as any).results ?? [];
-    toast.success(`Tested ${results.length} connector(s); ${results.filter((r: any) => r.ok).length} passed.`);
+    const results = payload.results ?? [];
+    toast.success(`Tested ${results.length} connector(s); ${results.filter((r) => r.ok).length} passed.`);
     await load();
     onTested();
   };

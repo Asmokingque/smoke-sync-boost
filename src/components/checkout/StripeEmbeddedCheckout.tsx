@@ -1,3 +1,4 @@
+import { getErrorMessage } from "@/lib/errors";
 import { EmbeddedCheckoutProvider, EmbeddedCheckout } from "@stripe/react-stripe-js";
 import { getStripe, getStripeEnvironment } from "@/lib/stripe";
 import { supabase } from "@/integrations/supabase/client";
@@ -43,7 +44,7 @@ export function StripeEmbeddedCheckout({ cartItems, customerInfo, returnUrl, onE
       },
     });
     if (error || !data?.clientSecret) {
-      const msg = (error as any)?.message || data?.error || "Failed to start checkout";
+      const msg = getErrorMessage(error, "") || data?.error || "Failed to start checkout";
       onError?.(msg);
       throw new Error(msg);
     }

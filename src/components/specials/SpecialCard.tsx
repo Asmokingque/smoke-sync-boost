@@ -44,7 +44,7 @@ export function SpecialCard({
     let cancelled = false;
     (async () => {
       const { data } = await supabase
-        .from("special_items" as any)
+        .from("special_items")
         .select("*")
         .eq("special_id", special.id)
         .eq("is_active", true)

@@ -31,7 +31,7 @@ export function useHolidayEvents(opts?: { upcomingOnly?: boolean }) {
       if (cancelled || !data) { setLoading(false); return; }
       const today = new Date().toISOString().slice(0, 10);
       const list = opts?.upcomingOnly
-        ? data.filter((d: any) => d.holiday_date >= today)
+        ? data.filter((d) => d.holiday_date >= today)
         : data;
       setEvents(list as unknown as HolidayEvent[]);
       setLoading(false);

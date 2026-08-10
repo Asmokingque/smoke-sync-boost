@@ -18,7 +18,7 @@ const PaymentConnectorsPage = () => {
   const { connectors, methods, loading, error, reload } = usePaymentConnectors();
   const [editing, setEditing] = useState<PaymentConnector | null>(null);
   const [testing, setTesting] = useState<string | null>(null);
-  const [results, setResults] = useState<Record<string, { ok: boolean; message: string; checks: any[] }>>({});
+  const [results, setResults] = useState<Record<string, { ok: boolean; message: string; checks: ConnectorCheck[] }>>({});
 
   const patchConnector = async (connector: PaymentConnector, patch: Partial<PaymentConnector>) => {
     const { error: err } = await supabase
@@ -41,7 +41,7 @@ const PaymentConnectorsPage = () => {
     const { data, error: err } = await supabase.functions.invoke("create-payment-session", {
       body: { provider: connector.provider, dryRun: true },
     });
-    const payload = (data ?? {}) as any;
+    const payload = (data ?? {}) as { ok?: boolean; message?: string; checks?: ConnectorCheck[] };
     const ok = !err && payload.ok === true;
     const message = err?.message ?? payload.message ?? "Connector not configured";
     const checks = Array.isArray(payload.checks) ? payload.checks : [];

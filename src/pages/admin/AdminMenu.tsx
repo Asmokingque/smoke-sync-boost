@@ -1,3 +1,4 @@
+import { getErrorMessage } from "@/lib/errors";
 import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2, Pencil, X, Check, Plus, Trash2, Upload, Image as ImageIcon, ArrowUp, ArrowDown, FolderPlus } from "lucide-react";
@@ -225,8 +226,8 @@ const AdminMenu = () => {
       if (dbErr) throw dbErr;
       setItems((prev) => prev.map((i) => (i.id === item.id ? { ...i, image_url: newUrl } : i)));
       toast.success(`Photo updated for ${item.name}`);
-    } catch (e: any) {
-      toast.error(e.message ?? "Upload failed");
+    } catch (e) {
+      toast.error(getErrorMessage(e, "Upload failed"));
     } finally {
       setRowUploadingId(null);
     }

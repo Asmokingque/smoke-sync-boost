@@ -31,7 +31,7 @@ export default function CheckoutSuccess() {
         ? await query.eq("id", orderNumber!).maybeSingle()
         : await query.eq("order_number", orderNumber!).maybeSingle();
       if (cancelled) return;
-      if (data) setOrder(data as any);
+      if (data) setOrder(data as { status: string; payment_status: string });
       attempts += 1;
       if (!cancelled && attempts < 10 && (!data || data.payment_status !== "paid")) {
         setTimeout(fetchOrder, 2000);

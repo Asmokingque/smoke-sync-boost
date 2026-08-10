@@ -23,7 +23,7 @@ type Highlight = { icon: string; title: string; body: string };
 const AdminHomepage = () => {
   const { merged, homepageSections, loading, refresh } = useContentAdmin();
   const [saving, setSaving] = useState(false);
-  const [content, setContent] = useState<Record<string, any>>({});
+  const [content, setContent] = useState<Record<string, unknown>>({});
   const [sections, setSections] = useState<HomepageSection[]>([]);
 
   useEffect(() => {

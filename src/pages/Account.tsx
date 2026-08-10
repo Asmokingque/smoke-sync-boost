@@ -7,10 +7,11 @@ import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { OrderStatusTimeline } from "@/components/orders/OrderStatusTimeline";
+import type { OrderWithItems } from "@/types/orders";
 
 const Account = () => {
   const { user, loading, isAdmin } = useAuth();
-  const [orders, setOrders] = useState<any[]>([]);
+  const [orders, setOrders] = useState<OrderWithItems[]>([]);
   const [loadingOrders, setLoadingOrders] = useState(true);
 
   useEffect(() => {
@@ -21,7 +22,7 @@ const Account = () => {
         .select("*, order_items(*)")
         .eq("user_id", user.id)
         .order("created_at", { ascending: false });
-      setOrders(data ?? []);
+      setOrders((data ?? []) as OrderWithItems[]);
       setLoadingOrders(false);
     })();
   }, [user]);
@@ -74,7 +75,7 @@ const Account = () => {
                   <OrderStatusTimeline status={o.status} paymentStatus={o.payment_status} />
                 </div>
                 <ul className="text-sm text-muted-foreground space-y-0.5 border-t border-border/50 pt-3 mt-2">
-                  {o.order_items.map((i: any) => (
+                  {o.order_items.map((i) => (
                     <li key={i.id}>{i.quantity}× {i.item_name}</li>
                   ))}
                 </ul>

@@ -50,8 +50,8 @@ export const STATUS_LABEL: Record<ConnectorStatus, string> = {
   error: "Error",
 };
 
-const asRow = (r: any): PaymentConnector => ({
-  ...r,
+const asRow = (r: Record<string, unknown>): PaymentConnector => ({
+  ...(r as unknown as PaymentConnector),
   supported_methods: Array.isArray(r.supported_methods) ? r.supported_methods : [],
   secret_refs: Array.isArray(r.secret_refs) ? r.secret_refs : [],
   public_config: (r.public_config ?? {}) as Record<string, string>,
@@ -64,7 +64,7 @@ export async function fetchConnectors(): Promise<PaymentConnector[]> {
     .select("*")
     .order("display_order", { ascending: true });
   if (error) throw error;
-  return (data ?? []).map(asRow);
+  return (data ?? []).map((r) => asRow(r as unknown as Record<string, unknown>));
 }
 
 /**
@@ -79,7 +79,7 @@ export async function fetchPublicConnectors(): Promise<PaymentConnector[]> {
   if (error) throw error;
   return (data ?? []).map((r: any) =>
     asRow({
-      ...r,
+      ...(r as unknown as PaymentConnector),
       secret_refs: [],
       webhook_status: "",
       connection_status: r.enabled ? (r.test_mode ? "test_mode" : "active") : "disabled",

@@ -1,3 +1,4 @@
+import type { Tables } from "@/integrations/supabase/types";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2, Star, Check, Trash2, EyeOff } from "lucide-react";
@@ -5,9 +6,11 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useAdminAuth } from "@/context/AdminAuthProvider";
 
+type ReviewRow = Tables<"reviews">;
+
 const AdminReviews = () => {
   const { isSuperAdmin } = useAdminAuth();
-  const [reviews, setReviews] = useState<any[]>([]);
+  const [reviews, setReviews] = useState<ReviewRow[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetch = async () => {

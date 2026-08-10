@@ -6,20 +6,21 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { OrderStatusBadge } from "@/components/retina/OrderStatusBadge";
+import type { OrderStatus, OrderWithItems, SelectedOption } from "@/types/orders";
 
 const STATUSES = ["pending", "confirmed", "preparing", "ready", "completed", "cancelled"] as const;
 
 const AdminOrders = () => {
-  const [orders, setOrders] = useState<any[]>([]);
+  const [orders, setOrders] = useState<OrderWithItems[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<string>("all");
   const [search, setSearch] = useState("");
 
   const fetchOrders = async () => {
     let query = supabase.from("orders").select("*, order_items(*)").order("created_at", { ascending: false });
-    if (filter !== "all") query = query.eq("status", filter as any);
+    if (filter !== "all") query = query.eq("status", filter as OrderStatus);
     const { data } = await query;
-    setOrders(data ?? []);
+    setOrders((data ?? []) as OrderWithItems[]);
     setLoading(false);
   };
 
@@ -39,12 +40,12 @@ const AdminOrders = () => {
       ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c] as string)
     );
 
-  const printTicket = (o: any) => {
+  const printTicket = (o: OrderWithItems) => {
     const w = window.open("", "_blank", "width=420,height=640,noopener");
     if (!w) return toast.error("Allow pop-ups to print tickets.");
-    try { (w as any).opener = null; } catch { /* noop */ }
+    try { (w as Window & { opener: unknown }).opener = null; } catch { /* noop */ }
     const items = (o.order_items ?? [])
-      .map((i: any) => `<li>${esc(i.quantity)}× ${esc(i.item_name)} — $${(i.unit_price * i.quantity).toFixed(2)}</li>`)
+      .map((i) => `<li>${esc(i.quantity)}× ${esc(i.item_name)} — $${(i.unit_price * i.quantity).toFixed(2)}</li>`)
       .join("");
     w.document.write(`<html><head><title>Order ${esc(o.order_number ?? o.id.slice(0, 8))}</title>
       <style>body{font-family:monospace;padding:16px}h1{font-size:18px}ul{padding-left:18px}</style></head>
@@ -62,7 +63,7 @@ const AdminOrders = () => {
 
 
   const updateStatus = async (id: string, status: string) => {
-    const { error } = await supabase.from("orders").update({ status: status as any }).eq("id", id);
+    const { error } = await supabase.from("orders").update({ status: status as OrderStatus }).eq("id", id);
     if (error) return toast.error(error.message);
     toast.success("Order updated");
     fetchOrders();
@@ -76,7 +77,7 @@ const AdminOrders = () => {
   };
 
   const updateHeroes = async (
-    o: any,
+    o: OrderWithItems,
     patch: { status?: "verified" | "removed" | "pending_verification"; amount?: number }
   ) => {
     const newAmount = patch.status === "removed" ? 0 : patch.amount ?? Number(o.heroes_discount_amount ?? 0);
@@ -193,15 +194,17 @@ const AdminOrders = () => {
                 </div>
               </div>
               <ul className="text-sm border-t border-border/50 pt-3 space-y-1.5">
-                {o.order_items.map((i: any) => {
-                  const opts = Array.isArray(i.selected_options) ? i.selected_options : [];
+                {o.order_items.map((i) => {
+                  const opts: SelectedOption[] = Array.isArray(i.selected_options)
+                    ? (i.selected_options as SelectedOption[])
+                    : [];
                   return (
                     <li key={i.id} className="flex justify-between gap-2">
                       <div className="min-w-0">
                         <div>{i.quantity}× {i.item_name}</div>
                         {opts.length > 0 && (
                           <div className="text-[11px] text-muted-foreground pl-4">
-                            {opts.map((o: any) => `${o.group}: ${o.name}`).join(" · ")}
+                            {opts.map((o) => `${o.group}: ${o.name}`).join(" · ")}
                           </div>
                         )}
                         {i.notes && (

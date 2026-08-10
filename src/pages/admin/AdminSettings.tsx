@@ -11,7 +11,8 @@ import { toast } from "sonner";
 
 const DAYS = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"] as const;
 
-type Settings = Record<string, any>;
+type Settings = Record<string, SettingValue>;
+type SettingValue = Record<string, unknown> | null;
 
 const AdminSettings = () => {
   const { isSuperAdmin } = useAdminAuth();
@@ -26,7 +27,7 @@ const AdminSettings = () => {
       const { data, error } = await supabase.from("business_settings").select("setting_key, setting_value");
       if (error) toast.error("Couldn't load settings. Please refresh and try again.");
       const map: Settings = {};
-      (data ?? []).forEach((r: any) => { map[r.setting_key] = r.setting_value; });
+      (data ?? []).forEach((r) => { map[r.setting_key] = r.setting_value as SettingValue; });
       if (map.tax_rate?.value != null) setTaxRate((Number(map.tax_rate.value) * 100).toFixed(2));
       setHours(map.pickup_hours ?? {});
       if (map.community_heroes) {

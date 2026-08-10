@@ -21,8 +21,8 @@ const AdminPayments = () => {
     (async () => {
       const { data, error } = await supabase.from("business_settings").select("setting_key, setting_value");
       if (error) toast.error("Couldn't load payment settings. Please refresh and try again.");
-      const map: Record<string, any> = {};
-      (data ?? []).forEach((r: any) => { map[r.setting_key] = r.setting_value; });
+      const map: Record<string, Record<string, unknown>> = {};
+      (data ?? []).forEach((r) => { map[r.setting_key] = (r.setting_value ?? {}) as Record<string, unknown>; });
       setPayAtPickup(!!map.pay_at_pickup?.enabled);
       if (map.delivery_fee) setDeliveryFee({ enabled: map.delivery_fee.enabled !== false, value: Number(map.delivery_fee.value ?? 5) });
       if (map.service_fee) setServiceFee({ enabled: map.service_fee.enabled !== false, value: Number(map.service_fee.value ?? 0.03) * 100 });

@@ -19,7 +19,7 @@ type Detail = { label: string; value: string };
 const AdminServiceArea = () => {
   const { merged, loading, refresh } = useContentAdmin();
   const [saving, setSaving] = useState(false);
-  const [data, setData] = useState<Record<string, any>>({});
+  const [data, setData] = useState<Record<string, unknown>>({});
   const [newCity, setNewCity] = useState("");
 
   useEffect(() => {
