@@ -77,9 +77,10 @@ export async function fetchPublicConnectors(): Promise<PaymentConnector[]> {
     .select("*")
     .order("display_order", { ascending: true });
   if (error) throw error;
-  return (data ?? []).map((r: any) =>
-    asRow({
-      ...(r as unknown as PaymentConnector),
+  return (data ?? []).map((row) => {
+    const r = row as unknown as Record<string, unknown>;
+    return asRow({
+      ...r,
       secret_refs: [],
       webhook_status: "",
       connection_status: r.enabled ? (r.test_mode ? "test_mode" : "active") : "disabled",
@@ -87,8 +88,8 @@ export async function fetchPublicConnectors(): Promise<PaymentConnector[]> {
       last_test_result: null,
       notes: null,
       updated_at: "",
-    }),
-  );
+    });
+  });
 }
 
 export async function fetchPaymentMethods(onlyEnabled = false): Promise<PaymentMethod[]> {
