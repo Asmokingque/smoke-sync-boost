@@ -11,6 +11,7 @@ import { Loader2, Plus, Trash2, Calendar as CalendarIcon, ArrowUp, ArrowDown, Ey
 import { toast } from "sonner";
 import { useAdminAuth } from "@/context/AdminAuthProvider";
 import type { Special, SpecialType } from "@/lib/specials";
+import type { TablesInsert, TablesUpdate } from "@/integrations/supabase/types";
 import { SPECIAL_TYPE_LABEL } from "@/lib/specials";
 
 const TYPES: SpecialType[] = ["daily", "lunch", "holiday", "featured", "catering"];
@@ -87,6 +88,17 @@ type CommunityDisc = {
   terms: string | null;
 };
 
+type DiscountOrder = {
+  id: string;
+  order_number: string | null;
+  customer_name: string | null;
+  created_at: string;
+  discount_group: string | null;
+  discount_amount: number | null;
+  discount_status: string | null;
+  total: number | null;
+};
+
 type AdminSpecialsFocus = "all" | "lunch" | "holiday";
 
 const AdminSpecials = ({ focus = "all" }: { focus?: AdminSpecialsFocus }) => {
@@ -98,7 +110,7 @@ const AdminSpecials = ({ focus = "all" }: { focus?: AdminSpecialsFocus }) => {
   const [editingHoliday, setEditingHoliday] = useState<Partial<HolidayEvt> | null>(null);
   const [discounts, setDiscounts] = useState<CommunityDisc[]>([]);
   const [editingDiscount, setEditingDiscount] = useState<Partial<CommunityDisc> | null>(null);
-  const [discountOrders, setDiscountOrders] = useState<any[]>([]);
+  const [discountOrders, setDiscountOrders] = useState<DiscountOrder[]>([]);
 
   // Items management state (only relevant when editing an existing special)
   const [items, setItems] = useState<SpecialItem[]>([]);
@@ -117,13 +129,13 @@ const AdminSpecials = ({ focus = "all" }: { focus?: AdminSpecialsFocus }) => {
     ]);
     setSpecials((s.data ?? []) as unknown as Special[]);
     setHolidays(((he.data ?? []) as unknown) as HolidayEvt[]);
-    const ds = ((cd.data ?? []) as any[]).map((d) => ({
+    const ds = (cd.data ?? []).map((d) => ({
       ...d,
       eligible_groups: Array.isArray(d.eligible_groups) ? d.eligible_groups : [],
     })) as CommunityDisc[];
     setDiscounts(ds);
-    setMenuItems((m.data ?? []) as any);
-    setDiscountOrders((ord.data ?? []) as any[]);
+    setMenuItems((m.data ?? []) as unknown as typeof menuItems);
+    setDiscountOrders((ord.data ?? []) as unknown as DiscountOrder[]);
     setLoading(false);
   };
 
@@ -132,12 +144,12 @@ const AdminSpecials = ({ focus = "all" }: { focus?: AdminSpecialsFocus }) => {
   const loadItems = async (specialId: string) => {
     setItemsLoading(true);
     const { data, error } = await supabase
-      .from("special_items" as any)
+      .from("special_items")
       .select("*")
       .eq("special_id", specialId)
       .order("display_order");
     if (error) toast.error(error.message);
-    setItems(((data as any) ?? []) as SpecialItem[]);
+    setItems((data ?? []) as unknown as SpecialItem[]);
     setItemsLoading(false);
   };
 
@@ -148,7 +160,7 @@ const AdminSpecials = ({ focus = "all" }: { focus?: AdminSpecialsFocus }) => {
 
   const saveSpecial = async () => {
     if (!editing) return;
-    const payload: any = { ...editing };
+    const payload = { ...editing } as TablesInsert<"specials"> & { id?: string };
     if (payload.special_price === "" || payload.special_price == null) return toast.error("Price required");
     payload.special_price = Number(payload.special_price);
     if (payload.regular_price) payload.regular_price = Number(payload.regular_price);
@@ -209,7 +221,7 @@ const AdminSpecials = ({ focus = "all" }: { focus?: AdminSpecialsFocus }) => {
     if (!editingHoliday) return;
     if (!editingHoliday.holiday_name?.trim()) return toast.error("Name required");
     if (!editingHoliday.holiday_date) return toast.error("Date required");
-    const payload: any = { ...editingHoliday };
+    const payload = { ...editingHoliday } as TablesInsert<"holiday_events"> & { id?: string };
     if (payload.id) {
       const { id, ...rest } = payload;
       const { error } = await supabase.from("holiday_events").update(rest).eq("id", id);
@@ -247,13 +259,13 @@ const AdminSpecials = ({ focus = "all" }: { focus?: AdminSpecialsFocus }) => {
   const saveDiscount = async () => {
     if (!editingDiscount) return;
     if (!editingDiscount.title?.trim()) return toast.error("Title required");
-    const payload: any = {
+    const payload = {
       ...editingDiscount,
       eligible_groups: editingDiscount.eligible_groups ?? [],
       discount_value: Number(editingDiscount.discount_value ?? 0),
       min_subtotal: editingDiscount.min_subtotal == null ? 0 : Number(editingDiscount.min_subtotal),
-      max_discount: editingDiscount.max_discount == null || (editingDiscount.max_discount as any) === "" ? null : Number(editingDiscount.max_discount),
-    };
+      max_discount: editingDiscount.max_discount == null || String(editingDiscount.max_discount) === "" ? null : Number(editingDiscount.max_discount),
+    } as TablesInsert<"community_discounts"> & { id?: string };
     if (payload.id) {
       const { id, ...rest } = payload;
       const { error } = await supabase.from("community_discounts").update(rest).eq("id", id);
@@ -279,7 +291,7 @@ const AdminSpecials = ({ focus = "all" }: { focus?: AdminSpecialsFocus }) => {
   };
 
   const verifyDiscountOrder = async (orderId: string, status: "Verified" | "Removed") => {
-    const patch: any = { discount_status: status };
+    const patch: TablesUpdate<"orders"> = { discount_status: status };
     if (status === "Removed") patch.discount_amount = 0;
     const { error } = await supabase.from("orders").update(patch).eq("id", orderId);
     if (error) return toast.error(error.message);
@@ -299,19 +311,19 @@ const AdminSpecials = ({ focus = "all" }: { focus?: AdminSpecialsFocus }) => {
     if (!editingItem || !editing?.id) return;
     if (!editingItem.item_name?.trim()) return toast.error("Item name required");
     if (editingItem.special_price == null || isNaN(Number(editingItem.special_price))) return toast.error("Price required");
-    const payload: any = {
+    const payload = {
       ...editingItem,
       special_id: editing.id,
       special_price: Number(editingItem.special_price),
-      regular_price: editingItem.regular_price == null || (editingItem.regular_price as any) === "" ? null : Number(editingItem.regular_price),
+      regular_price: editingItem.regular_price == null || String(editingItem.regular_price) === "" ? null : Number(editingItem.regular_price),
       included_sides: Number(editingItem.included_sides ?? 0),
-    };
+    } as TablesInsert<"special_items"> & { id?: string };
     if (payload.id) {
       const { id, ...rest } = payload;
-      const { error } = await supabase.from("special_items" as any).update(rest).eq("id", id);
+      const { error } = await supabase.from("special_items").update(rest).eq("id", id);
       if (error) return toast.error(error.message);
     } else {
-      const { error } = await supabase.from("special_items" as any).insert(payload);
+      const { error } = await supabase.from("special_items").insert(payload);
       if (error) return toast.error(error.message);
     }
     toast.success("Item saved");
@@ -321,13 +333,13 @@ const AdminSpecials = ({ focus = "all" }: { focus?: AdminSpecialsFocus }) => {
 
   const removeItem = async (id: string) => {
     if (!confirm("Delete this item?")) return;
-    const { error } = await supabase.from("special_items" as any).delete().eq("id", id);
+    const { error } = await supabase.from("special_items").delete().eq("id", id);
     if (error) return toast.error(error.message);
     if (editing?.id) loadItems(editing.id);
   };
 
   const toggleItemActive = async (it: SpecialItem) => {
-    await supabase.from("special_items" as any).update({ is_active: !it.is_active }).eq("id", it.id);
+    await supabase.from("special_items").update({ is_active: !it.is_active }).eq("id", it.id);
     if (editing?.id) loadItems(editing.id);
   };
 
@@ -338,8 +350,8 @@ const AdminSpecials = ({ focus = "all" }: { focus?: AdminSpecialsFocus }) => {
     if (swapIdx < 0 || swapIdx >= sorted.length) return;
     const other = sorted[swapIdx];
     await Promise.all([
-      supabase.from("special_items" as any).update({ display_order: other.display_order }).eq("id", it.id),
-      supabase.from("special_items" as any).update({ display_order: it.display_order }).eq("id", other.id),
+      supabase.from("special_items").update({ display_order: other.display_order }).eq("id", it.id),
+      supabase.from("special_items").update({ display_order: it.display_order }).eq("id", other.id),
     ]);
     if (editing?.id) loadItems(editing.id);
   };
@@ -801,7 +813,7 @@ const AdminSpecials = ({ focus = "all" }: { focus?: AdminSpecialsFocus }) => {
             </div>
             <div className="grid sm:grid-cols-3 gap-3">
               <div className="space-y-2"><Label>Type</Label>
-                <Select value={editingDiscount.discount_type ?? "percentage"} onValueChange={(v) => setEditingDiscount({ ...editingDiscount, discount_type: v as any })}>
+                <Select value={editingDiscount.discount_type ?? "percentage"} onValueChange={(v) => setEditingDiscount({ ...editingDiscount, discount_type: v as CommunityDisc["discount_type"] })}>
                   <SelectTrigger className="luxury-input h-11"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="percentage">Percentage</SelectItem>
