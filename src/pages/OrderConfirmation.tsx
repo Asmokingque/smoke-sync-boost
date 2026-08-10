@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import type { OrderWithItems } from "@/types/orders";
 
 const formatDateTime = (iso?: string | null) => {
   if (!iso) return null;
@@ -37,7 +38,7 @@ const formatDateTime = (iso?: string | null) => {
 
 const OrderConfirmation = () => {
   const { id } = useParams();
-  const [order, setOrder] = useState<any>(null);
+  const [order, setOrder] = useState<OrderWithItems | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -78,7 +79,7 @@ const OrderConfirmation = () => {
 
   const itemsCount =
     order?.order_items?.reduce(
-      (s: number, i: any) => s + Number(i.quantity ?? 0),
+      (s: number, i: OrderWithItems["order_items"][number]) => s + Number(i.quantity ?? 0),
       0,
     ) ?? 0;
   const pickup = formatDateTime(order?.pickup_time);
@@ -258,7 +259,7 @@ const OrderConfirmation = () => {
             <span className="gold-rule-short block mb-5" />
 
             <ul className="space-y-3 mb-6">
-              {order.order_items?.map((i: any) => (
+              {order.order_items?.map((i) => (
                 <li
                   key={i.id}
                   className="flex justify-between items-start gap-4 pb-3 border-b border-border/40 last:border-0"

@@ -4,6 +4,7 @@
  * `publicOnly` reads the safe public connector directory (no secret refs or
  * diagnostics) — used by storefront/checkout. Admin screens pass false.
  */
+import { getErrorMessage } from "@/lib/errors";
 import { useCallback, useEffect, useState } from "react";
 import {
   availableMethods,
@@ -29,8 +30,8 @@ export function usePaymentConnectors(onlyEnabled = false, publicOnly = false) {
       ]);
       setConnectors(c);
       setMethods(m);
-    } catch (e: any) {
-      setError(e?.message ?? "Failed to load payment connectors");
+    } catch (e) {
+      setError(getErrorMessage(e, "Failed to load payment connectors"));
     } finally {
       setLoading(false);
     }

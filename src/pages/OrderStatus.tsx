@@ -1,3 +1,4 @@
+import { getErrorMessage } from "@/lib/errors";
 import { Seo } from "@/components/seo/Seo";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -67,8 +68,8 @@ const OrderStatus = () => {
         .select("id, item_name, quantity, unit_price, line_total, notes")
         .eq("order_id", data.id);
       setItems((it ?? []) as Item[]);
-    } catch (err: any) {
-      toast.error(err.message ?? "Lookup failed");
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Lookup failed"));
     } finally {
       setLoading(false);
     }

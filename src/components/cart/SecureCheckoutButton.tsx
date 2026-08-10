@@ -1,3 +1,4 @@
+import { getErrorMessage } from "@/lib/errors";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -96,9 +97,9 @@ export function SecureCheckoutButton({
         return;
       }
       navigate("/checkout");
-    } catch (err: any) {
+    } catch (err) {
       console.error("Secure checkout failed", err);
-      toast.error(err?.message || "Unable to start secure checkout.");
+      toast.error(getErrorMessage(err, "Unable to start secure checkout."));
       setBusy(false);
     }
   };

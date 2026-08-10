@@ -338,7 +338,7 @@ const Checkout = () => {
       specialItemId: i.specialItemId,
       quantity: i.quantity,
       selectedOptionIds: (i.selectedOptions ?? [])
-        .map((o: any) => o.id)
+        .map((o) => o.id)
         .filter(Boolean),
       notes: i.notes ?? undefined,
     }));
@@ -686,7 +686,7 @@ const Checkout = () => {
                       specialId: i.specialId,
                       specialItemId: i.specialItemId,
                       quantity: i.quantity,
-                      selectedOptionIds: (i.selectedOptions ?? []).map((o: any) => o.id).filter(Boolean),
+                      selectedOptionIds: (i.selectedOptions ?? []).map((o) => o.id).filter(Boolean),
                       notes: i.notes ?? undefined,
                     })),
                     customerInfo: {

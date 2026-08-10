@@ -9,6 +9,7 @@ import { PaymentProviderCard } from "@/components/payments/PaymentProviderCard";
 import { PaymentConnectorSettingsModal } from "@/components/payments/PaymentConnectorSettingsModal";
 import { PaymentTestPanel } from "@/components/payments/PaymentTestPanel";
 import { ConnectorAutoTestCard } from "@/components/payments/ConnectorAutoTestCard";
+import type { ConnectorCheck } from "@/components/payments/ConnectorTestResult";
 
 import type { PaymentConnector, PaymentMethod } from "@/lib/paymentConnectors";
 import { Loader2, ShieldAlert } from "lucide-react";
@@ -18,7 +19,7 @@ const PaymentConnectorsPage = () => {
   const { connectors, methods, loading, error, reload } = usePaymentConnectors();
   const [editing, setEditing] = useState<PaymentConnector | null>(null);
   const [testing, setTesting] = useState<string | null>(null);
-  const [results, setResults] = useState<Record<string, { ok: boolean; message: string; checks: any[] }>>({});
+  const [results, setResults] = useState<Record<string, { ok: boolean; message: string; checks: ConnectorCheck[] }>>({});
 
   const patchConnector = async (connector: PaymentConnector, patch: Partial<PaymentConnector>) => {
     const { error: err } = await supabase
@@ -41,11 +42,11 @@ const PaymentConnectorsPage = () => {
     const { data, error: err } = await supabase.functions.invoke("create-payment-session", {
       body: { provider: connector.provider, dryRun: true },
     });
-    const payload = (data ?? {}) as any;
+    const payload = (data ?? {}) as { ok?: boolean; message?: string; status?: PaymentConnector["connection_status"]; checks?: ConnectorCheck[] };
     const ok = !err && payload.ok === true;
     const message = err?.message ?? payload.message ?? "Connector not configured";
     const checks = Array.isArray(payload.checks) ? payload.checks : [];
-    const status = (payload.status as PaymentConnector["connection_status"]) ??
+    const status = payload.status ??
       (ok ? (connector.test_mode ? "test_mode" : "active") : "not_configured");
 
     setResults((r) => ({ ...r, [connector.provider]: { ok, message, checks } }));

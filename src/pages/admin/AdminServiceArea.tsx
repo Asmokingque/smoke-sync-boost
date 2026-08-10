@@ -13,23 +13,24 @@ import { toast } from "sonner";
 import { AdminFormCard } from "@/components/admin/AdminFormCard";
 import { useContentAdmin } from "@/hooks/useEditableContent";
 import { saveOverride } from "@/lib/contentOverrides";
+import { asList, asString, type ContentMap, type ContentValue } from "@/lib/contentValues";
 
 type Detail = { label: string; value: string };
 
 const AdminServiceArea = () => {
   const { merged, loading, refresh } = useContentAdmin();
   const [saving, setSaving] = useState(false);
-  const [data, setData] = useState<Record<string, any>>({});
+  const [data, setData] = useState<ContentMap>({});
   const [newCity, setNewCity] = useState("");
 
   useEffect(() => {
     if (!loading) setData(JSON.parse(JSON.stringify(merged("serviceArea"))));
   }, [loading, merged]);
 
-  const set = (key: string, value: unknown) => setData((d) => ({ ...d, [key]: value }));
+  const set = (key: string, value: ContentValue) => setData((d) => ({ ...d, [key]: value }));
 
-  const cities: string[] = data.cities ?? [];
-  const details: Detail[] = data.details ?? [];
+  const cities = asList<string>(data.cities);
+  const details = asList<Detail>(data.details);
 
   const save = async () => {
     const lat = Number(data.mapLat);
@@ -71,23 +72,23 @@ const AdminServiceArea = () => {
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
             <Label htmlFor="sa-badge">Badge</Label>
-            <Input id="sa-badge" className="h-11" value={data.badge ?? ""} onChange={(e) => set("badge", e.target.value)} />
+            <Input id="sa-badge" className="h-11" value={asString(data.badge)} onChange={(e) => set("badge", e.target.value)} />
           </div>
           <div className="space-y-2">
             <Label htmlFor="sa-title">Title</Label>
-            <Input id="sa-title" className="h-11" value={data.title ?? ""} onChange={(e) => set("title", e.target.value)} />
+            <Input id="sa-title" className="h-11" value={asString(data.title)} onChange={(e) => set("title", e.target.value)} />
           </div>
           <div className="space-y-2 sm:col-span-2">
             <Label htmlFor="sa-sub">Subtitle</Label>
-            <Input id="sa-sub" className="h-11" value={data.subtitle ?? ""} onChange={(e) => set("subtitle", e.target.value)} />
+            <Input id="sa-sub" className="h-11" value={asString(data.subtitle)} onChange={(e) => set("subtitle", e.target.value)} />
           </div>
           <div className="space-y-2 sm:col-span-2">
             <Label htmlFor="sa-footnote">Footnote</Label>
-            <Textarea id="sa-footnote" rows={2} value={data.footnote ?? ""} onChange={(e) => set("footnote", e.target.value)} />
+            <Textarea id="sa-footnote" rows={2} value={asString(data.footnote)} onChange={(e) => set("footnote", e.target.value)} />
           </div>
           <div className="space-y-2 sm:col-span-2">
             <Label htmlFor="sa-footer">Footer wording</Label>
-            <Input id="sa-footer" className="h-11" value={data.footerText ?? ""} onChange={(e) => set("footerText", e.target.value)} />
+            <Input id="sa-footer" className="h-11" value={asString(data.footerText)} onChange={(e) => set("footerText", e.target.value)} />
           </div>
         </div>
       </AdminFormCard>
@@ -96,23 +97,23 @@ const AdminServiceArea = () => {
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
             <Label htmlFor="sa-city">City</Label>
-            <Input id="sa-city" className="h-11" value={data.city ?? ""} onChange={(e) => set("city", e.target.value)} />
+            <Input id="sa-city" className="h-11" value={asString(data.city)} onChange={(e) => set("city", e.target.value)} />
           </div>
           <div className="space-y-2">
             <Label htmlFor="sa-state">State</Label>
-            <Input id="sa-state" className="h-11" value={data.state ?? ""} onChange={(e) => set("state", e.target.value)} />
+            <Input id="sa-state" className="h-11" value={asString(data.state)} onChange={(e) => set("state", e.target.value)} />
           </div>
           <div className="space-y-2">
             <Label htmlFor="sa-lat">Map latitude</Label>
-            <Input id="sa-lat" inputMode="decimal" className="h-11" value={data.mapLat ?? ""} onChange={(e) => set("mapLat", e.target.value)} />
+            <Input id="sa-lat" inputMode="decimal" className="h-11" value={asString(data.mapLat)} onChange={(e) => set("mapLat", e.target.value)} />
           </div>
           <div className="space-y-2">
             <Label htmlFor="sa-lng">Map longitude</Label>
-            <Input id="sa-lng" inputMode="decimal" className="h-11" value={data.mapLng ?? ""} onChange={(e) => set("mapLng", e.target.value)} />
+            <Input id="sa-lng" inputMode="decimal" className="h-11" value={asString(data.mapLng)} onChange={(e) => set("mapLng", e.target.value)} />
           </div>
           <div className="space-y-2">
             <Label htmlFor="sa-zoom">Map zoom</Label>
-            <Input id="sa-zoom" inputMode="numeric" className="h-11" value={data.mapZoom ?? ""} onChange={(e) => set("mapZoom", e.target.value)} />
+            <Input id="sa-zoom" inputMode="numeric" className="h-11" value={asString(data.mapZoom)} onChange={(e) => set("mapZoom", e.target.value)} />
           </div>
         </div>
       </AdminFormCard>
@@ -125,7 +126,7 @@ const AdminServiceArea = () => {
               <button
                 type="button"
                 aria-label={`Remove ${c}`}
-                onClick={() => set("cities", cities.filter((_, idx) => idx !== i))}
+                onClick={() => set("cities", cities.filter((_, idx) => idx !== i) as unknown as ContentValue)}
                 className="text-muted-foreground hover:text-destructive"
               >
                 <X className="h-3.5 w-3.5" />
@@ -181,7 +182,7 @@ const AdminServiceArea = () => {
               </div>
             </div>
           ))}
-          <Button type="button" variant="outline" className="font-stencil" onClick={() => set("details", [...details, { label: "", value: "" }])}>
+          <Button type="button" variant="outline" className="font-stencil" onClick={() => set("details", [...details, { label: "", value: "" }] as unknown as ContentValue)}>
             <Plus className="h-4 w-4" /> Add detail
           </Button>
         </div>

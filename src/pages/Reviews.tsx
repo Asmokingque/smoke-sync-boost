@@ -1,3 +1,4 @@
+import { getErrorMessage } from "@/lib/errors";
 import { Seo } from "@/components/seo/Seo";
 import { useEffect, useState } from "react";
 import { z } from "zod";
@@ -116,8 +117,8 @@ const Reviews = () => {
       if (error) throw error;
       toast.success("Thanks! Your review will appear once approved.");
       setTitle(""); setBody(""); setRating(5); setFile(null);
-    } catch (err: any) {
-      toast.error(err.message ?? "Could not submit review");
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Could not submit review"));
     } finally {
       setSubmitting(false);
     }

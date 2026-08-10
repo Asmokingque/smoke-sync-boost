@@ -16,6 +16,7 @@ import { AdminFormCard } from "@/components/admin/AdminFormCard";
 import { useContentAdmin } from "@/hooks/useEditableContent";
 import { saveOverride, resetOverride } from "@/lib/contentOverrides";
 import type { HomepageSection } from "@/data/homepageLayout";
+import { asList, asRecord, asString, type ContentMap, type ContentValue } from "@/lib/contentValues";
 
 type Favorite = { name: string; desc: string; price: string };
 type Highlight = { icon: string; title: string; body: string };
@@ -23,7 +24,7 @@ type Highlight = { icon: string; title: string; body: string };
 const AdminHomepage = () => {
   const { merged, homepageSections, loading, refresh } = useContentAdmin();
   const [saving, setSaving] = useState(false);
-  const [content, setContent] = useState<Record<string, any>>({});
+  const [content, setContent] = useState<ContentMap>({});
   const [sections, setSections] = useState<HomepageSection[]>([]);
 
   useEffect(() => {
@@ -32,9 +33,9 @@ const AdminHomepage = () => {
     setSections(homepageSections.map((s) => ({ ...s })));
   }, [loading, merged, homepageSections]);
 
-  const set = (key: string, value: unknown) => setContent((c) => ({ ...c, [key]: value }));
-  const setNested = (key: string, field: string, value: unknown) =>
-    setContent((c) => ({ ...c, [key]: { ...(c[key] ?? {}), [field]: value } }));
+  const set = (key: string, value: ContentValue) => setContent((c) => ({ ...c, [key]: value }));
+  const setNested = (key: string, field: string, value: ContentValue) =>
+    setContent((c) => ({ ...c, [key]: { ...asRecord(c[key]), [field]: value } }));
 
   const move = (index: number, dir: -1 | 1) => {
     const next = [...sections];
@@ -79,9 +80,9 @@ const AdminHomepage = () => {
     );
   }
 
-  const favorites: Favorite[] = content.favorites ?? [];
-  const highlights: Highlight[] = content.highlights ?? [];
-  const cta = content.callToAction ?? {};
+  const favorites = asList<Favorite>(content.favorites);
+  const highlights = asList<Highlight>(content.highlights);
+  const cta = asRecord(content.callToAction);
 
   return (
     <div className="space-y-8 max-w-4xl pb-24">
@@ -97,24 +98,24 @@ const AdminHomepage = () => {
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
             <Label htmlFor="hero-eyebrow">Eyebrow</Label>
-            <Input id="hero-eyebrow" className="h-11" value={content.heroEyebrow ?? ""} onChange={(e) => set("heroEyebrow", e.target.value)} />
+            <Input id="hero-eyebrow" className="h-11" value={asString(content.heroEyebrow)} onChange={(e) => set("heroEyebrow", e.target.value)} />
           </div>
           <div className="space-y-2">
             <Label htmlFor="hero-title">Title</Label>
-            <Input id="hero-title" className="h-11" value={content.heroTitle ?? ""} onChange={(e) => set("heroTitle", e.target.value)} />
+            <Input id="hero-title" className="h-11" value={asString(content.heroTitle)} onChange={(e) => set("heroTitle", e.target.value)} />
           </div>
           <div className="space-y-2">
             <Label htmlFor="hero-accent">Title accent</Label>
-            <Input id="hero-accent" className="h-11" value={content.heroTitleAccent ?? ""} onChange={(e) => set("heroTitleAccent", e.target.value)} />
+            <Input id="hero-accent" className="h-11" value={asString(content.heroTitleAccent)} onChange={(e) => set("heroTitleAccent", e.target.value)} />
           </div>
           <div className="space-y-2">
             <Label htmlFor="hero-tagline">Tagline</Label>
-            <Input id="hero-tagline" className="h-11" value={content.heroSubtitle ?? ""} onChange={(e) => set("heroSubtitle", e.target.value)} />
+            <Input id="hero-tagline" className="h-11" value={asString(content.heroSubtitle)} onChange={(e) => set("heroSubtitle", e.target.value)} />
           </div>
         </div>
         <div className="space-y-2">
           <Label htmlFor="hero-desc">Description</Label>
-          <Textarea id="hero-desc" rows={3} value={content.heroDescription ?? ""} onChange={(e) => set("heroDescription", e.target.value)} />
+          <Textarea id="hero-desc" rows={3} value={asString(content.heroDescription)} onChange={(e) => set("heroDescription", e.target.value)} />
         </div>
       </AdminFormCard>
 
@@ -135,7 +136,7 @@ const AdminHomepage = () => {
               <Input
                 id={`cta-${key}`}
                 className="h-11"
-                value={cta[key] ?? ""}
+                value={asString(cta[key])}
                 onChange={(e) => setNested("callToAction", key, e.target.value)}
               />
             </div>
@@ -147,19 +148,19 @@ const AdminHomepage = () => {
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
             <Label htmlFor="feat-badge">Badge</Label>
-            <Input id="feat-badge" className="h-11" value={content.heroFeatured?.badge ?? ""} onChange={(e) => setNested("heroFeatured", "badge", e.target.value)} />
+            <Input id="feat-badge" className="h-11" value={asString(asRecord(content.heroFeatured).badge)} onChange={(e) => setNested("heroFeatured", "badge", e.target.value)} />
           </div>
           <div className="space-y-2">
             <Label htmlFor="feat-price">Price</Label>
-            <Input id="feat-price" className="h-11" value={content.heroFeatured?.price ?? ""} onChange={(e) => setNested("heroFeatured", "price", e.target.value)} />
+            <Input id="feat-price" className="h-11" value={asString(asRecord(content.heroFeatured).price)} onChange={(e) => setNested("heroFeatured", "price", e.target.value)} />
           </div>
           <div className="space-y-2 sm:col-span-2">
             <Label htmlFor="feat-title">Title</Label>
-            <Input id="feat-title" className="h-11" value={content.heroFeatured?.title ?? ""} onChange={(e) => setNested("heroFeatured", "title", e.target.value)} />
+            <Input id="feat-title" className="h-11" value={asString(asRecord(content.heroFeatured).title)} onChange={(e) => setNested("heroFeatured", "title", e.target.value)} />
           </div>
           <div className="space-y-2 sm:col-span-2">
             <Label htmlFor="feat-desc">Description</Label>
-            <Textarea id="feat-desc" rows={2} value={content.heroFeatured?.description ?? ""} onChange={(e) => setNested("heroFeatured", "description", e.target.value)} />
+            <Textarea id="feat-desc" rows={2} value={asString(asRecord(content.heroFeatured).description)} onChange={(e) => setNested("heroFeatured", "description", e.target.value)} />
           </div>
         </div>
       </AdminFormCard>
@@ -171,19 +172,19 @@ const AdminHomepage = () => {
               <div className="space-y-2">
                 <Label htmlFor={`fav-name-${i}`}>Name</Label>
                 <Input id={`fav-name-${i}`} className="h-11" value={f.name ?? ""} onChange={(e) => {
-                  const next = [...favorites]; next[i] = { ...f, name: e.target.value }; set("favorites", next);
+                  const next = [...favorites]; next[i] = { ...f, name: e.target.value }; set("favorites", next as unknown as ContentValue);
                 }} />
               </div>
               <div className="space-y-2">
                 <Label htmlFor={`fav-desc-${i}`}>Description</Label>
                 <Input id={`fav-desc-${i}`} className="h-11" value={f.desc ?? ""} onChange={(e) => {
-                  const next = [...favorites]; next[i] = { ...f, desc: e.target.value }; set("favorites", next);
+                  const next = [...favorites]; next[i] = { ...f, desc: e.target.value }; set("favorites", next as unknown as ContentValue);
                 }} />
               </div>
               <div className="space-y-2">
                 <Label htmlFor={`fav-price-${i}`}>Price</Label>
                 <Input id={`fav-price-${i}`} className="h-11" value={f.price ?? ""} onChange={(e) => {
-                  const next = [...favorites]; next[i] = { ...f, price: e.target.value }; set("favorites", next);
+                  const next = [...favorites]; next[i] = { ...f, price: e.target.value }; set("favorites", next as unknown as ContentValue);
                 }} />
               </div>
             </div>
@@ -192,7 +193,7 @@ const AdminHomepage = () => {
             type="button"
             variant="outline"
             className="font-stencil"
-            onClick={() => set("favorites", [...favorites, { name: "", desc: "", price: "" }])}
+            onClick={() => set("favorites", [...favorites, { name: "", desc: "", price: "" }] as unknown as ContentValue)}
           >
             Add favorite
           </Button>
@@ -206,19 +207,19 @@ const AdminHomepage = () => {
               <div className="space-y-2">
                 <Label htmlFor={`hl-icon-${i}`}>Icon</Label>
                 <Input id={`hl-icon-${i}`} className="h-11" value={h.icon ?? ""} onChange={(e) => {
-                  const next = [...highlights]; next[i] = { ...h, icon: e.target.value }; set("highlights", next);
+                  const next = [...highlights]; next[i] = { ...h, icon: e.target.value }; set("highlights", next as unknown as ContentValue);
                 }} />
               </div>
               <div className="space-y-2">
                 <Label htmlFor={`hl-title-${i}`}>Title</Label>
                 <Input id={`hl-title-${i}`} className="h-11" value={h.title ?? ""} onChange={(e) => {
-                  const next = [...highlights]; next[i] = { ...h, title: e.target.value }; set("highlights", next);
+                  const next = [...highlights]; next[i] = { ...h, title: e.target.value }; set("highlights", next as unknown as ContentValue);
                 }} />
               </div>
               <div className="space-y-2">
                 <Label htmlFor={`hl-body-${i}`}>Text</Label>
                 <Input id={`hl-body-${i}`} className="h-11" value={h.body ?? ""} onChange={(e) => {
-                  const next = [...highlights]; next[i] = { ...h, body: e.target.value }; set("highlights", next);
+                  const next = [...highlights]; next[i] = { ...h, body: e.target.value }; set("highlights", next as unknown as ContentValue);
                 }} />
               </div>
             </div>
@@ -230,23 +231,23 @@ const AdminHomepage = () => {
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
             <Label htmlFor="exp-badge">Experience badge</Label>
-            <Input id="exp-badge" className="h-11" value={content.experience?.badge ?? ""} onChange={(e) => setNested("experience", "badge", e.target.value)} />
+            <Input id="exp-badge" className="h-11" value={asString(asRecord(content.experience).badge)} onChange={(e) => setNested("experience", "badge", e.target.value)} />
           </div>
           <div className="space-y-2">
             <Label htmlFor="exp-title">Experience title</Label>
-            <Input id="exp-title" className="h-11" value={content.experience?.title ?? ""} onChange={(e) => setNested("experience", "title", e.target.value)} />
+            <Input id="exp-title" className="h-11" value={asString(asRecord(content.experience).title)} onChange={(e) => setNested("experience", "title", e.target.value)} />
           </div>
           <div className="space-y-2 sm:col-span-2">
             <Label htmlFor="exp-sub">Experience subtitle</Label>
-            <Input id="exp-sub" className="h-11" value={content.experience?.subtitle ?? ""} onChange={(e) => setNested("experience", "subtitle", e.target.value)} />
+            <Input id="exp-sub" className="h-11" value={asString(asRecord(content.experience).subtitle)} onChange={(e) => setNested("experience", "subtitle", e.target.value)} />
           </div>
           <div className="space-y-2 sm:col-span-2">
             <Label htmlFor="service-blurb">Service area blurb</Label>
-            <Input id="service-blurb" className="h-11" value={content.serviceAreaText ?? ""} onChange={(e) => set("serviceAreaText", e.target.value)} />
+            <Input id="service-blurb" className="h-11" value={asString(content.serviceAreaText)} onChange={(e) => set("serviceAreaText", e.target.value)} />
           </div>
           <div className="space-y-2 sm:col-span-2">
             <Label htmlFor="footer-text">Footer text</Label>
-            <Textarea id="footer-text" rows={2} value={content.footerText ?? ""} onChange={(e) => set("footerText", e.target.value)} />
+            <Textarea id="footer-text" rows={2} value={asString(content.footerText)} onChange={(e) => set("footerText", e.target.value)} />
           </div>
         </div>
       </AdminFormCard>
