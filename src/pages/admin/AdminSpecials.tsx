@@ -93,7 +93,8 @@ type DiscountOrder = {
   order_number: string | null;
   customer_name: string | null;
   created_at: string;
-  discount_group: string | null;
+  discount_name: string | null;
+  community_group: string | null;
   discount_amount: number | null;
   discount_status: string | null;
   total: number | null;
@@ -161,7 +162,7 @@ const AdminSpecials = ({ focus = "all" }: { focus?: AdminSpecialsFocus }) => {
   const saveSpecial = async () => {
     if (!editing) return;
     const payload = { ...editing } as TablesInsert<"specials"> & { id?: string };
-    if (payload.special_price === "" || payload.special_price == null) return toast.error("Price required");
+    if (String(payload.special_price ?? "") === "") return toast.error("Price required");
     payload.special_price = Number(payload.special_price);
     if (payload.regular_price) payload.regular_price = Number(payload.regular_price);
     if (payload.id) {
