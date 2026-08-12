@@ -15,7 +15,9 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "export:zip": "npx tsx scripts/export-zip.ts",
-    "export:design": "npx tsx scripts/export-design-system.ts"
+    "export:design": "npx tsx scripts/export-design-system.ts",
+    "export:figma": "npx tsx scripts/export-figma-tokens.ts",
+    "export:figma:all": "npm run export:design && npm run export:figma"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
