@@ -23,7 +23,7 @@ if (!existsSync(OUT_DIR)) mkdirSync(OUT_DIR, { recursive: true });
 
 const read = (p: string) => readFileSync(resolve(ROOT, p), "utf8");
 
-const css = read("src/index.css");
+const css = read("src/index.css").replace(/\/\*[\s\S]*?\*\//g, "");
 const tailwind = read("tailwind.config.ts");
 const indexHtml = read("index.html");
 
@@ -142,10 +142,19 @@ const containerScreens = tailwind.match(/screens:\s*\{([^}]*)\}/)?.[1]?.replace(
 const containerPadding = tailwind.match(/padding:\s*"([^"]+)"/)?.[1] ?? null;
 
 /** Head metadata */
+const decode = (v: string | null) =>
+  v
+    ? v
+        .replace(/&#39;/g, "'")
+        .replace(/&quot;/g, '"')
+        .replace(/&amp;/g, "&")
+        .replace(/&mdash;/g, "—")
+    : null;
+
 const meta = {
-  title: indexHtml.match(/<title>([^<]*)<\/title>/)?.[1] ?? null,
-  description: indexHtml.match(/<meta\s+name="description"\s+content="([^"]*)"/)?.[1] ?? null,
-  ogTitle: indexHtml.match(/<meta\s+property="og:title"\s+content="([^"]*)"/)?.[1] ?? null,
+  title: decode(indexHtml.match(/<title>([^<]*)<\/title>/)?.[1] ?? null),
+  description: decode(indexHtml.match(/<meta\s+name="description"\s+content="([^"]*)"/)?.[1] ?? null),
+  ogTitle: decode(indexHtml.match(/<meta\s+property="og:title"\s+content="([^"]*)"/)?.[1] ?? null),
   favicon: indexHtml.match(/<link\s+rel="icon"[^>]*href="([^"]*)"/)?.[1] ?? null,
 };
 
