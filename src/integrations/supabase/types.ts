@@ -602,6 +602,44 @@ export type Database = {
           },
         ]
       }
+      order_status_history: {
+        Row: {
+          changed_by: string | null
+          created_at: string
+          id: string
+          new_status: string
+          notes: string | null
+          order_id: string
+          previous_status: string | null
+        }
+        Insert: {
+          changed_by?: string | null
+          created_at?: string
+          id?: string
+          new_status: string
+          notes?: string | null
+          order_id: string
+          previous_status?: string | null
+        }
+        Update: {
+          changed_by?: string | null
+          created_at?: string
+          id?: string
+          new_status?: string
+          notes?: string | null
+          order_id?: string
+          previous_status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_status_history_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       order_items: {
         Row: {
           created_at: string
@@ -658,6 +696,7 @@ export type Database = {
       }
       orders: {
         Row: {
+          checkout_request_id: string | null
           community_group: string | null
           created_at: string
           customer_email: string
@@ -678,13 +717,16 @@ export type Database = {
             | null
           heroes_group: string | null
           id: string
+          internal_notes: string | null
           notes: string | null
           order_number: string | null
           order_type: string
           payment_status: string
+          pickup_date: string | null
           pickup_time: string | null
           service_fee: number
           status: Database["public"]["Enums"]["order_status"]
+          status_lookup_token: string | null
           stripe_payment_intent_id: string | null
           stripe_session_id: string | null
           subtotal: number
@@ -695,6 +737,7 @@ export type Database = {
           user_id: string | null
         }
         Insert: {
+          checkout_request_id?: string | null
           community_group?: string | null
           created_at?: string
           customer_email: string
@@ -715,13 +758,16 @@ export type Database = {
             | null
           heroes_group?: string | null
           id?: string
+          internal_notes?: string | null
           notes?: string | null
           order_number?: string | null
           order_type?: string
           payment_status?: string
+          pickup_date?: string | null
           pickup_time?: string | null
           service_fee?: number
           status?: Database["public"]["Enums"]["order_status"]
+          status_lookup_token?: string | null
           stripe_payment_intent_id?: string | null
           stripe_session_id?: string | null
           subtotal?: number
@@ -732,6 +778,7 @@ export type Database = {
           user_id?: string | null
         }
         Update: {
+          checkout_request_id?: string | null
           community_group?: string | null
           created_at?: string
           customer_email?: string
@@ -752,13 +799,16 @@ export type Database = {
             | null
           heroes_group?: string | null
           id?: string
+          internal_notes?: string | null
           notes?: string | null
           order_number?: string | null
           order_type?: string
           payment_status?: string
+          pickup_date?: string | null
           pickup_time?: string | null
           service_fee?: number
           status?: Database["public"]["Enums"]["order_status"]
+          status_lookup_token?: string | null
           stripe_payment_intent_id?: string | null
           stripe_session_id?: string | null
           subtotal?: number
