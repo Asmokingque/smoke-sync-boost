@@ -9,6 +9,7 @@ import { useCart } from "@/store/cart";
 import { useCartUI } from "@/store/cartUi";
 import { Plus, Settings2, Flame, Search, X } from "lucide-react";
 import { toast } from "sonner";
+import { trackEvent } from "@/lib/analytics";
 import { Link } from "react-router-dom";
 import { OptionsPickerDialog } from "@/components/menu/OptionsPickerDialog";
 import { CateringCallout } from "@/components/menu/CateringCallout";
@@ -95,7 +96,8 @@ const Menu = () => {
       price,
       priceLabel: variantLabel ?? undefined,
     });
-    // Toast is shown by AnimatedCartControls. For options-required items handled in picker below.
+    trackEvent("menu_item_added", { menuItemId: item.id, variant: variantId });
+    toast.success("Added to your order.");
   };
 
   const jumpTo = (slug: string) => {
@@ -139,6 +141,7 @@ const Menu = () => {
             itemName={item.name}
             fly={flyOnAdd}
             onAdd={() => handleAdd(item, false)}
+            silent
             className={`flex-1 text-xs ${btnBase}`}
           >
             <Plus className="h-3.5 w-3.5" />${Number(item.price).toFixed(0)}
@@ -147,6 +150,7 @@ const Menu = () => {
             itemName={item.name}
             fly={flyOnAdd}
             onAdd={() => handleAdd(item, true)}
+            silent
             className={`flex-1 text-xs ${btnBase}`}
           >
             <Plus className="h-3.5 w-3.5" />${Number(item.price_alt).toFixed(0)}
@@ -159,6 +163,7 @@ const Menu = () => {
         itemName={item.name}
         fly={flyOnAdd}
         onAdd={() => handleAdd(item)}
+        silent
         className={`${compact ? "" : "w-full"} text-sm ${btnBase}`}
       >
         {item.requires_options ? <><Settings2 className="h-4 w-4" />Customize</> : <><Plus className="h-4 w-4" />Order Online</>}
@@ -383,12 +388,12 @@ const Menu = () => {
             selectedOptions,
             notes: notes || undefined,
           });
-          // Trigger flying animation from screen center after option dialog closes
           useCartUI.getState().fly({
             name: pickerItem.name,
             from: { x: window.innerWidth / 2, y: window.innerHeight / 2 },
           });
-          toast.success(`${pickerItem.name} added to your order.`, { duration: 2500 });
+          trackEvent("menu_item_added", { menuItemId: pickerItem.id, source: "options_picker" });
+          toast.success("Added to your order.", { duration: 2500 });
         }}
       />
     </SiteLayout>

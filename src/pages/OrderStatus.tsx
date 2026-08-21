@@ -1,12 +1,13 @@
 import { getErrorMessage } from "@/lib/errors";
 import { Seo } from "@/components/seo/Seo";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { SiteLayout } from "@/components/layout/SiteLayout";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Loader2, Search } from "lucide-react";
+import { useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 
 type Order = {
@@ -34,14 +35,73 @@ type Item = {
 };
 
 const OrderStatus = () => {
-  const [orderNumber, setOrderNumber] = useState("");
+  const [searchParams] = useSearchParams();
+  const [orderNumber, setOrderNumber] = useState(searchParams.get("orderNumber") ?? "");
   const [contact, setContact] = useState("");
+  const [tokenMode, setTokenMode] = useState(Boolean(searchParams.get("token")));
   const [loading, setLoading] = useState(false);
   const [order, setOrder] = useState<Order | null>(null);
   const [items, setItems] = useState<Item[]>([]);
 
+
+  const lookupWithToken = async (lookupOrderNumber: string, token: string) => {
+    setLoading(true);
+    setOrder(null);
+    setItems([]);
+    try {
+      const { data, error } = await supabase.functions.invoke("get-order-status", {
+        body: { orderNumber: lookupOrderNumber, statusLookupToken: token },
+      });
+      if (error) throw error;
+      setOrder({
+        id: lookupOrderNumber,
+        order_number: data.orderNumber,
+        status: data.status,
+        payment_status: data.paymentStatus,
+        order_type: data.orderType,
+        pickup_time: data.pickupTime,
+        delivery_address: null,
+        customer_name: "",
+        customer_email: "",
+        customer_phone: "",
+        total: Number(data.total ?? 0),
+        created_at: new Date().toISOString(),
+      });
+      setItems((data.items ?? []).map((item: { name: string; quantity: number }, index: number) => ({
+        id: `${lookupOrderNumber}-${index}`,
+        item_name: item.name,
+        quantity: item.quantity,
+        unit_price: 0,
+        line_total: 0,
+        notes: null,
+      })));
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Lookup failed"));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const token = searchParams.get("token");
+    const nextOrderNumber = searchParams.get("orderNumber");
+    if (token && nextOrderNumber) {
+      void lookupWithToken(nextOrderNumber, token);
+      setTokenMode(true);
+    }
+  }, [searchParams]);
+
   const lookup = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (tokenMode) {
+      const token = searchParams.get("token");
+      if (!token) {
+        toast.error("Missing secure lookup token.");
+        return;
+      }
+      await lookupWithToken(orderNumber.trim().toUpperCase(), token);
+      return;
+    }
     if (!orderNumber.trim() || !contact.trim()) {
       toast.error("Enter your order number and email or phone.");
       return;
@@ -112,6 +172,7 @@ const OrderStatus = () => {
               value={contact}
               onChange={(e) => setContact(e.target.value)}
               className="h-12"
+              disabled={tokenMode}
             />
           </div>
           <Button type="submit" disabled={loading} className="w-full h-12 bg-primary hover:bg-primary/90 font-stencil">

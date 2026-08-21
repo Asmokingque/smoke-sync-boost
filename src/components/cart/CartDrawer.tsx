@@ -1,24 +1,25 @@
-import { AnimatePresence, motion } from "framer-motion";
-import { X, Trash2, Minus, Plus, Lock } from "lucide-react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { Lock, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useCart } from "@/store/cart";
+import { useCart } from "@/hooks/useCart";
+import { CartItemCard } from "@/components/cart/CartItemCard";
+import { CartSummary } from "@/components/cart/CartSummary";
+import { trackEvent } from "@/lib/analytics";
 
 export function CartDrawer({
   open,
   onOpenChange,
 }: {
   open: boolean;
-  onOpenChange: (o: boolean) => void;
+  onOpenChange: (open: boolean) => void;
 }) {
   const navigate = useNavigate();
-  const { items, updateQuantity, removeItem, subtotal } = useCart();
-
-  const sub = subtotal();
-  const tax = sub * 0.0825;
-  const total = sub + tax;
+  const reducedMotion = useReducedMotion();
+  const { items, estimatedSubtotal, updateQuantity, removeItem } = useCart();
 
   const onClose = () => onOpenChange(false);
   const onCheckout = () => {
+    trackEvent("cart_opened", { source: "drawer_checkout" });
     onOpenChange(false);
     navigate("/checkout");
   };
@@ -30,21 +31,21 @@ export function CartDrawer({
           <motion.div
             key="cart-overlay"
             className="fixed inset-0 z-[9998] bg-background/80 backdrop-blur-sm"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.25 }}
+            initial={reducedMotion ? false : { opacity: 0 }}
+            animate={reducedMotion ? undefined : { opacity: 1 }}
+            exit={reducedMotion ? undefined : { opacity: 0 }}
+            transition={{ duration: reducedMotion ? 0 : 0.2 }}
             onClick={onClose}
           />
           <motion.aside
             key="cart-drawer"
             role="dialog"
             aria-label="Your order"
-            className="fixed right-0 top-0 z-[9999] flex h-full w-full max-w-md flex-col border-l border-gold/30 bg-background shadow-2xl"
-            initial={{ x: "100%" }}
-            animate={{ x: 0 }}
-            exit={{ x: "100%" }}
-            transition={{ type: "spring", stiffness: 260, damping: 28 }}
+            className="fixed right-0 top-0 z-[9999] flex h-full w-[calc(100vw-1rem)] max-w-[460px] flex-col border-l border-gold/30 bg-background shadow-2xl sm:w-full"
+            initial={reducedMotion ? false : { x: "100%" }}
+            animate={reducedMotion ? undefined : { x: 0 }}
+            exit={reducedMotion ? undefined : { x: "100%" }}
+            transition={reducedMotion ? { duration: 0 } : { type: "spring", stiffness: 260, damping: 28 }}
           >
             <div className="border-b border-gold/20 bg-card/95 p-5">
               <div className="flex items-center justify-between">
@@ -74,94 +75,31 @@ export function CartDrawer({
                   </p>
                 </div>
               ) : (
-                <div className="space-y-4">
-                  {items.map((item, index) => {
-                    const optionLabels =
-                      item.selectedOptions?.map((o) => `${o.group}: ${o.name}`) ?? [];
-                    return (
-                      <motion.div
-                        key={item.id}
-                        initial={{ opacity: 0, y: 14 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.05 }}
-                        className="rounded-2xl border border-gold/20 bg-card p-4"
-                      >
-                        <div className="flex items-start justify-between gap-4">
-                          <div className="min-w-0">
-                            <h3 className="font-stencil font-bold text-foreground">{item.name}</h3>
-                            {optionLabels.length > 0 && (
-                              <p className="mt-1 text-xs text-muted-foreground">
-                                {optionLabels.join(", ")}
-                              </p>
-                            )}
-                            {item.notes && (
-                              <p className="mt-1 text-xs text-gold">Note: {item.notes}</p>
-                            )}
-                          </div>
-                          <p className="font-display text-lg font-black text-gold shrink-0">
-                            ${(item.price * item.quantity).toFixed(2)}
-                          </p>
-                        </div>
-                        <div className="mt-4 flex items-center justify-between">
-                          <div className="flex items-center gap-2 rounded-full border border-border bg-background/60 p-1">
-                            <button
-                              type="button"
-                              onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                              className="rounded-full p-2 text-foreground hover:bg-secondary"
-                              aria-label="Decrease quantity"
-                            >
-                              <Minus className="h-4 w-4" />
-                            </button>
-                            <span className="min-w-8 text-center font-bold text-foreground">
-                              {item.quantity}
-                            </span>
-                            <button
-                              type="button"
-                              onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                              className="rounded-full p-2 text-foreground hover:bg-secondary"
-                              aria-label="Increase quantity"
-                            >
-                              <Plus className="h-4 w-4" />
-                            </button>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => removeItem(item.id)}
-                            className="rounded-full p-2 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
-                            aria-label="Remove item"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </button>
-                        </div>
-                      </motion.div>
-                    );
-                  })}
-                </div>
+                <AnimatePresence initial={false} mode="popLayout">
+                  <div className="space-y-4">
+                    {items.map((item) => (
+                      <CartItemCard
+                        key={item.cartItemId}
+                        item={item}
+                        reducedMotion={!!reducedMotion}
+                        onDecrease={() => updateQuantity(item.cartItemId, item.quantity - 1)}
+                        onIncrease={() => updateQuantity(item.cartItemId, item.quantity + 1)}
+                        onRemove={() => removeItem(item.cartItemId)}
+                      />
+                    ))}
+                  </div>
+                </AnimatePresence>
               )}
             </div>
 
             <div className="border-t border-gold/20 bg-card p-5">
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between text-muted-foreground">
-                  <span>Subtotal</span>
-                  <span>${sub.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between text-muted-foreground">
-                  <span>Estimated Tax (8.25%)</span>
-                  <span>${tax.toFixed(2)}</span>
-                </div>
-                <div className="h-px bg-gold/20" />
-                <div className="flex justify-between text-xl font-black text-foreground">
-                  <span>Total</span>
-                  <span>${total.toFixed(2)}</span>
-                </div>
-              </div>
+              <CartSummary subtotal={estimatedSubtotal} />
               <motion.button
                 type="button"
                 disabled={items.length === 0}
                 onClick={onCheckout}
-                whileHover={{ scale: items.length ? 1.02 : 1 }}
-                whileTap={{ scale: items.length ? 0.97 : 1 }}
+                whileHover={reducedMotion || !items.length ? undefined : { scale: 1.02 }}
+                whileTap={reducedMotion || !items.length ? undefined : { scale: 0.97 }}
                 className="mt-5 flex w-full items-center justify-center gap-3 rounded-full border border-gold/40 bg-gradient-to-r from-primary to-primary/80 px-6 py-4 font-stencil font-bold tracking-wider text-primary-foreground shadow-ember hover:from-primary hover:to-primary disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <Lock className="h-5 w-5" />
