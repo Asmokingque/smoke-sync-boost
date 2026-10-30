@@ -385,7 +385,8 @@ Deno.serve(async (req) => {
         name: discountName ?? "Discount",
       });
       if (!coupon.id) {
-        console.error("Unexpected coupon response keys", Object.keys(coupon));
+        const failure = coupon as unknown as { status?: number; type?: string; title?: string; message?: string };
+        console.error("Discount provider failure", { status: failure.status, type: failure.type, title: failure.title, message: failure.message });
         throw new Error("Unable to apply the checkout discount. No payment was taken.");
       }
       discountsParam = [{ coupon: coupon.id }];
