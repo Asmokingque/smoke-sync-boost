@@ -24,6 +24,7 @@ export type CheckoutCustomerInfo = {
   orderNotes?: string;
   tipCents?: number;
   communityGroup?: string;
+  promoCode?: string;
 };
 
 interface Props {
@@ -35,7 +36,9 @@ interface Props {
 
 export function StripeEmbeddedCheckout({ cartItems, customerInfo, returnUrl, onError }: Props) {
   const fetchClientSecret = useCallback(async (): Promise<string> => {
+    const { data: { session } } = await supabase.auth.getSession();
     const { data, error } = await supabase.functions.invoke("create-checkout-session", {
+      headers: session ? undefined : { Authorization: "" },
       body: {
         cartItems,
         customerInfo,
@@ -44,7 +47,11 @@ export function StripeEmbeddedCheckout({ cartItems, customerInfo, returnUrl, onE
       },
     });
     if (error || !data?.clientSecret) {
-      const msg = getErrorMessage(error, "") || data?.error || "Failed to start checkout";
+      let msg = data?.error || getErrorMessage(error, "") || "Failed to start checkout";
+      if (error && "context" in error && error.context instanceof Response) {
+        const details = await error.context.json().catch(() => null);
+        msg = details?.error || msg;
+      }
       onError?.(msg);
       throw new Error(msg);
     }

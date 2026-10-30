@@ -14,7 +14,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
 import { SafetyCommitmentBlock } from "@/components/checkout/SafetyCommitmentBlock";
-import { computeDiscount, buildSafeOrderTotals, type Promo } from "@/lib/promo";
+import { computeDiscount, buildSafeOrderTotals, PROMOS, type Promo } from "@/lib/promo";
+import { getErrorMessage } from "@/lib/errors";
 import { useCommunityDiscount, computeCommunityDiscountAmount } from "@/hooks/useCommunityDiscount";
 import { StripeEmbeddedCheckout, type CheckoutCartItem, type CheckoutCustomerInfo } from "@/components/checkout/StripeEmbeddedCheckout";
 import { CheckoutPaymentSelector } from "@/components/payments/CheckoutPaymentSelector";
@@ -36,12 +37,6 @@ const schema = z.object({
 const TAX_RATE = 0.0825;
 const DELIVERY_FEE = 6.99;
 const DELIVERY_FREE_THRESHOLD = 75;
-
-const PROMOS: Promo[] = [
-  { code: "SMOKE10", label: "10% off", type: "percent", value: 0.1 },
-  { code: "BBQ20", label: "20% off", type: "percent", value: 0.2 },
-  { code: "PITMASTER5", label: "$5 off order", type: "fixed", value: 5 },
-];
 
 
 
@@ -223,9 +218,9 @@ const Checkout = () => {
   const discountRate = promo?.type === "percent" ? Math.min(Math.max(promo.value, 0), 1) : 0;
   const heroesEnabled = !!communityDiscount?.is_active && (communityDiscount?.allow_online_selection ?? true);
   const heroesActive = heroesEnabled && !!heroesGroup && heroesAck;
-  const heroesDiscount = heroesActive ? computeCommunityDiscountAmount(communityDiscount, discountedSub) : 0;
+  const heroesDiscount = heroesActive ? Math.min(discountedSub, computeCommunityDiscountAmount(communityDiscount, discountedSub)) : 0;
   const subAfterAll = Math.max(0, discountedSub - heroesDiscount);
-  const tax = Math.max(0, subAfterAll * TAX_RATE);
+  const tax = Math.round(Math.max(0, subAfterAll * TAX_RATE) * 100) / 100;
   const deliveryFee = form.order_type === "Delivery"
     ? (subAfterAll >= DELIVERY_FREE_THRESHOLD ? 0 : DELIVERY_FEE)
     : 0;
@@ -319,8 +314,9 @@ const Checkout = () => {
     { id: 3, label: "Confirm", icon: Receipt, done: false, active: false },
   ];
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent, forceCard = false) => {
     e.preventDefault();
+    if (submitting) return;
     if (nameError || phoneError) {
       setTouched({ name: true, phone: true });
       toast.error(nameError || phoneError || "Please fix the highlighted fields");
@@ -356,7 +352,33 @@ const Checkout = () => {
           : undefined,
       orderNotes: parsed.data.notes,
       communityGroup: heroesActive ? heroesGroup : "",
+      promoCode: promo?.code,
     };
+
+    if (!forceCard && (!paymentMethodKey || paymentMethodKey === "pay_at_pickup" || paymentMethodKey === "manual_cash")) {
+      setSubmitting(true);
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        const { data, error } = await supabase.functions.invoke("create-checkout-session", {
+          headers: session ? undefined : { Authorization: "" },
+          body: { cartItems, customerInfo, paymentMethod: paymentMethodKey ?? (form.order_type === "Delivery" ? "manual_cash" : "pay_at_pickup") },
+        });
+        if (error || !data?.orderId) {
+          let message = data?.error || getErrorMessage(error, "Unable to place your order.");
+          if (error && "context" in error && error.context instanceof Response) {
+            const detail = await error.context.json().catch(() => null);
+            message = detail?.error || message;
+          }
+          throw new Error(message);
+        }
+        navigate(`/checkout/success?order=${encodeURIComponent(data.orderNumber ?? data.orderId)}&payment=unpaid`);
+      } catch (error) {
+        toast.error(getErrorMessage(error, "Unable to place your order."));
+      } finally {
+        setSubmitting(false);
+      }
+      return;
+    }
 
     setEmbeddedPayload({ cartItems, customerInfo });
     setShowEmbedded(true);
@@ -669,42 +691,7 @@ const Checkout = () => {
               <Button
                 type="button"
                 disabled={submitting || !contactValid}
-                onClick={() => {
-                  if (nameError || phoneError) {
-                    setTouched({ name: true, phone: true });
-                    toast.error(nameError || phoneError || "Please complete your details");
-                    return;
-                  }
-                  const parsed = schema.safeParse(form);
-                  if (!parsed.success) {
-                    toast.error(parsed.error.issues[0].message);
-                    return;
-                  }
-                  setEmbeddedPayload({
-                    cartItems: items.map((i) => ({
-                      menuItemId: i.menuItemId,
-                      specialId: i.specialId,
-                      specialItemId: i.specialItemId,
-                      quantity: i.quantity,
-                      selectedOptionIds: (i.selectedOptions ?? []).map((o) => o.id).filter(Boolean),
-                      notes: i.notes ?? undefined,
-                    })),
-                    customerInfo: {
-                      customerName: parsed.data.customer_name,
-                      phone: parsed.data.customer_phone,
-                      email: parsed.data.customer_email,
-                      orderType: parsed.data.order_type,
-                      pickupTime: parsed.data.pickup_time
-                        ? new Date(parsed.data.pickup_time).toISOString()
-                        : undefined,
-                      deliveryAddress:
-                        parsed.data.order_type === "Delivery" ? parsed.data.delivery_address : undefined,
-                      orderNotes: parsed.data.notes,
-                      communityGroup: heroesActive ? heroesGroup : "",
-                    },
-                  });
-                  setShowEmbedded(true);
-                }}
+                onClick={(e) => handleSubmit(e, true)}
                 className="h-14 luxury-secondary-btn font-stencil text-sm tracking-widest"
               >
                 Pay with Card · ${total.toFixed(2)}
@@ -714,26 +701,6 @@ const Checkout = () => {
               Secure card checkout powered by Stripe.
             </p>
 
-            {showEmbedded && embeddedPayload && (
-              <div className="mt-6">
-                <StripeEmbeddedCheckout
-                  cartItems={embeddedPayload.cartItems}
-                  customerInfo={embeddedPayload.customerInfo}
-                  returnUrl={`${window.location.origin}/checkout/success`}
-                  onError={(msg) => {
-                    toast.error(msg);
-                    setShowEmbedded(false);
-                  }}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowEmbedded(false)}
-                  className="mt-2 text-xs text-muted-foreground hover:text-foreground underline w-full text-center"
-                >
-                  Cancel card payment
-                </button>
-              </div>
-            )}
           </form>
 
           <aside className="premium-glass-card p-6 h-fit lg:sticky lg:top-24">

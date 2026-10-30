@@ -4,13 +4,8 @@
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { type StripeEnv, createStripeClient } from "../_shared/stripe.ts";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-};
+import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
+import { checkoutTotals, promoDiscountCents, manualPaymentState } from "../_shared/checkoutRules.ts";
 
 type CartItemInput = {
   menuItemId: string;
@@ -32,14 +27,8 @@ type CustomerInfoInput = {
   orderNotes?: string;
   tipCents?: number;
   communityGroup?: string;
+  promoCode?: string;
 };
-
-const TAX_RATE = 0.0825;
-const DELIVERY_FEE_CENTS = 699;
-const DELIVERY_FREE_THRESHOLD_CENTS = 7500;
-const HEROES_PERCENT = 0.10;
-const HEROES_CAP_CENTS = 2500;
-const ELIGIBLE_GROUPS = new Set(["Law Enforcement", "Firefighter", "Teacher", "Veteran"]);
 
 function cleanText(value: unknown, maxLength = 500): string {
   if (typeof value !== "string") return "";
@@ -69,25 +58,29 @@ Deno.serve(async (req) => {
     const body = await req.json().catch(() => null);
     if (!body || typeof body !== "object") return jsonResponse(400, { error: "Invalid request body." });
 
-    const env: StripeEnv = body.environment === "live" ? "live" : "sandbox";
+    const paymentMethod = body.paymentMethod ?? "card";
+    const isManual = paymentMethod !== "card";
+    if (!isManual && body.environment !== "sandbox" && body.environment !== "live") {
+      return jsonResponse(400, { error: "Invalid payment environment." });
+    }
     const origin = req.headers.get("origin") || "";
     const returnUrl = cleanText(body.returnUrl, 500) || (origin ? `${origin}/checkout/success` : "");
-    if (!returnUrl) return jsonResponse(400, { error: "returnUrl is required." });
+    if (!isManual && !returnUrl) return jsonResponse(400, { error: "returnUrl is required." });
 
-    // Best-effort: if a user JWT is provided, link the order to that user.
+    // Guest requests use the public API key; user tokens must validate.
     let userId: string | null = null;
     const authHeader = req.headers.get("Authorization");
-    if (authHeader?.startsWith("Bearer ")) {
+    if (authHeader?.startsWith("Bearer ") && authHeader.slice(7) !== Deno.env.get("SUPABASE_ANON_KEY")) {
       try {
         const userClient = createClient(supabaseUrl, Deno.env.get("SUPABASE_ANON_KEY") || "", {
           global: { headers: { Authorization: authHeader } },
         });
-        const { data: u } = await userClient.auth.getUser();
+        const { data: u, error } = await userClient.auth.getUser();
+        if (error || !u.user) return jsonResponse(401, { error: "Please sign in again." });
         userId = u?.user?.id ?? null;
-      } catch (_) { /* anonymous checkout */ }
+      } catch (_) { return jsonResponse(401, { error: "Please sign in again." }); }
     }
 
-    const stripe = createStripeClient(env);
     const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey);
 
     const cartItems = body.cartItems as CartItemInput[];
@@ -105,6 +98,21 @@ Deno.serve(async (req) => {
     if (!customerName || !phone) return jsonResponse(400, { error: "Customer name and phone are required." });
     if (orderType === "Delivery" && deliveryAddress.length < 6) {
       return jsonResponse(400, { error: "Delivery address is required for delivery orders." });
+    }
+
+    let paymentState = { status: "pending", payment_status: "pending" };
+    let manualLabel = "";
+    if (isManual) {
+      paymentState = manualPaymentState(paymentMethod, orderType);
+      const { data: method, error: methodError } = await supabaseAdmin.from("payment_methods")
+        .select("label, provider, enabled, is_manual").eq("method_key", paymentMethod).maybeSingle();
+      if (methodError) throw methodError;
+      if (!method?.enabled || !method.is_manual) throw new Error("This payment method is unavailable.");
+      const { data: connector, error: connectorError } = await supabaseAdmin.from("payment_connectors")
+        .select("enabled").eq("provider", method.provider).maybeSingle();
+      if (connectorError) throw connectorError;
+      if (!connector?.enabled) throw new Error("This payment method is unavailable.");
+      manualLabel = method.label;
     }
 
     // Resolve regular menu items.
@@ -244,24 +252,34 @@ Deno.serve(async (req) => {
     });
 
     const subtotalCents = calculated.reduce((s, i) => s + i.lineTotalCents, 0);
-    const deliveryFeeCents =
-      orderType === "Delivery" && subtotalCents < DELIVERY_FREE_THRESHOLD_CENTS ? DELIVERY_FEE_CENTS : 0;
     const tipCents = Math.min(Math.max(Number(customerInfo.tipCents || 0), 0), 50000);
+    if (!Number.isInteger(tipCents)) throw new Error("Invalid tip.");
+    const promoCode = cleanText(customerInfo.promoCode, 30).toUpperCase();
+    const promoCents = promoDiscountCents(subtotalCents, promoCode);
 
     let discountName: string | null = null;
-    let discountAmountCents = 0;
+    let communityCents = 0;
     let discountStatus: string = "None";
     let communityGroup: string | null = null;
-    if (customerInfo.communityGroup && ELIGIBLE_GROUPS.has(customerInfo.communityGroup)) {
+    const { data: heroes, error: heroesError } = await supabaseAdmin.from("community_discounts")
+      .select("*").eq("is_active", true).order("created_at", { ascending: true }).limit(1).maybeSingle();
+    if (heroesError) throw heroesError;
+    const afterPromoCents = subtotalCents - promoCents;
+    if (customerInfo.communityGroup && heroes && heroes.allow_online_selection !== false &&
+      heroes.eligible_groups.includes(customerInfo.communityGroup) && afterPromoCents >= toCents(heroes.min_subtotal)) {
       communityGroup = customerInfo.communityGroup;
-      discountName = "Community Heroes Deal";
-      discountAmountCents = Math.min(Math.round(subtotalCents * HEROES_PERCENT), HEROES_CAP_CENTS);
+      discountName = heroes.title;
+      communityCents = heroes.discount_type === "percentage"
+        ? Math.round(afterPromoCents * Math.min(Math.max(Number(heroes.discount_value), 0), 100) / 100)
+        : Math.min(toCents(heroes.discount_value), afterPromoCents);
+      if (heroes.max_discount) communityCents = Math.min(communityCents, toCents(heroes.max_discount));
       discountStatus = "Pending Verification";
     }
 
-    const taxableCents = Math.max(0, subtotalCents - discountAmountCents);
-    const taxCents = Math.round(taxableCents * TAX_RATE);
-    const totalCents = taxableCents + taxCents + deliveryFeeCents + tipCents;
+    const { discountCents: discountAmountCents, taxCents, deliveryFeeCents, totalCents } =
+      checkoutTotals(subtotalCents, promoCode, communityCents, orderType, tipCents);
+    discountName = [promoCode || null, discountName].filter(Boolean).join(" + ") || null;
+    if (promoCode && !communityGroup) discountStatus = "Applied";
     if (totalCents <= 0) return jsonResponse(400, { error: "Order total is invalid." });
 
     let pickupTimestamp: string | null = null;
@@ -277,8 +295,10 @@ Deno.serve(async (req) => {
 
     const noteParts = [
       cleanText(customerInfo.orderNotes, 500),
-      discountName
-        ? `${discountName} (${communityGroup}) −$${(discountAmountCents / 100).toFixed(2)} pending verification`
+      manualLabel ? `Payment: ${manualLabel} — awaiting payment` : null,
+      promoCode ? `Promo: ${promoCode} −$${(promoCents / 100).toFixed(2)}` : null,
+      communityGroup
+        ? `Community discount (${communityGroup}) −$${(communityCents / 100).toFixed(2)} pending verification`
         : null,
     ].filter(Boolean);
 
@@ -303,8 +323,7 @@ Deno.serve(async (req) => {
         discount_status: discountStatus,
         community_group: communityGroup,
         total: totalCents / 100,
-        payment_status: "pending",
-        status: "pending",
+        ...paymentState,
       })
       .select("id, order_number")
       .single();
@@ -321,7 +340,17 @@ Deno.serve(async (req) => {
       notes: i.notes || null,
     }));
     const { error: itemsError } = await supabaseAdmin.from("order_items").insert(orderItemsPayload);
-    if (itemsError) throw itemsError;
+    if (itemsError) {
+      await supabaseAdmin.from("orders").delete().eq("id", order.id);
+      throw itemsError;
+    }
+
+    if (isManual) return jsonResponse(200, {
+      orderNumber: order.order_number, orderId: order.id, paymentStatus: "unpaid", total: totalCents / 100,
+    });
+
+    const env: StripeEnv = body.environment;
+    const stripe = createStripeClient(env);
 
     const lineItems = calculated.map((i) => ({
       quantity: i.quantity,
@@ -355,6 +384,11 @@ Deno.serve(async (req) => {
         duration: "once",
         name: discountName ?? "Discount",
       });
+      if (!coupon.id) {
+        const failure = coupon as unknown as { status?: number; type?: string; title?: string; message?: string };
+        console.error("Discount provider failure", { status: failure.status, type: failure.type, title: failure.title, message: failure.message });
+        throw new Error("Unable to apply the checkout discount. No payment was taken.");
+      }
       discountsParam = [{ coupon: coupon.id }];
     }
 
@@ -370,6 +404,11 @@ Deno.serve(async (req) => {
         order_number: order.order_number ?? "",
       },
     });
+
+    if (!session.id || !session.client_secret) {
+      console.error("Unexpected checkout response keys", Object.keys(session));
+      throw new Error("Payment provider did not return a checkout form. No payment was taken.");
+    }
 
     await supabaseAdmin.from("orders").update({ stripe_session_id: session.id }).eq("id", order.id);
 
