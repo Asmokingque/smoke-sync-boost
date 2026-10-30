@@ -1,3 +1,5 @@
+export { CHECKOUT_PROMOS as PROMOS } from "../../supabase/functions/_shared/checkoutRules";
+
 export type Promo = {
   code: string;
   label: string;

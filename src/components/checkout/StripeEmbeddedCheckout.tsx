@@ -24,6 +24,7 @@ export type CheckoutCustomerInfo = {
   orderNotes?: string;
   tipCents?: number;
   communityGroup?: string;
+  promoCode?: string;
 };
 
 interface Props {
