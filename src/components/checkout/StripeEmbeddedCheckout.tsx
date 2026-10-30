@@ -36,7 +36,9 @@ interface Props {
 
 export function StripeEmbeddedCheckout({ cartItems, customerInfo, returnUrl, onError }: Props) {
   const fetchClientSecret = useCallback(async (): Promise<string> => {
+    const { data: { session } } = await supabase.auth.getSession();
     const { data, error } = await supabase.functions.invoke("create-checkout-session", {
+      headers: session ? undefined : { Authorization: "" },
       body: {
         cartItems,
         customerInfo,

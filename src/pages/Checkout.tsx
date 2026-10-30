@@ -358,7 +358,9 @@ const Checkout = () => {
     if (!forceCard && (!paymentMethodKey || paymentMethodKey === "pay_at_pickup" || paymentMethodKey === "manual_cash")) {
       setSubmitting(true);
       try {
+        const { data: { session } } = await supabase.auth.getSession();
         const { data, error } = await supabase.functions.invoke("create-checkout-session", {
+          headers: session ? undefined : { Authorization: "" },
           body: { cartItems, customerInfo, paymentMethod: paymentMethodKey ?? (form.order_type === "Delivery" ? "manual_cash" : "pay_at_pickup") },
         });
         if (error || !data?.orderId) {
