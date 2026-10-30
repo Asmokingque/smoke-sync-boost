@@ -11,6 +11,7 @@ import { OrderStatusTimeline } from "@/components/orders/OrderStatusTimeline";
 export default function CheckoutSuccess() {
   const [params] = useSearchParams();
   const orderNumber = params.get("order") ?? params.get("session_id");
+  const payLater = params.get("payment") === "unpaid";
   const clear = useCart((s) => s.clear);
   const [order, setOrder] = useState<{ status: string; payment_status: string } | null>(null);
 
@@ -21,15 +22,16 @@ export default function CheckoutSuccess() {
   // Poll order status briefly while webhook flips it to paid/confirmed.
   useEffect(() => {
     if (!orderNumber) return;
+    const identifier = orderNumber;
     let cancelled = false;
     let attempts = 0;
 
     async function fetchOrder() {
-      const isUuid = /^[0-9a-f-]{36}$/i.test(orderNumber!);
+      const isUuid = /^[0-9a-f-]{36}$/i.test(identifier);
       const query = supabase.from("orders").select("status, payment_status").limit(1);
       const { data } = isUuid
-        ? await query.eq("id", orderNumber!).maybeSingle()
-        : await query.eq("order_number", orderNumber!).maybeSingle();
+        ? await query.eq("id", identifier).maybeSingle()
+        : await query.eq("order_number", identifier).maybeSingle();
       if (cancelled) return;
       if (data) setOrder(data as { status: string; payment_status: string });
       attempts += 1;
@@ -58,14 +60,17 @@ export default function CheckoutSuccess() {
 
         <span className="badge-premium mb-4 inline-flex">
           <Sparkles className="h-3 w-3" />
-          Order Confirmed
+          {payLater ? "Order Received" : "Order Confirmed"}
         </span>
         <h1 className="font-serif text-5xl md:text-6xl mb-3 tracking-tight">
           Thank you for your <span className="italic text-gradient-ember">order</span>
         </h1>
         <span className="gold-rule-short mx-auto block mb-5" />
         <p className="text-muted-foreground leading-relaxed mb-8">
-          Payment confirmed. We've fired up the pit — you'll get a text when your order is ready.
+          {order?.payment_status === "paid"
+            ? "Payment confirmed. Thank you for your order."
+            : payLater ? "Your order has been placed. Payment is due at pickup or delivery."
+            : "Your order was received. Waiting for payment confirmation."}
         </p>
 
         {orderNumber && (
@@ -82,7 +87,7 @@ export default function CheckoutSuccess() {
           </div>
           <OrderStatusTimeline
             status={order?.status}
-            paymentStatus={order?.payment_status}
+            paymentStatus={order?.payment_status ?? (payLater ? "unpaid" : undefined)}
           />
         </div>
 
