@@ -384,6 +384,10 @@ Deno.serve(async (req) => {
         duration: "once",
         name: discountName ?? "Discount",
       });
+      if (!coupon.id) {
+        console.error("Unexpected coupon response keys", Object.keys(coupon));
+        throw new Error("Unable to apply the checkout discount. No payment was taken.");
+      }
       discountsParam = [{ coupon: coupon.id }];
     }
 
@@ -399,6 +403,11 @@ Deno.serve(async (req) => {
         order_number: order.order_number ?? "",
       },
     });
+
+    if (!session.id || !session.client_secret) {
+      console.error("Unexpected checkout response keys", Object.keys(session));
+      throw new Error("Payment provider did not return a checkout form. No payment was taken.");
+    }
 
     await supabaseAdmin.from("orders").update({ stripe_session_id: session.id }).eq("id", order.id);
 
