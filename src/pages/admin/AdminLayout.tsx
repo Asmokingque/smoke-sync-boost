@@ -33,6 +33,7 @@ const navItems: AdminNavItem[] = [
   { to: "/admin/payment-connectors", label: "Payment Connectors", icon: CreditCard, superOnly: true },
   { to: "/admin/content", label: "Site Content", icon: FileText, superOnly: true },
   { to: "/admin/users", label: "Admin Users", icon: Users, superOnly: true },
+  { to: "/admin/github", label: "GitHub", icon: FileText, superOnly: true },
   { to: "/admin/sop", label: "Website SOP", icon: BookOpen },
 ];
 
