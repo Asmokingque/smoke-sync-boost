@@ -5,7 +5,7 @@ import { logAdminDenial } from "@/lib/adminAccessLog";
 import {
   Loader2, ShoppingBag, MessageSquareText, UtensilsCrossed, Mail, LogOut, Home,
   Sparkles, BookOpen, FileText, Users, Settings, CreditCard, LayoutDashboard,
-  CalendarDays, Sandwich, Menu as MenuIcon, X, PanelsTopLeft, MapPin, FolderTree, Image as ImageIcon,
+  CalendarDays, Sandwich, Menu as MenuIcon, X, PanelsTopLeft, MapPin, FolderTree, Image as ImageIcon, History,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { RoleBadge } from "@/components/admin/RoleBadge";
@@ -17,6 +17,7 @@ const navItems: AdminNavItem[] = [
   { to: "/admin", end: true, label: "Dashboard", icon: LayoutDashboard },
   { to: "/admin/orders", label: "Orders", icon: ShoppingBag },
   { to: "/admin/menu", label: "Menu Manager", icon: UtensilsCrossed },
+  { to: "/admin/menu-history", label: "Menu History", icon: History },
   { to: "/admin/categories", label: "Categories", icon: FolderTree },
   { to: "/admin/storage", label: "Storage / Images", icon: ImageIcon },
   { to: "/admin/promo-images", label: "Promo Images", icon: Sparkles },

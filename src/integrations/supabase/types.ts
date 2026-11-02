@@ -490,6 +490,45 @@ export type Database = {
         }
         Relationships: []
       }
+      menu_item_history: {
+        Row: {
+          action: string
+          changed_by: string | null
+          changed_by_email: string | null
+          created_at: string
+          id: string
+          item_name: string
+          menu_item_id: string
+          new_data: Json | null
+          old_data: Json | null
+          undone_at: string | null
+        }
+        Insert: {
+          action: string
+          changed_by?: string | null
+          changed_by_email?: string | null
+          created_at?: string
+          id?: string
+          item_name: string
+          menu_item_id: string
+          new_data?: Json | null
+          old_data?: Json | null
+          undone_at?: string | null
+        }
+        Update: {
+          action?: string
+          changed_by?: string | null
+          changed_by_email?: string | null
+          created_at?: string
+          id?: string
+          item_name?: string
+          menu_item_id?: string
+          new_data?: Json | null
+          old_data?: Json | null
+          undone_at?: string | null
+        }
+        Relationships: []
+      }
       menu_item_options: {
         Row: {
           created_at: string
