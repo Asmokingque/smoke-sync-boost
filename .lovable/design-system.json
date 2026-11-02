@@ -1,0 +1,1715 @@
+{
+  "meta": {
+    "name": "BBQ Business Launch",
+    "package": "@ws-tpnofyf7w9euqohcrhkq/8670264f-5376-4ce1-a599-daa2c984dcd4",
+    "version": "1.0.0",
+    "framework": "react",
+    "css_framework": "tailwind",
+    "starter_template": "custom_design_system_tailwind",
+    "theme_files": [
+      "src/data/theme.ts",
+      "src/index.css"
+    ],
+    "source_type": "local",
+    "source_manifest": {
+      "#enrichment": "e08f214e5a383c3d1e850cba268f7a92d08ba7d8613d244a2974ff810c261734",
+      ".github/ISSUE_TEMPLATE/admin-login-bug.yml": "4cc0a71c62c926985424fcc4cfe81668",
+      ".github/ISSUE_TEMPLATE/website-bug.yml": "480f050dc0a8e79fc9fddb2a05a081a4",
+      ".github/dependabot.yml": "047b3958a8800d75eb0f9f2d57b0ff95",
+      ".github/workflows/.github/workflows/website-smoke-test.yml": "68b329da9893e34099c7d8ad5cb9c940",
+      ".github/workflows/ci.yml": "7097c828dfce5743755e017b72143e21",
+      ".github/workflows/codeql.yml": "ff3a4b10792757fb92855d16ae5dd81f",
+      ".github/workflows/failed-workflow-issue.yml": "9404f1de937dd08e9a5cd442fab5dc93",
+      ".github/workflows/issue.yml": "68b329da9893e34099c7d8ad5cb9c940",
+      ".github/workflows/website-smoke-test.yml": "4494009b6bd4a548e8a4cc93b1f17728",
+      ".gitignore": "d9566700e8535935d03c1583474d790c",
+      "AGENTS.md": "6531e1c39ad84737d3d6af1cff6a1acc",
+      "CLONE-GUIDE.md": "f0bbea9cdeafe3dcf8f65f3dba2ff4f3",
+      "README.md": "4fdcae58dda493b10ead055f9004986d",
+      "components.json": "a547944ace00dc5d5373aaca70a40bc4",
+      "eslint.config.js": "6e7941bb8fe228ebddb5ced447c10c9c",
+      "index.html": "c4c322792f83fb1c008c02f7eee581d4",
+      "package.json": "aeefb00bb43072e2599d70cd1a631409",
+      "postcss.config.js": "c735540bb63936a123bc867d950c9f69",
+      "public/favicon.png": "6d53af912fcde6ca920667099dc290dd",
+      "public/llms.txt": "2e80f7df80a3edb49d60d19674c6b207",
+      "public/menu/beef-ribs.jpg": "4c65b77859b73321b4a67a5232699f22",
+      "public/menu/chopped-beef-sandwich-combo.jpg": "159df54f68a05f100da77053c14ff677",
+      "public/menu/sliced-brisket.jpg": "bffca618af17ce8ab16fa3b3c1ff1d5f",
+      "public/menu/smoked-chicken-wings.jpg": "f232bde94aa07438eb60978bd03483e0",
+      "public/placeholder.svg": "b501d7dff3280ac829c321fe854d99d0",
+      "public/robots.txt": "a72f649c20ef76228e6c412cfd3a850f",
+      "public/sitemap.xml": "3917f1bcaaee14ec7fa61d663f2fd478",
+      "roadmap.md": "975be4525ba7bdd886365ea326865536",
+      "scripts/export-design-system.ts": "6f32cc6e5137f1084c748b462d03adb9",
+      "scripts/export-figma-tokens.ts": "55a4ab83b1b819ba86e37309d11f1a19",
+      "scripts/export-zip.ts": "cf0ddf5fcb8543174d70162c22c78f58",
+      "scripts/generate-sitemap.ts": "dbaa9dce7d994453f2b9f76db20f6414",
+      "src/App.css": "3061aee6b63300763d91be8ff5432a42",
+      "src/App.tsx": "7998db5105f80ee0a3627bb7acc5e37d",
+      "src/assets/facebook-cover.jpg": "0719100bb26d237fdd3339f0842247ea",
+      "src/assets/facebook-event-cover.jpg": "28d072a924b21a8768639bb966619241",
+      "src/assets/facebook-post-catering.jpg": "1ac621a79f1ac858c0ade88929754abd",
+      "src/assets/facebook-post-hours.jpg": "d4b300933c1f7d462afdbe7956c05bb3",
+      "src/assets/facebook-post-special.jpg": "c6ce57c1e8005a99f54280873f67904e",
+      "src/assets/facebook-profile.jpg": "af0166d946f49eb255e0a87e10b91939",
+      "src/assets/hero-bbq.jpg": "c715be3e41a9f9a9d65b5dd212ff0ebc",
+      "src/assets/logo.png": "6781bde5aaa0eabd01c5ac1b27c8362d",
+      "src/assets/menu-reference.png": "455bed350e83cfb39c61956aae33ac8e",
+      "src/assets/menu/burnt-ends.jpg": "a00e6ff63f5a4d6bee6dabbc3441bdb0",
+      "src/assets/menu/dino-rib.jpg": "d45fe9b9d70a57ced05cbb59143d43cc",
+      "src/assets/menu/dinoritto.jpg": "01e00239b1591a69161c98baaa97511f",
+      "src/assets/menu/full-slab.jpg": "5bac61fdee49dc624fbe4528c43506a7",
+      "src/assets/menu/half-slab.jpg": "d44a80ad2716d2757e888fb864c33008",
+      "src/assets/menu/pulled-pork-sandwich.jpg": "d9642c83cf3e93aa900cacab3d3da088",
+      "src/assets/menu/rib-bones.jpg": "7fd5b9eeb523d25bfdbd28bc37a790e5",
+      "src/assets/menu/smoked-turkey-plate.jpg": "9689a98c178277acb19a118213f7b132",
+      "src/assets/smoke-texture.jpg": "c8803d6b0753bf798cd0902e2e44ac5f",
+      "src/components/NavLink.tsx": "8f7c178b4776787e58e1011855ca28f6",
+      "src/components/PaymentTestModeBanner.tsx": "728928a0398be5c308ba364ad91784bd",
+      "src/components/admin/AdminFormCard.tsx": "6ab07c902a90c31e355a6aed81f3e374",
+      "src/components/admin/ConfirmDeleteDialog.tsx": "f177e00543449c1f680034fc4f88b74c",
+      "src/components/admin/ContentFieldEditor.tsx": "0788bd49662ec297e293306f955e0a7f",
+      "src/components/admin/DevAdminSignIn.tsx": "bd0d860d8453599b65bb2c6a41c3b8a5",
+      "src/components/admin/ImageUploader.tsx": "eecf9a34c8f8edaee2f3255165c12387",
+      "src/components/admin/RequireSuperAdmin.tsx": "4b1d9f969bc8735ec1321c378f708168",
+      "src/components/admin/RoleBadge.tsx": "275ac764ae1a46893d19f0affa3bfacb",
+      "src/components/admin/SetPasswordDialog.tsx": "6f255b9527f4fcbe5c29bf32e10afd63",
+      "src/components/admin/SopFunctionIndex.tsx": "05a0b97609f70a1847ae8017d4da018b",
+      "src/components/admin/StatCard.tsx": "0cfd3dfc0da8ccbb7e5b4713a5cfe4a1",
+      "src/components/cart/AnimatedAddToCartButton.tsx": "706a20cfa8d745a2d3ff99d1d3a1db77",
+      "src/components/cart/AnimatedCartControls.tsx": "98d38c738a19b99ea54f38b2dfd51c6e",
+      "src/components/cart/CartDrawer.tsx": "86c36a0092b4eec2346baaefc626ae6a",
+      "src/components/cart/CartPulseBadge.tsx": "5a0128e6512463faab9989b8b4afc791",
+      "src/components/cart/FlyingCartLayer.tsx": "ec313a3a3ce16c57fdd6f9c28e6ad4f7",
+      "src/components/cart/SecureCheckoutButton.tsx": "98be7bdeff99dd1da7555a533617403b",
+      "src/components/cart/SecureCheckoutOverlay.tsx": "81108af42fc90d2bf770915c524e74f8",
+      "src/components/catering/CateringPackages.tsx": "c895a69d57669ec694e8aa3807c2e05f",
+      "src/components/checkout/SafetyCommitmentBlock.tsx": "15067a697ed0278891914734ba4d816b",
+      "src/components/checkout/StripeEmbeddedCheckout.tsx": "c7da44c57613599120ef00e0a672b050",
+      "src/components/home/CateringPreviewSection.tsx": "0e82ee8614dbdf0d1452b7dc9b29b3cb",
+      "src/components/home/CommunityHeroesSection.tsx": "dd7d6f7ca15faf9d7c3381f8f19d4ba9",
+      "src/components/home/ExperiencePreviewSection.tsx": "95381f4b492dac5a6dd0d0beaa7e7b51",
+      "src/components/home/FeaturedSpecialSection.tsx": "96e661e88bf47f9024434ae3131f58fa",
+      "src/components/home/HeroSection.tsx": "55bd8358d9dee084f40405fb47423862",
+      "src/components/home/LunchSpecialsSection.tsx": "066d0137006eca3e968162834bcf333d",
+      "src/components/home/ServiceAreaSection.tsx": "bf823a3d6c62984a5afb26a343852445",
+      "src/components/home/SignatureFavoritesSection.tsx": "1ced08302bb1dda086ddb3b023feab5a",
+      "src/components/home/UpcomingHolidaysSection.tsx": "72e10aa831ff7e3605af253d7dda3416",
+      "src/components/layout/Footer.tsx": "dc50a4f7312652a53df250f624c28e00",
+      "src/components/layout/Header.tsx": "1d3cf416ddf826b82d0acebcb82b47b3",
+      "src/components/layout/SiteLayout.tsx": "0c3d9f5b9fc54f97ba1db6daf2d8b144",
+      "src/components/layout/TopAlertBar.tsx": "0176cd6dd7c58c3b88662e9856779e40",
+      "src/components/menu/CateringCallout.tsx": "a9303e0046eedfd47a642406f2b87870",
+      "src/components/menu/OptionsPickerDialog.tsx": "1bf30f096b197f3a6478cc6cf0b76661",
+      "src/components/orders/OrderStatusTimeline.tsx": "8a45e313f4f7fcb499ba5ac98ba5cdfa",
+      "src/components/payments/CateringPaymentOptions.tsx": "9ca464c4976103a050a361e093781462",
+      "src/components/payments/CheckoutPaymentSelector.tsx": "cd7c8e0fc92cf6dd19e6b375b5101476",
+      "src/components/payments/ConnectorAutoTestCard.tsx": "4ff9a001cc307b564f7cea6da47e9ae3",
+      "src/components/payments/ConnectorTestResult.tsx": "e276cec65db7fc2716a4c514421b9f5c",
+      "src/components/payments/ManualPaymentInstructions.tsx": "6b59c4e3aab2d09efb702842922a99ec",
+      "src/components/payments/PaymentConnectorSettingsModal.tsx": "8e5046426a6ef385b29dd78f3b3fa743",
+      "src/components/payments/PaymentConnectorStatusBadge.tsx": "7df124aa2cea4a5ff852900f898baf70",
+      "src/components/payments/PaymentMethodToggle.tsx": "e3a4741736b9ea31c9740b585e935f63",
+      "src/components/payments/PaymentProviderCard.tsx": "14590df4a163b81e71c8c618506143ac",
+      "src/components/payments/PaymentTestPanel.tsx": "bbdaefbc1bde74934026de9c66431df7",
+      "src/components/retina/CategoryJumpBar.tsx": "ab3475e1d4a8184d499e69010f6e9c51",
+      "src/components/retina/FeaturedMenuCarousel.tsx": "af3d8bf6a03211f58b101414eb529b44",
+      "src/components/retina/FloatingCartButton.tsx": "59dcb4176afc82535253c98a0b8fddb4",
+      "src/components/retina/GlassSection.tsx": "bfafd66d16c8971063d4a651e9742b38",
+      "src/components/retina/OrderStatusBadge.tsx": "d1804bb74f2dcb029dc0aebd93c5a735",
+      "src/components/retina/RetinaMenuCard.tsx": "3c9b3b0528a35de5878dfd7e51d92009",
+      "src/components/retina/ReviewPhotoCard.tsx": "690f0456bddcac7b090ca59826e74a1d",
+      "src/components/retina/SmokeDivider.tsx": "078ac460969934ce87ca347608be7c0e",
+      "src/components/seo/Seo.tsx": "043fe93b9b27f79ada99a64c200e24f1",
+      "src/components/shared/PremiumButton.tsx": "5095c6587d76005d8e9a657c45af06f9",
+      "src/components/shared/PremiumCard.tsx": "acfbf64f7e3a7021ef42e0a95691da07",
+      "src/components/shared/SectionHeader.tsx": "fa467e63433a90eea89480788a43c29e",
+      "src/components/shared/SmokeDivider.tsx": "5529a1779e530389231be947588c0a17",
+      "src/components/shared/StatusBadge.tsx": "a234451927074c7af78a2c013218ef07",
+      "src/components/specials/SpecialCard.tsx": "3298e59d5dcffe71ea92b5bdb2c99ff2",
+      "src/components/ui/ShimmerButton.tsx": "b43e7a834b66282e649e794df9b9f7d8",
+      "src/components/ui/SmokeBackground.tsx": "2140cdb7594a9eafbbfa3eea257f0d25",
+      "src/components/ui/accordion.tsx": "f9ebb6ee913b44e5f3e06fe1d9679784",
+      "src/components/ui/alert-dialog.tsx": "2ee6c5e5e070315114319bc060d17a52",
+      "src/components/ui/alert.tsx": "354d0206f924d48bcebbb023c3940a6b",
+      "src/components/ui/aspect-ratio.tsx": "c5c364545e1b25a94e9e752cd67ad048",
+      "src/components/ui/avatar.tsx": "53921dca0903c74cd72fada89388d9f8",
+      "src/components/ui/badge.tsx": "8db4e6d330f88f4041f81e7cde43782b",
+      "src/components/ui/breadcrumb.tsx": "c200fc41e9b214ebb6ccd19a300c42c5",
+      "src/components/ui/button.tsx": "b59f5a3c54b63cf3ea4eb2523151f617",
+      "src/components/ui/calendar.tsx": "1da7a387f28cdb11722da319c0295a6c",
+      "src/components/ui/card.tsx": "202402023747c80d975f48b906e6eb1b",
+      "src/components/ui/carousel.tsx": "63a7442a3088b58113c8a8cfc1defe26",
+      "src/components/ui/chart.tsx": "29cfd7470f3197deccd58b2b4f00fbae",
+      "src/components/ui/checkbox.tsx": "cb12d2f3410761f7a678add95c90ac5d",
+      "src/components/ui/collapsible.tsx": "934b00582dae08af749fb55469081de6",
+      "src/components/ui/command.tsx": "e911f182b4136a63c601c3fc48b2e9c7",
+      "src/components/ui/context-menu.tsx": "9b8e8efdf0456cd542e32d341b071cac",
+      "src/components/ui/dialog.tsx": "fc3a9626ba52435552c93ac3a74374ec",
+      "src/components/ui/drawer.tsx": "05e2b536fe11649e9b4c6e73678e32a6",
+      "src/components/ui/dropdown-menu.tsx": "f308eb98a2e21bf8bd1e30dbcb741dc0",
+      "src/components/ui/form.tsx": "4bb820d59aad3ee5bc78097596298ace",
+      "src/components/ui/hover-card.tsx": "f77f80ed64ff8f3549e5d7e9d837e08e",
+      "src/components/ui/input-otp.tsx": "3fb5994635434d5168bee869689fc2aa",
+      "src/components/ui/input.tsx": "b8279d768c2a1ce78a05a369a0502877",
+      "src/components/ui/label.tsx": "cd2b2255bbe519cb0865dfeaa6615797",
+      "src/components/ui/menubar.tsx": "163c3fa58a2b4ea2caa00166f4d862c7",
+      "src/components/ui/navigation-menu.tsx": "77e94b0c299d10c3763d2755bf556916",
+      "src/components/ui/pagination.tsx": "a3ced9f9b19826b467d788b1bf01746f",
+      "src/components/ui/popover.tsx": "c056d22288a642b756b77c7691ad4532",
+      "src/components/ui/progress.tsx": "9a8b05beca19e008a562a10e489f5968",
+      "src/components/ui/radio-group.tsx": "3773798b5b2f334a5db0dc9c8d06f1b8",
+      "src/components/ui/resizable.tsx": "ec681e92cbe705b5571ded11b5227a2a",
+      "src/components/ui/scroll-area.tsx": "cfbc224001af0e6daba676de225a2a47",
+      "src/components/ui/select.tsx": "25de64d0126624cbd8efa50cfb64bd21",
+      "src/components/ui/separator.tsx": "ed1101f185e9dc801712593e3330a75d",
+      "src/components/ui/sheet.tsx": "3660be09e2e40467a22fd46b354c1b50",
+      "src/components/ui/sidebar.tsx": "9eab1256b1ffe3f1336eebfd07b319c9",
+      "src/components/ui/skeleton.tsx": "c55f76f4faa1d6e888dbc51d41eaa586",
+      "src/components/ui/slider.tsx": "e3bf7b6116ddbdbe8c7b3597d07daee0",
+      "src/components/ui/sonner.tsx": "88644703cc00886c56e0e3b7df0e21d8",
+      "src/components/ui/switch.tsx": "eccd8c41c46e782eaaa1f8be0111e089",
+      "src/components/ui/table.tsx": "d0ff87c4734c23839337811378ad07df",
+      "src/components/ui/tabs.tsx": "26b15e1ffce0f831be4da95b8f8a43df",
+      "src/components/ui/textarea.tsx": "29ab470ee59e9da5070d4fba251bce81",
+      "src/components/ui/toast.tsx": "7c08b5cb6026058514672a4ebc53847e",
+      "src/components/ui/toaster.tsx": "1903846ab268620de6356ef667e3fa21",
+      "src/components/ui/toggle-group.tsx": "e82bf234e3877ad708ea3d1dba614def",
+      "src/components/ui/toggle.tsx": "ff7a7deebff23c3488e79ad72ee47e4b",
+      "src/components/ui/tooltip.tsx": "d7e923341b9e91d77db45ba5f2fa0cf9",
+      "src/components/ui/use-toast.ts": "4f094014a1315ca1081cbdc7f78d55cc",
+      "src/context/AdminAuthProvider.tsx": "f3690eb60631aa561b569992d60547e5",
+      "src/data/adminSopGuide.ts": "aafa6a40cc7e87900c8d13ce01edee0c",
+      "src/data/cateringData.ts": "48eb14f9b34b09bb3e580eb7a8ade9e2",
+      "src/data/holidayData.ts": "677cc9fb426b8f6ddd737ac337df52e4",
+      "src/data/homepageLayout.ts": "6f6f13dee64d8f9446e3d9e4dc98812f",
+      "src/data/menuData.ts": "ad18ccf2d24a836b598abe48a710c709",
+      "src/data/serviceAreaData.ts": "c72f18ab6114dc7b038164bd06202110",
+      "src/data/siteContent.ts": "2cdc1022b7312ed87e67d5e487988fba",
+      "src/data/specialsData.ts": "c4128c1f6f6caa5a4e0e08b5dd4599e1",
+      "src/data/theme.ts": "4b7e5953448017b47fb922749c8e2bd3",
+      "src/hooks/use-mobile.tsx": "c0a0bdd4638c391a1dd06ac82074e60b",
+      "src/hooks/use-toast.ts": "e706bc004c87e17db559a113637eddea",
+      "src/hooks/useAuth.ts": "86877c0e7e8f7f9050ac7a6a711bda29",
+      "src/hooks/useCommunityDiscount.ts": "e59a7925d8b0e9ae9dd0746e565c10d3",
+      "src/hooks/useEditableContent.tsx": "a40a5641a87314a1b07e6798c0f4300a",
+      "src/hooks/useHolidayEvents.ts": "921c9c7920a46adbb257d1aa2434cbd4",
+      "src/hooks/useMenuData.ts": "793e1a63346782390bafed85fbee5e96",
+      "src/hooks/usePaymentConnectors.ts": "1dda6ee2795dc6089dff1c4c7002236b",
+      "src/hooks/useSpecials.ts": "59be12c5ff03ee7feccb99fd4533bed4",
+      "src/index.css": "c74cbc212e4a29b9ed1e51b5f26096fc",
+      "src/integrations/supabase/client.ts": "ea731aa7f857b1b89542717c662d05c0",
+      "src/integrations/supabase/previewAuthStorage.ts": "315e4ae3473d92766e0d6d4d83945aef",
+      "src/integrations/supabase/types.ts": "af6a73050dce26fd768fff992252808f",
+      "src/lib/adminAccessLog.ts": "182cebf3e864b6e8fceaf0680ba65369",
+      "src/lib/checkoutRules.test.ts": "ab1e1d1654ba33733742650c5cb308b5",
+      "src/lib/contentOverrides.ts": "33d54f1c26a02c32fbf288ea09bb0bca",
+      "src/lib/contentValues.ts": "ab19081b124fde09fe145d97f5875881",
+      "src/lib/errors.ts": "8a2bfaa38783bfa88b1859f2871fae90",
+      "src/lib/holidays.ts": "c2bf63f9721949f650c1b0509f019401",
+      "src/lib/paymentConnectors.ts": "fa0fc5adbca277b5881a130a1d9617f8",
+      "src/lib/promo.test.ts": "749eeb27ecd0867846d686a23a68994c",
+      "src/lib/promo.ts": "d054f8188c336c212be086fab8ae2f72",
+      "src/lib/sopExport.ts": "12bb91b0a5bf2d5befaed523e9f67365",
+      "src/lib/specials.ts": "539b146ba905e0751ee58daf93b325c9",
+      "src/lib/storagePaths.ts": "0f25dfca0c52610295ec515d1a3d3607",
+      "src/lib/streamImage.test.ts": "61d788438f99ca23a308bb8286a0948d",
+      "src/lib/streamImage.ts": "50c31849de6c2f3aad113824a56c8f56",
+      "src/lib/stripe.ts": "2a4a48c68bf8d59166f06674b11b8646",
+      "src/lib/utils.ts": "d9837f38cc05303254571985e3164050",
+      "src/lib/visitorId.ts": "c5985fd51120edea356feee643496ae7",
+      "src/main.tsx": "54db5c0e98b4bc3cc4f6f58bcff0b319",
+      "src/pages/Account.tsx": "ff62e0a87250e892808f422ffa78b539",
+      "src/pages/Auth.tsx": "8c01b84f67623d95b63d3454408e12f5",
+      "src/pages/Catering.tsx": "4602d5a395e133d0dd253f60f1a3bf49",
+      "src/pages/ChangePassword.tsx": "66a0cee64c32c841c045011d69aa85d1",
+      "src/pages/Checkout.tsx": "f4c768473e04083b1aeaed9606843e7c",
+      "src/pages/CheckoutCancel.tsx": "5d459287c1bb7da35b8ee28018122321",
+      "src/pages/CheckoutSuccess.tsx": "583b513de53678075188dfe07506a1c9",
+      "src/pages/Contact.tsx": "95b7128f8c3030a6a24b886625b19738",
+      "src/pages/HolidayCalendar.tsx": "9c05af9b2d3bde5ce5153b6b450114ce",
+      "src/pages/Home.tsx": "4ccbe70907a201bc5956b9f3b9f8759a",
+      "src/pages/Index.tsx": "59d9a57671174292bfbfa4b88a17440a",
+      "src/pages/Menu.tsx": "1ba7d4cab49d41c8f7141d635696a7d3",
+      "src/pages/NotFound.tsx": "233617e24ded7876ea905f003f0f2889",
+      "src/pages/OrderConfirmation.tsx": "e929c014b44c976671bacdd696de9e25",
+      "src/pages/OrderStatus.tsx": "e9218f055ce7106fb6583762781536b1",
+      "src/pages/Reviews.tsx": "b8492a3409e9347803e9f8d1c51ea453",
+      "src/pages/Specials.tsx": "d9bb609fc549890c65a74fc5b942bdfd",
+      "src/pages/Unsubscribe.tsx": "13f7a89f2d03edb23968d43bd9e87b05",
+      "src/pages/admin/AdminCategories.tsx": "88d463964f3af77182e20862d4489d13",
+      "src/pages/admin/AdminCatering.tsx": "1affb5acda7940cc1b73da464e112552",
+      "src/pages/admin/AdminContact.tsx": "8605dd9c696a93fe39b7739a649fd0d1",
+      "src/pages/admin/AdminContent.tsx": "b7d3925931f0a4672cada509f762d4f2",
+      "src/pages/admin/AdminDashboard.tsx": "9348487d4275c021c53ea86789ad02c2",
+      "src/pages/admin/AdminGitHub.tsx": "8d7704c3e11078d306b255f7f1cc9353",
+      "src/pages/admin/AdminHolidayCalendar.tsx": "bbb806c0b15369d3bde2e23d379c24ad",
+      "src/pages/admin/AdminHomepage.tsx": "d4bddc3edf2fd0cdbba985ba0e77f5b6",
+      "src/pages/admin/AdminLayout.tsx": "2674865c3cb7304a57b0811199200afd",
+      "src/pages/admin/AdminLogin.tsx": "18bc55b435ea5d43de50ced605dbad65",
+      "src/pages/admin/AdminLunchSpecials.tsx": "7a0c56ec6e43cebae1dff75b495d3bf1",
+      "src/pages/admin/AdminMenu.tsx": "2a0a16e40c28e039cf587f8412e122fc",
+      "src/pages/admin/AdminOrders.tsx": "5c7c1a6e130a9f287e28996bf3ad6a65",
+      "src/pages/admin/AdminPayments.tsx": "4042a98c6cef6d9e8077e3b137170afb",
+      "src/pages/admin/AdminPromoImages.tsx": "284a6bf2129aac5cf4715c51f0fe4560",
+      "src/pages/admin/AdminReviews.tsx": "24364995e83bb1a90900f54c068ba671",
+      "src/pages/admin/AdminSOP.tsx": "72536ebcd346c5515531384f7ce6576c",
+      "src/pages/admin/AdminServiceArea.tsx": "b1def1b197db7850f3653c1720a37736",
+      "src/pages/admin/AdminSettings.tsx": "0a0c44ed758a5e2cba50963e46a3da70",
+      "src/pages/admin/AdminSpecials.tsx": "dbec32754a2cf77edd735cdb94ac3d32",
+      "src/pages/admin/AdminStorage.tsx": "eea4678f84cbbae6e9d46ce65c56e64e",
+      "src/pages/admin/AdminUsers.tsx": "8345fd2ce33ff856492a55a169f10ee7",
+      "src/pages/admin/PaymentConnectorsPage.tsx": "c63107e6b85604b930fa9ee2be466eae",
+      "src/store/cart.ts": "5a2cdcba2d717224c2469324f59296c2",
+      "src/store/cartUi.ts": "ad977e5f8ce4cb39f6ec409a5024ef37",
+      "src/test/example.test.ts": "f7aec10728902324d57cf05ee8a8e57e",
+      "src/test/setup.ts": "3ed816a7adf0e76610ce76bd32744ea0",
+      "src/types/orders.ts": "bdff498483ec7bf148d668fe5d4e97c4",
+      "src/vite-env.d.ts": "0352474ba2918efe13895edbc3780d94",
+      "supabase/config.toml": "ac3ffe935e9c68e8ad4cdec9541256f9",
+      "supabase/functions/_shared/checkoutRules.ts": "96938035d65b253e900a194898e4047e",
+      "supabase/functions/_shared/connectorChecks.ts": "ba233cc96f9e603c346b1c16ee915a4b",
+      "supabase/functions/_shared/promoImageGateway.ts": "c26b5cd17d1098ba9636527f3c49e27a",
+      "supabase/functions/_shared/stripe.ts": "21637b13ed4cb30d8470e665490b3058",
+      "supabase/functions/_shared/transactional-email-templates/admin-order-notification.tsx": "5a99cb51119e29fd6ac4388cb9d1dbb1",
+      "supabase/functions/_shared/transactional-email-templates/order-receipt.tsx": "85831357253e3f204e2a40f5fc65a539",
+      "supabase/functions/_shared/transactional-email-templates/registry.ts": "a99773cb40f93ce8e02a1edcfe2b1fe2",
+      "supabase/functions/admin-set-password/index.ts": "ab203e9d5c41146fff62bd0be57377c0",
+      "supabase/functions/create-checkout-session/index.ts": "81803580509800390912ce7f006ab1d9",
+      "supabase/functions/create-payment-session/index.ts": "6681475e9da3a6bb1888b6c6db2b4df9",
+      "supabase/functions/github-status/index.ts": "8079fc7163141163df779ad413bac30d",
+      "supabase/functions/handle-email-suppression/deno.json": "99914b932bd37a50b983c5e7c90ae93b",
+      "supabase/functions/handle-email-suppression/index.ts": "c081b1fde057dca57dba0509e80264c8",
+      "supabase/functions/handle-email-unsubscribe/deno.json": "99914b932bd37a50b983c5e7c90ae93b",
+      "supabase/functions/handle-email-unsubscribe/index.ts": "8492998493b536b22a1e380354236e2a",
+      "supabase/functions/health/index.ts": "799354e9359f316c14e9c76e8035b08f",
+      "supabase/functions/payment-webhook-router/index.ts": "a1514a728b07a3d18f1c93bde26daa53",
+      "supabase/functions/payments-webhook/index.ts": "fcead993cf3212c8b2c67921e406d142",
+      "supabase/functions/paypal-capture-order/index.ts": "5a1ed18b02b8304e7f2bfa27fd1ef643",
+      "supabase/functions/paypal-create-order/index.ts": "b29726de66cf1ad04ad16ce05c6b9c67",
+      "supabase/functions/preview-transactional-email/deno.json": "49c76feeb30a2d17f086296c45c282d4",
+      "supabase/functions/preview-transactional-email/index.ts": "c9dec1b54d5a5f58e107980933b9446e",
+      "supabase/functions/process-email-queue/deno.json": "99914b932bd37a50b983c5e7c90ae93b",
+      "supabase/functions/process-email-queue/index.ts": "06e11fbc74840b716a1346e37716e2e4",
+      "supabase/functions/promo-image/index.ts": "a9a3de062f0eb4fc92777a41f9628250",
+      "supabase/functions/send-order-emails/index.ts": "225e7b869062955fbf5aba5eb09d043c",
+      "supabase/functions/send-transactional-email/deno.json": "49c76feeb30a2d17f086296c45c282d4",
+      "supabase/functions/send-transactional-email/index.ts": "723c2b56925092fdb36dbd4cd169a5f1",
+      "supabase/functions/square-create-payment/index.ts": "4605a85f292fc54ff85a22738ad02744",
+      "supabase/functions/stripe-create-checkout-session/index.ts": "3a5983da8eb590e5c09e57ff56d1742b",
+      "supabase/functions/stripe-webhook/index.ts": "2d8353d2e6ee06b43bb2f1138dd0c8bc",
+      "supabase/functions/test-payment-connectors/index.ts": "3dd1a90e96fa24a3e356f487bdb9f9fb",
+      "supabase/migrations/20260501235527_078ed519-0087-4406-9d03-901d7d0c5210.sql": "f41ca48abfd192bdcc4d5e6a5f76edd4",
+      "supabase/migrations/20260501235550_392cc209-acbe-4045-9324-1a9c3b792cca.sql": "a5b6be6f1306ae6ac7f70d966dbdefb2",
+      "supabase/migrations/20260502001715_3729dea0-357a-41c3-87a1-d02ff52f7d59.sql": "96be16d38d03cbaf58c03da35dcbb018",
+      "supabase/migrations/20260502001734_42dba921-182d-4f80-81d4-2faeb2d7c856.sql": "3ef2be9b60b0f8e44c378289b77982ae",
+      "supabase/migrations/20260502001748_f22e8d37-cc36-4840-8044-81b0699a4dcb.sql": "798e73daf2096f9910c56f0867033f2e",
+      "supabase/migrations/20260502005227_c65ccf29-892a-4306-ae60-dd3069372f2b.sql": "558f14dbc1ec819dd0dd614fb7b1e9f5",
+      "supabase/migrations/20260502005957_fe4168d6-d92e-42b9-871f-30089a2a257a.sql": "89634a5595a630366f8a19953727b897",
+      "supabase/migrations/20260502010828_7c0ee16b-8b58-4f94-9b12-9e7e82a96010.sql": "e736474b9635afb98ca910d669b1b91b",
+      "supabase/migrations/20260503113443_dae7d120-ab84-4174-82a1-251c82c05a54.sql": "ba5018340f766c7cbbeb6facf56962a1",
+      "supabase/migrations/20260503121949_43456cec-205e-406e-9350-b9a352bee330.sql": "265d16fa7805961965a009d77ee1ec98",
+      "supabase/migrations/20260503122718_bc88c755-98ed-4512-b87e-adad50374cf8.sql": "676ffa3c5357524242e8b2c178bd651f",
+      "supabase/migrations/20260503150308_2f6e6b90-c338-4847-99f9-deb00eec48dc.sql": "84e704cec27154c8f0d43f5ca0e7b580",
+      "supabase/migrations/20260503150916_dfd29604-8b57-4339-b5a4-c69eca7b70ca.sql": "49e5ab5ef8598ac11ff481faefd07c49",
+      "supabase/migrations/20260503150953_78e6c487-1133-47ae-b5e8-85ea524922eb.sql": "19fbc7f94214e53033bfb5a00f9f0fc6",
+      "supabase/migrations/20260503171656_9d812ef6-78d6-4800-8530-6d21a6daf34c.sql": "c2b564a32f7d7094476cbb69cbd45792",
+      "supabase/migrations/20260503172849_48bd5d95-33ff-4e48-8aa5-dde484315ed0.sql": "4458c0398ee448ded11eaa883883ce5c",
+      "supabase/migrations/20260503220850_632a21df-0828-425c-b5a5-ad928e073ac9.sql": "a54dc01b8b076a6b6144a81d2a7e36f6",
+      "supabase/migrations/20260504003629_094d032a-0ff6-42d7-bcb3-551278b149ec.sql": "d8d9212e0e408b73555efb524753e13e",
+      "supabase/migrations/20260504005235_e9c6756b-06f3-401a-a031-0303e11b480f.sql": "f73673a1d9987374994f706531fb182c",
+      "supabase/migrations/20260504055844_9153ccb6-88fe-48ff-9017-69ff430f1179.sql": "5bd8f2a2943597e92dc3eb28d9d46675",
+      "supabase/migrations/20260504151851_87f3e5ad-2f97-4efc-853a-91edefc8ff07.sql": "f069075de5ccd164aa8b253ff04f6582",
+      "supabase/migrations/20260504223326_email_infra.sql": "dd8aec2dcdba5beafdc2c4e27ccd3e63",
+      "supabase/migrations/20260507021402_a17ca8e8-eda0-4091-b22b-cffdddb7dab7.sql": "4b3170e1f7814093a0596e6f6657f2f1",
+      "supabase/migrations/20260507023330_c50152e6-790d-4f02-b7bb-fe041e9d0c5f.sql": "337e352650c8b39719990f2ed460d495",
+      "supabase/migrations/20260509002654_a5dac1a0-3886-4b7a-a492-549155ebb4bf.sql": "180490039fd0bdc1c351497fa5b2e139",
+      "supabase/migrations/20260512015049_3d924a00-a305-494b-a48a-05a6af40021e.sql": "12f53f2981561763b772dace683854ec",
+      "supabase/migrations/20260806172539_0d730be4-d1e7-4290-bd75-daf2361a4429.sql": "c522fc28b1326b3cc67faad1fe47c8b5",
+      "supabase/migrations/20260806174621_9092b3ee-cf1e-410e-bdbe-70a59e6878b1.sql": "9d92507142858c0d12994bbf5c9d779d",
+      "supabase/migrations/20260807000131_1259258c-b7c0-4474-81b9-16c0848c53fc.sql": "b526784faf6198f253548b8cd6a8b453",
+      "supabase/migrations/20260807010930_ee62bb65-1f9e-4694-85df-7f07ac14df14.sql": "5c59c8c31fc465ba692347cf5f23ea02",
+      "supabase/migrations/20260807024416_1fa11c78-4520-472d-a36c-37c574b3172f.sql": "c2e332b1dc01052e966c9d89a65af636",
+      "supabase/migrations/20260807212025_cb869f14-0573-484c-b10a-520415cf9f11.sql": "da40432f6c0a9ccc3f8c088cf0d61196",
+      "supabase/migrations/20260807212501_a1a7ab79-9e58-4576-85c8-01211290e3db.sql": "3d0fbb4c87e774575053f0e90c45ccf6",
+      "supabase/migrations/20260807213253_f075ff67-e727-43a1-b830-28c5783c372c.sql": "e27fb5f3b31da5713db21ccdae5e909e",
+      "supabase/migrations/20260807215224_36e75f4d-b8b7-4aa4-8ca6-945424b127ac.sql": "2c35e334252aa201fae5907f0c2f29f0",
+      "supabase/migrations/20260807222321_5c12fec7-3e3b-45b5-81bb-a60191878d0e.sql": "d02e3d689da4757364a0ce85cc486574",
+      "supabase/migrations/20260808130542_62d55bce-150a-4f87-81a2-abc0c24c9d76.sql": "126397e8f2ffdbb3698c6990987ba509",
+      "supabase/migrations/20260808130607_18408b78-8637-40be-b48a-da12ee4fdd61.sql": "f83e2917c13c0d63851183039804261d",
+      "supabase/migrations/20260808130709_8354feae-e9f1-4b84-8940-3a38e8d53041.sql": "8a9d2503190002107558894d93f23ac0",
+      "supabase/migrations/20260810011417_d8621d33-a07f-4467-9714-4877fa0b6b31.sql": "ef86417987315ff665e356593e758f1b",
+      "supabase/migrations/20260810011748_85befe99-e783-41a3-b663-48635b10e3e6.sql": "b529826855bfb59fb9d6201229cfc415",
+      "tailwind.config.ts": "4912c803bc15aad262d7881daf434b73",
+      "tests/smoke.spec.ts": "b54b1d35c939784f714e27ed6ead9b37",
+      "tsconfig.app.json": "ba5729c7405efe54f489c8134bb19b9e",
+      "tsconfig.json": "7a1fa761227cbe0de8fe3ca14cc936ee",
+      "tsconfig.node.json": "1417fb05378a1d1102f085e60b20db0e",
+      "vite.config.ts": "9b0e06c88c24cd440aac4cc574fc3bbf",
+      "vitest.config.ts": "9285ab80c07d5cd1a71aa20c1687352a"
+    },
+    "pipeline_version": 8
+  },
+  "tokens": {
+    "color": [
+      {
+        "name": "--bbq-black",
+        "raw": "0 0% 4%",
+        "source": "src/index.css"
+      },
+      {
+        "name": "--bbq-charcoal",
+        "raw": "0 0% 11%",
+        "source": "src/index.css"
+      },
+      {
+        "name": "--bbq-smoke-dark",
+        "raw": "0 0% 17%",
+        "source": "src/index.css"
+      },
+      {
+        "name": "--bbq-smoke",
+        "raw": "0 0% 29%",
+        "source": "src/index.css"
+      },
+      {
+        "name": "--bbq-steel-gray",
+        "raw": "0 0% 42%",
+        "source": "src/index.css"
+      },
+      {
+        "name": "--bbq-white",
+        "raw": "0 0% 100%",
+        "source": "src/index.css"
+      },
+      {
+        "name": "--bbq-bone",
+        "raw": "0 0% 91%",
+        "source": "src/index.css"
+      },
+      {
+        "name": "--bbq-silver",
+        "raw": "210 2% 82%",
+        "source": "src/index.css"
+      },
+      {
+        "name": "--bbq-crimson",
+        "raw": "4 85% 31%",
+        "source": "src/index.css"
+      },
+      {
+        "name": "--bbq-deep-red",
+        "raw": "5 65% 26%",
+        "source": "src/index.css"
+      },
+      {
+        "name": "--bbq-ember",
+        "raw": "354 86% 40%",
+        "source": "src/index.css"
+      },
+      {
+        "name": "--bbq-gold",
+        "raw": "41 53% 54%",
+        "source": "src/index.css"
+      },
+      {
+        "name": "--bbq-soft-gold",
+        "raw": "44 65% 66%",
+        "source": "src/index.css"
+      },
+      {
+        "name": "--gradient-card",
+        "raw": "linear-gradient(180deg, hsl(var(--bbq-charcoal)), hsl(var(--bbq-black)))",
+        "source": "src/index.css"
+      }
+    ],
+    "radius": [
+      {
+        "name": "--radius",
+        "raw": "0.375rem",
+        "source": "src/index.css"
+      }
+    ],
+    "shadow": [
+      {
+        "name": "--shadow-ember",
+        "raw": "0 10px 40px -10px hsl(var(--bbq-crimson) / 0.4)",
+        "source": "src/index.css"
+      },
+      {
+        "name": "--shadow-card",
+        "raw": "0 8px 30px -12px hsl(0 0% 0% / 0.6)",
+        "source": "src/index.css"
+      },
+      {
+        "name": "--shadow-glow",
+        "raw": "0 0 60px hsl(var(--bbq-ember) / 0.25)",
+        "source": "src/index.css"
+      }
+    ],
+    "other": [
+      {
+        "name": "--gradient-hero",
+        "raw": "linear-gradient(135deg, hsl(var(--bbq-black) / 0.95), hsl(var(--bbq-black) / 0.85))",
+        "source": "src/index.css"
+      },
+      {
+        "name": "--gradient-ember",
+        "raw": "linear-gradient(135deg, hsl(var(--bbq-crimson)), hsl(var(--bbq-ember)))",
+        "source": "src/index.css"
+      },
+      {
+        "name": "--gradient-smoke",
+        "raw": "linear-gradient(180deg, hsl(var(--bbq-black)), hsl(var(--bbq-charcoal)))",
+        "source": "src/index.css"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "PaymentTestModeBanner",
+      "file": "src/components/PaymentTestModeBanner",
+      "import_path": ""
+    },
+    {
+      "name": "AdminFormCard",
+      "file": "src/components/admin/AdminFormCard",
+      "import_path": "",
+      "props": [
+        {
+          "name": "title",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "hint",
+          "type": "string"
+        },
+        {
+          "name": "action",
+          "type": "any"
+        },
+        {
+          "name": "children",
+          "type": "any",
+          "required": true
+        },
+        {
+          "name": "className",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "ConfirmDeleteDialog",
+      "file": "src/components/admin/ConfirmDeleteDialog",
+      "import_path": "",
+      "props": [
+        {
+          "name": "open",
+          "type": "boolean",
+          "required": true
+        },
+        {
+          "name": "onOpenChange",
+          "type": "function",
+          "required": true
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "default": "Delete this item?"
+        },
+        {
+          "name": "description",
+          "type": "string",
+          "default": "This can't be undone."
+        },
+        {
+          "name": "confirmLabel",
+          "type": "string",
+          "default": "Delete"
+        },
+        {
+          "name": "onConfirm",
+          "type": "function",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "ContentFieldEditor",
+      "file": "src/components/admin/ContentFieldEditor",
+      "import_path": "",
+      "props": [
+        {
+          "name": "value",
+          "type": "object",
+          "required": true
+        },
+        {
+          "name": "onChange",
+          "type": "function",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "DevAdminSignIn",
+      "file": "src/components/admin/DevAdminSignIn",
+      "import_path": "",
+      "props": [
+        {
+          "name": "onFill",
+          "type": "function",
+          "required": true
+        },
+        {
+          "name": "onSignIn",
+          "type": "function",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "ImageUploader",
+      "file": "src/components/admin/ImageUploader",
+      "import_path": "",
+      "props": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "onChange",
+          "type": "function",
+          "required": true
+        },
+        {
+          "name": "bucket",
+          "type": "any",
+          "default": "menu-images"
+        },
+        {
+          "name": "folder",
+          "type": "string",
+          "default": "uploads"
+        },
+        {
+          "name": "menu",
+          "type": "object"
+        },
+        {
+          "name": "sectionKey",
+          "type": "string"
+        },
+        {
+          "name": "special",
+          "type": "object"
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "default": "Photo"
+        },
+        {
+          "name": "className",
+          "type": "string"
+        },
+        {
+          "name": "showUrlField",
+          "type": "boolean",
+          "default": "true"
+        },
+        {
+          "name": "onUploaded",
+          "type": "function"
+        }
+      ]
+    },
+    {
+      "name": "RequireSuperAdmin",
+      "file": "src/components/admin/RequireSuperAdmin",
+      "import_path": ""
+    },
+    {
+      "name": "RoleBadge",
+      "file": "src/components/admin/RoleBadge",
+      "import_path": ""
+    },
+    {
+      "name": "SetPasswordDialog",
+      "file": "src/components/admin/SetPasswordDialog",
+      "import_path": "",
+      "props": [
+        {
+          "name": "open",
+          "type": "boolean",
+          "required": true
+        },
+        {
+          "name": "onOpenChange",
+          "type": "function",
+          "required": true
+        },
+        {
+          "name": "admin",
+          "type": "object",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "SopFunctionIndex",
+      "file": "src/components/admin/SopFunctionIndex",
+      "import_path": "",
+      "props": [
+        {
+          "name": "query",
+          "type": "string",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "StatCard",
+      "file": "src/components/admin/StatCard",
+      "import_path": "",
+      "props": [
+        {
+          "name": "label",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "value",
+          "type": "any",
+          "required": true
+        },
+        {
+          "name": "hint",
+          "type": "string"
+        },
+        {
+          "name": "icon",
+          "type": "any",
+          "required": true
+        },
+        {
+          "name": "to",
+          "type": "string"
+        },
+        {
+          "name": "tone",
+          "type": "enum",
+          "values": [
+            "primary",
+            "gold"
+          ],
+          "default": "primary"
+        }
+      ]
+    },
+    {
+      "name": "AnimatedAddToCartButton",
+      "file": "src/components/cart/AnimatedAddToCartButton",
+      "import_path": "",
+      "props": [
+        {
+          "name": "onAdd",
+          "type": "function",
+          "required": true
+        },
+        {
+          "name": "itemName",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "fly",
+          "type": "boolean",
+          "default": "true"
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "default": "inline-flex items-center justify-center gap-1.5"
+        },
+        {
+          "name": "children",
+          "type": "any",
+          "required": true
+        },
+        {
+          "name": "disabled",
+          "type": "boolean"
+        },
+        {
+          "name": "ariaLabel",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "AnimatedCartControls",
+      "file": "src/components/cart/AnimatedCartControls",
+      "import_path": "",
+      "props": [
+        {
+          "name": "itemName",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "onAdd",
+          "type": "function",
+          "required": true
+        },
+        {
+          "name": "fly",
+          "type": "boolean",
+          "default": "true"
+        },
+        {
+          "name": "silent",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "default": "inline-flex items-center justify-center gap-1.5"
+        },
+        {
+          "name": "children",
+          "type": "any",
+          "required": true
+        },
+        {
+          "name": "disabled",
+          "type": "boolean"
+        },
+        {
+          "name": "ariaLabel",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "CartDrawer",
+      "file": "src/components/cart/CartDrawer",
+      "import_path": ""
+    },
+    {
+      "name": "CartPulseBadge",
+      "file": "src/components/cart/CartPulseBadge",
+      "import_path": ""
+    },
+    {
+      "name": "FlyingCartLayer",
+      "file": "src/components/cart/FlyingCartLayer",
+      "import_path": ""
+    },
+    {
+      "name": "SecureCheckoutButton",
+      "file": "src/components/cart/SecureCheckoutButton",
+      "import_path": "",
+      "props": [
+        {
+          "name": "cartItems",
+          "type": "any"
+        },
+        {
+          "name": "customerInfo",
+          "type": "any"
+        },
+        {
+          "name": "onCheckout",
+          "type": "function"
+        },
+        {
+          "name": "onBeforeNavigate",
+          "type": "function"
+        },
+        {
+          "name": "disabled",
+          "type": "boolean"
+        },
+        {
+          "name": "className",
+          "type": "string"
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "default": "Secure Checkout"
+        }
+      ]
+    },
+    {
+      "name": "SecureCheckoutOverlay",
+      "file": "src/components/cart/SecureCheckoutOverlay",
+      "import_path": ""
+    },
+    {
+      "name": "CateringPackages",
+      "file": "src/components/catering/CateringPackages",
+      "import_path": ""
+    },
+    {
+      "name": "SafetyCommitmentBlock",
+      "file": "src/components/checkout/SafetyCommitmentBlock",
+      "import_path": ""
+    },
+    {
+      "name": "StripeEmbeddedCheckout",
+      "file": "src/components/checkout/StripeEmbeddedCheckout",
+      "import_path": "",
+      "props": [
+        {
+          "name": "cartItems",
+          "type": "any",
+          "required": true
+        },
+        {
+          "name": "customerInfo",
+          "type": "any",
+          "required": true
+        },
+        {
+          "name": "returnUrl",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "onError",
+          "type": "function"
+        }
+      ]
+    },
+    {
+      "name": "CateringPreviewSection",
+      "file": "src/components/home/CateringPreviewSection",
+      "import_path": ""
+    },
+    {
+      "name": "CommunityHeroesSection",
+      "file": "src/components/home/CommunityHeroesSection",
+      "import_path": ""
+    },
+    {
+      "name": "ExperiencePreviewSection",
+      "file": "src/components/home/ExperiencePreviewSection",
+      "import_path": ""
+    },
+    {
+      "name": "FeaturedSpecialSection",
+      "file": "src/components/home/FeaturedSpecialSection",
+      "import_path": ""
+    },
+    {
+      "name": "HeroSection",
+      "file": "src/components/home/HeroSection",
+      "import_path": ""
+    },
+    {
+      "name": "LunchSpecialsSection",
+      "file": "src/components/home/LunchSpecialsSection",
+      "import_path": ""
+    },
+    {
+      "name": "ServiceAreaSection",
+      "file": "src/components/home/ServiceAreaSection",
+      "import_path": ""
+    },
+    {
+      "name": "SignatureFavoritesSection",
+      "file": "src/components/home/SignatureFavoritesSection",
+      "import_path": ""
+    },
+    {
+      "name": "UpcomingHolidaysSection",
+      "file": "src/components/home/UpcomingHolidaysSection",
+      "import_path": ""
+    },
+    {
+      "name": "Footer",
+      "file": "src/components/layout/Footer",
+      "import_path": ""
+    },
+    {
+      "name": "Header",
+      "file": "src/components/layout/Header",
+      "import_path": ""
+    },
+    {
+      "name": "SiteLayout",
+      "file": "src/components/layout/SiteLayout",
+      "import_path": ""
+    },
+    {
+      "name": "TopAlertBar",
+      "file": "src/components/layout/TopAlertBar",
+      "import_path": ""
+    },
+    {
+      "name": "CateringCallout",
+      "file": "src/components/menu/CateringCallout",
+      "import_path": ""
+    },
+    {
+      "name": "OptionsPickerDialog",
+      "file": "src/components/menu/OptionsPickerDialog",
+      "import_path": "",
+      "props": [
+        {
+          "name": "open",
+          "type": "boolean",
+          "required": true
+        },
+        {
+          "name": "onOpenChange",
+          "type": "function",
+          "required": true
+        },
+        {
+          "name": "item",
+          "type": "object",
+          "required": true
+        },
+        {
+          "name": "onConfirm",
+          "type": "function",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "OrderStatusTimeline",
+      "file": "src/components/orders/OrderStatusTimeline",
+      "import_path": "",
+      "props": [
+        {
+          "name": "status",
+          "type": "string"
+        },
+        {
+          "name": "paymentStatus",
+          "type": "string"
+        },
+        {
+          "name": "className",
+          "type": "string",
+          "default": "h-5 w-5 text-destructive shrink-0 mt-0.5"
+        },
+        {
+          "name": "compact",
+          "type": "boolean"
+        }
+      ]
+    },
+    {
+      "name": "CheckoutPaymentSelector",
+      "file": "src/components/payments/CheckoutPaymentSelector",
+      "import_path": ""
+    },
+    {
+      "name": "ConnectorAutoTestCard",
+      "file": "src/components/payments/ConnectorAutoTestCard",
+      "import_path": ""
+    },
+    {
+      "name": "ManualPaymentInstructions",
+      "file": "src/components/payments/ManualPaymentInstructions",
+      "import_path": ""
+    },
+    {
+      "name": "PaymentConnectorSettingsModal",
+      "file": "src/components/payments/PaymentConnectorSettingsModal",
+      "import_path": ""
+    },
+    {
+      "name": "PaymentConnectorStatusBadge",
+      "file": "src/components/payments/PaymentConnectorStatusBadge",
+      "import_path": ""
+    },
+    {
+      "name": "PaymentMethodToggle",
+      "file": "src/components/payments/PaymentMethodToggle",
+      "import_path": ""
+    },
+    {
+      "name": "PaymentProviderCard",
+      "file": "src/components/payments/PaymentProviderCard",
+      "import_path": ""
+    },
+    {
+      "name": "PaymentTestPanel",
+      "file": "src/components/payments/PaymentTestPanel",
+      "import_path": ""
+    },
+    {
+      "name": "CategoryJumpBar",
+      "file": "src/components/retina/CategoryJumpBar",
+      "import_path": ""
+    },
+    {
+      "name": "FeaturedMenuCarousel",
+      "file": "src/components/retina/FeaturedMenuCarousel",
+      "import_path": ""
+    },
+    {
+      "name": "FloatingCartButton",
+      "file": "src/components/retina/FloatingCartButton",
+      "import_path": "",
+      "props": [
+        {
+          "name": "cartCount",
+          "type": "number",
+          "required": true
+        },
+        {
+          "name": "cartTotal",
+          "type": "number",
+          "default": "0"
+        },
+        {
+          "name": "isPulsing",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
+          "name": "onClick",
+          "type": "function",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "GlassSection",
+      "file": "src/components/retina/GlassSection",
+      "import_path": ""
+    },
+    {
+      "name": "OrderStatusBadge",
+      "file": "src/components/retina/OrderStatusBadge",
+      "import_path": ""
+    },
+    {
+      "name": "RetinaMenuCard",
+      "file": "src/components/retina/RetinaMenuCard",
+      "import_path": ""
+    },
+    {
+      "name": "ReviewPhotoCard",
+      "file": "src/components/retina/ReviewPhotoCard",
+      "import_path": ""
+    },
+    {
+      "name": "SmokeDivider",
+      "file": "src/components/retina/SmokeDivider",
+      "import_path": ""
+    },
+    {
+      "name": "Seo",
+      "file": "src/components/seo/Seo",
+      "import_path": "",
+      "props": [
+        {
+          "name": "title",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "description",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "path",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "type",
+          "type": "enum",
+          "values": [
+            "website",
+            "article"
+          ],
+          "default": "website"
+        },
+        {
+          "name": "jsonLd",
+          "type": "object"
+        }
+      ]
+    },
+    {
+      "name": "PremiumButton",
+      "file": "src/components/shared/PremiumButton",
+      "import_path": "",
+      "props": [
+        {
+          "name": "children",
+          "type": "any",
+          "required": true
+        },
+        {
+          "name": "variant",
+          "type": "enum",
+          "values": [
+            "primary",
+            "secondary",
+            "small"
+          ],
+          "default": "primary"
+        },
+        {
+          "name": "to",
+          "type": "string"
+        },
+        {
+          "name": "onClick",
+          "type": "function"
+        },
+        {
+          "name": "type",
+          "type": "enum",
+          "values": [
+            "button",
+            "submit"
+          ],
+          "default": "button"
+        },
+        {
+          "name": "disabled",
+          "type": "boolean"
+        },
+        {
+          "name": "fullWidth",
+          "type": "boolean"
+        },
+        {
+          "name": "className",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "PremiumCard",
+      "file": "src/components/shared/PremiumCard",
+      "import_path": "",
+      "props": [
+        {
+          "name": "children",
+          "type": "any",
+          "required": true
+        },
+        {
+          "name": "size",
+          "type": "enum",
+          "values": [
+            "base",
+            "compact"
+          ],
+          "default": "base"
+        },
+        {
+          "name": "hover",
+          "type": "boolean",
+          "default": "false"
+        },
+        {
+          "name": "className",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "SectionHeader",
+      "file": "src/components/shared/SectionHeader",
+      "import_path": "",
+      "props": [
+        {
+          "name": "badge",
+          "type": "string"
+        },
+        {
+          "name": "badgeIcon",
+          "type": "any"
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "required": true
+        },
+        {
+          "name": "subtitle",
+          "type": "string"
+        },
+        {
+          "name": "align",
+          "type": "enum",
+          "values": [
+            "center",
+            "left"
+          ],
+          "default": "center"
+        },
+        {
+          "name": "className",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "StatusBadge",
+      "file": "src/components/shared/StatusBadge",
+      "import_path": ""
+    },
+    {
+      "name": "SpecialCard",
+      "file": "src/components/specials/SpecialCard",
+      "import_path": ""
+    },
+    {
+      "name": "ShimmerButton",
+      "file": "src/components/ui/ShimmerButton",
+      "import_path": "",
+      "props": [
+        {
+          "name": "asChild",
+          "type": "boolean"
+        }
+      ]
+    },
+    {
+      "name": "SmokeBackground",
+      "file": "src/components/ui/SmokeBackground",
+      "import_path": ""
+    },
+    {
+      "name": "Accordion",
+      "file": "src/components/ui/accordion",
+      "import_path": ""
+    },
+    {
+      "name": "AccordionItem",
+      "file": "src/components/ui/accordion",
+      "import_path": ""
+    },
+    {
+      "name": "AccordionTrigger",
+      "file": "src/components/ui/accordion",
+      "import_path": ""
+    },
+    {
+      "name": "AccordionContent",
+      "file": "src/components/ui/accordion",
+      "import_path": ""
+    },
+    {
+      "name": "AlertDialog",
+      "file": "src/components/ui/alert-dialog",
+      "import_path": ""
+    },
+    {
+      "name": "AlertDialogPortal",
+      "file": "src/components/ui/alert-dialog",
+      "import_path": ""
+    },
+    {
+      "name": "AlertDialogOverlay",
+      "file": "src/components/ui/alert-dialog",
+      "import_path": ""
+    },
+    {
+      "name": "AlertDialogTrigger",
+      "file": "src/components/ui/alert-dialog",
+      "import_path": ""
+    },
+    {
+      "name": "AlertDialogContent",
+      "file": "src/components/ui/alert-dialog",
+      "import_path": ""
+    },
+    {
+      "name": "AlertDialogHeader",
+      "file": "src/components/ui/alert-dialog",
+      "import_path": ""
+    },
+    {
+      "name": "AlertDialogFooter",
+      "file": "src/components/ui/alert-dialog",
+      "import_path": ""
+    },
+    {
+      "name": "AlertDialogTitle",
+      "file": "src/components/ui/alert-dialog",
+      "import_path": ""
+    },
+    {
+      "name": "AlertDialogDescription",
+      "file": "src/components/ui/alert-dialog",
+      "import_path": ""
+    },
+    {
+      "name": "AlertDialogAction",
+      "file": "src/components/ui/alert-dialog",
+      "import_path": ""
+    },
+    {
+      "name": "AlertDialogCancel",
+      "file": "src/components/ui/alert-dialog",
+      "import_path": ""
+    },
+    {
+      "name": "Badge",
+      "file": "src/components/ui/badge",
+      "import_path": "",
+      "props": [
+        {
+          "name": "variant",
+          "type": "enum",
+          "values": [
+            "default",
+            "secondary",
+            "destructive",
+            "outline"
+          ],
+          "default": "default"
+        }
+      ]
+    },
+    {
+      "name": "Button",
+      "file": "src/components/ui/button",
+      "import_path": "",
+      "props": [
+        {
+          "name": "variant",
+          "type": "enum",
+          "values": [
+            "default",
+            "destructive",
+            "outline",
+            "secondary",
+            "ghost",
+            "link"
+          ],
+          "default": "default"
+        },
+        {
+          "name": "size",
+          "type": "enum",
+          "values": [
+            "default",
+            "sm",
+            "lg",
+            "icon"
+          ],
+          "default": "default"
+        },
+        {
+          "name": "asChild",
+          "type": "boolean",
+          "default": "false"
+        }
+      ]
+    },
+    {
+      "name": "Dialog",
+      "file": "src/components/ui/dialog",
+      "import_path": ""
+    },
+    {
+      "name": "DialogPortal",
+      "file": "src/components/ui/dialog",
+      "import_path": ""
+    },
+    {
+      "name": "DialogOverlay",
+      "file": "src/components/ui/dialog",
+      "import_path": ""
+    },
+    {
+      "name": "DialogClose",
+      "file": "src/components/ui/dialog",
+      "import_path": ""
+    },
+    {
+      "name": "DialogTrigger",
+      "file": "src/components/ui/dialog",
+      "import_path": ""
+    },
+    {
+      "name": "DialogContent",
+      "file": "src/components/ui/dialog",
+      "import_path": ""
+    },
+    {
+      "name": "DialogHeader",
+      "file": "src/components/ui/dialog",
+      "import_path": ""
+    },
+    {
+      "name": "DialogFooter",
+      "file": "src/components/ui/dialog",
+      "import_path": ""
+    },
+    {
+      "name": "DialogTitle",
+      "file": "src/components/ui/dialog",
+      "import_path": ""
+    },
+    {
+      "name": "DialogDescription",
+      "file": "src/components/ui/dialog",
+      "import_path": ""
+    },
+    {
+      "name": "Input",
+      "file": "src/components/ui/input",
+      "import_path": ""
+    },
+    {
+      "name": "Label",
+      "file": "src/components/ui/label",
+      "import_path": ""
+    },
+    {
+      "name": "Progress",
+      "file": "src/components/ui/progress",
+      "import_path": ""
+    },
+    {
+      "name": "Sheet",
+      "file": "src/components/ui/sheet",
+      "import_path": "",
+      "props": [
+        {
+          "name": "side",
+          "type": "enum",
+          "values": [
+            "top",
+            "bottom",
+            "left",
+            "right"
+          ],
+          "default": "right"
+        }
+      ]
+    },
+    {
+      "name": "SheetClose",
+      "file": "src/components/ui/sheet",
+      "import_path": ""
+    },
+    {
+      "name": "SheetContent",
+      "file": "src/components/ui/sheet",
+      "import_path": ""
+    },
+    {
+      "name": "SheetDescription",
+      "file": "src/components/ui/sheet",
+      "import_path": ""
+    },
+    {
+      "name": "SheetFooter",
+      "file": "src/components/ui/sheet",
+      "import_path": ""
+    },
+    {
+      "name": "SheetHeader",
+      "file": "src/components/ui/sheet",
+      "import_path": ""
+    },
+    {
+      "name": "SheetOverlay",
+      "file": "src/components/ui/sheet",
+      "import_path": ""
+    },
+    {
+      "name": "SheetPortal",
+      "file": "src/components/ui/sheet",
+      "import_path": ""
+    },
+    {
+      "name": "SheetTitle",
+      "file": "src/components/ui/sheet",
+      "import_path": ""
+    },
+    {
+      "name": "SheetTrigger",
+      "file": "src/components/ui/sheet",
+      "import_path": ""
+    },
+    {
+      "name": "Switch",
+      "file": "src/components/ui/switch",
+      "import_path": ""
+    },
+    {
+      "name": "Textarea",
+      "file": "src/components/ui/textarea",
+      "import_path": ""
+    },
+    {
+      "name": "ToastProvider",
+      "file": "src/components/ui/toast",
+      "import_path": ""
+    },
+    {
+      "name": "ToastViewport",
+      "file": "src/components/ui/toast",
+      "import_path": ""
+    },
+    {
+      "name": "Toast",
+      "file": "src/components/ui/toast",
+      "import_path": "",
+      "props": [
+        {
+          "name": "variant",
+          "type": "enum",
+          "values": [
+            "default",
+            "destructive"
+          ],
+          "default": "default"
+        }
+      ]
+    },
+    {
+      "name": "ToastTitle",
+      "file": "src/components/ui/toast",
+      "import_path": ""
+    },
+    {
+      "name": "ToastDescription",
+      "file": "src/components/ui/toast",
+      "import_path": ""
+    },
+    {
+      "name": "ToastClose",
+      "file": "src/components/ui/toast",
+      "import_path": ""
+    },
+    {
+      "name": "ToastAction",
+      "file": "src/components/ui/toast",
+      "import_path": ""
+    },
+    {
+      "name": "AdminAuthProvider",
+      "file": "src/context/AdminAuthProvider",
+      "import_path": ""
+    },
+    {
+      "name": "ContentProvider",
+      "file": "src/hooks/useEditableContent",
+      "import_path": ""
+    },
+    {
+      "name": "Constants",
+      "file": "src/integrations/supabase/types",
+      "import_path": ""
+    }
+  ],
+  "assets": [
+    {
+      "file": "src/assets/facebook-cover.jpg",
+      "kind": "image",
+      "format": "jpg"
+    },
+    {
+      "file": "src/assets/facebook-event-cover.jpg",
+      "kind": "image",
+      "format": "jpg"
+    },
+    {
+      "file": "src/assets/facebook-post-catering.jpg",
+      "kind": "image",
+      "format": "jpg"
+    },
+    {
+      "file": "src/assets/facebook-post-hours.jpg",
+      "kind": "image",
+      "format": "jpg"
+    },
+    {
+      "file": "src/assets/facebook-post-special.jpg",
+      "kind": "image",
+      "format": "jpg"
+    },
+    {
+      "file": "src/assets/facebook-profile.jpg",
+      "kind": "image",
+      "format": "jpg"
+    },
+    {
+      "file": "src/assets/hero-bbq.jpg",
+      "kind": "image",
+      "format": "jpg"
+    },
+    {
+      "file": "src/assets/logo.png",
+      "kind": "logo",
+      "format": "png"
+    },
+    {
+      "file": "src/assets/menu-reference.png",
+      "kind": "image",
+      "format": "png"
+    },
+    {
+      "file": "src/assets/menu/burnt-ends.jpg",
+      "kind": "image",
+      "format": "jpg"
+    },
+    {
+      "file": "src/assets/menu/dino-rib.jpg",
+      "kind": "image",
+      "format": "jpg"
+    },
+    {
+      "file": "src/assets/menu/dinoritto.jpg",
+      "kind": "image",
+      "format": "jpg"
+    },
+    {
+      "file": "src/assets/menu/full-slab.jpg",
+      "kind": "image",
+      "format": "jpg"
+    },
+    {
+      "file": "src/assets/menu/half-slab.jpg",
+      "kind": "image",
+      "format": "jpg"
+    },
+    {
+      "file": "src/assets/menu/pulled-pork-sandwich.jpg",
+      "kind": "image",
+      "format": "jpg"
+    },
+    {
+      "file": "src/assets/menu/rib-bones.jpg",
+      "kind": "image",
+      "format": "jpg"
+    },
+    {
+      "file": "src/assets/menu/smoked-turkey-plate.jpg",
+      "kind": "image",
+      "format": "jpg"
+    },
+    {
+      "file": "src/assets/smoke-texture.jpg",
+      "kind": "image",
+      "format": "jpg"
+    }
+  ]
+}
