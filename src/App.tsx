@@ -20,6 +20,7 @@ import { RequireSuperAdmin } from "./components/admin/RequireSuperAdmin";
 
 import AdminOrders from "./pages/admin/AdminOrders";
 import AdminMenu from "./pages/admin/AdminMenu";
+import AdminMenuHistory from "./pages/admin/AdminMenuHistory";
 import AdminCategories from "./pages/admin/AdminCategories";
 import AdminStorage from "./pages/admin/AdminStorage";
 import AdminReviews from "./pages/admin/AdminReviews";
@@ -80,6 +81,7 @@ const App = () => (
             <Route index element={<AdminDashboard />} />
             <Route path="orders" element={<AdminOrders />} />
             <Route path="menu" element={<AdminMenu />} />
+            <Route path="menu-history" element={<AdminMenuHistory />} />
             <Route path="categories" element={<AdminCategories />} />
             <Route path="storage" element={<AdminStorage />} />
             <Route path="specials" element={<AdminSpecials />} />
