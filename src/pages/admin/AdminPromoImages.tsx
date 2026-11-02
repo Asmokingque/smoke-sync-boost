@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FunctionsHttpError } from "@supabase/supabase-js";
+import { streamImage } from "@/lib/streamImage";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -22,18 +22,22 @@ const AdminPromoImages = () => {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  const [isFinal, setIsFinal] = useState(false);
 
   const generate = async () => {
-    setLoading(true); setErr(null);
-    const { data, error } = await supabase.functions.invoke("promo-image", { body: { prompt, size } });
-    if (error) {
-      let msg = error.message;
-      if (error instanceof FunctionsHttpError) {
-        try { msg = (await error.context.json()).error ?? msg; } catch { /* keep */ }
-      }
-      setErr(msg);
-    } else setImage(data.image);
-    setLoading(false);
+    setLoading(true); setErr(null); setImage(null); setIsFinal(false);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error("Please sign in again to generate images.");
+      await streamImage(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/promo-image`, { prompt, size },
+        (url, final) => { setImage(url); setIsFinal(final); }, undefined,
+        { Authorization: `Bearer ${session.access_token}`, apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY });
+    } catch (error) {
+      setErr(error instanceof Error ? error.message : "Image generation failed.");
+      setImage(null); setIsFinal(false);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const save = async () => {
@@ -50,7 +54,7 @@ const AdminPromoImages = () => {
     <div className="space-y-6">
       <div>
         <h1 className="font-serif text-3xl text-foreground">Promo Images</h1>
-        <p className="text-muted-foreground">Create branded food and campaign images with Hugging Face.</p>
+        <p className="text-muted-foreground">Lovable AI · Uses workspace AI credits</p>
       </div>
       <Card>
         <CardHeader><CardTitle>Describe your image</CardTitle></CardHeader>
@@ -82,8 +86,8 @@ const AdminPromoImages = () => {
       {image && (
         <Card>
           <CardContent className="space-y-4 pt-6">
-            <img src={image} alt={prompt} className="mx-auto max-h-[600px] rounded-md" />
-            <div className="flex gap-3">
+            <img src={image} alt={prompt} className={`mx-auto max-h-[600px] rounded-md ${isFinal ? "" : "blur-lg"}`} />
+            {isFinal && !loading && <div className="flex gap-3">
               <Button variant="outline" asChild>
                 <a href={image} download="promo-image.png"><Download className="mr-2 h-4 w-4" />Download</a>
               </Button>
@@ -91,7 +95,7 @@ const AdminPromoImages = () => {
                 {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
                 Save to site images
               </Button>
-            </div>
+            </div>}
           </CardContent>
         </Card>
       )}
