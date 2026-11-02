@@ -2,7 +2,7 @@
   "meta": {
     "name": "BBQ Business Launch",
     "package": "@ws-tpnofyf7w9euqohcrhkq/8670264f-5376-4ce1-a599-daa2c984dcd4",
-    "version": "1.0.0",
+    "version": "2.0.0",
     "framework": "react",
     "css_framework": "tailwind",
     "starter_template": "custom_design_system_tailwind",
@@ -23,6 +23,8 @@
       ".github/workflows/issue.yml": "68b329da9893e34099c7d8ad5cb9c940",
       ".github/workflows/website-smoke-test.yml": "4494009b6bd4a548e8a4cc93b1f17728",
       ".gitignore": "d9566700e8535935d03c1583474d790c",
+      ".lovable/meta.yaml": "954a981e8847ec1692669dbb04ae9ae9",
+      ".lovable/sources.yaml": "a2b81ff106435d43ddef23d4112256d5",
       "AGENTS.md": "6531e1c39ad84737d3d6af1cff6a1acc",
       "CLONE-GUIDE.md": "f0bbea9cdeafe3dcf8f65f3dba2ff4f3",
       "README.md": "4fdcae58dda493b10ead055f9004986d",
