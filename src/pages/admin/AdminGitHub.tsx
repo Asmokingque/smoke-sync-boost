@@ -25,10 +25,11 @@ async function call<T>(body: object): Promise<T> {
 }
 
 const fmt = (d: string) => new Date(d).toLocaleString();
+const DEFAULT_REPOSITORY = "Asmokingque/smoke-sync-boost";
 
 const AdminGitHub = () => {
   const [repos, setRepos] = useState<RepoSummary[]>([]);
-  const [selected, setSelected] = useState<string>("");
+  const [selected, setSelected] = useState<string>(DEFAULT_REPOSITORY);
   const [repo, setRepo] = useState<RepoDetail | null>(null);
   const [commits, setCommits] = useState<Commit[]>([]);
   const [loading, setLoading] = useState(false);
@@ -36,7 +37,7 @@ const AdminGitHub = () => {
 
   useEffect(() => {
     call<{ repos: RepoSummary[] }>({})
-      .then((d) => { setRepos(d.repos); if (d.repos[0]) setSelected(d.repos[0].full_name); })
+      .then((d) => { setRepos(d.repos); })
       .catch((e) => setErr(e.message));
   }, []);
 
@@ -61,6 +62,9 @@ const AdminGitHub = () => {
           <Select value={selected} onValueChange={setSelected}>
             <SelectTrigger className="w-72"><SelectValue placeholder="Choose a repository" /></SelectTrigger>
             <SelectContent>
+              {!repos.some((r) => r.full_name.toLowerCase() === DEFAULT_REPOSITORY.toLowerCase()) && (
+                <SelectItem value={DEFAULT_REPOSITORY}>{DEFAULT_REPOSITORY}</SelectItem>
+              )}
               {repos.map((r) => <SelectItem key={r.full_name} value={r.full_name}>{r.full_name}</SelectItem>)}
             </SelectContent>
           </Select>
