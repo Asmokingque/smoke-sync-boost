@@ -19,6 +19,7 @@ const navItems: AdminNavItem[] = [
   { to: "/admin/menu", label: "Menu Manager", icon: UtensilsCrossed },
   { to: "/admin/categories", label: "Categories", icon: FolderTree },
   { to: "/admin/storage", label: "Storage / Images", icon: ImageIcon },
+  { to: "/admin/promo-images", label: "Promo Images", icon: Sparkles },
   { to: "/admin/specials", label: "Specials", icon: Sparkles },
   { to: "/admin/lunch-specials", label: "Lunch Specials", icon: Sandwich },
   { to: "/admin/holiday-calendar", label: "Holiday Calendar", icon: CalendarDays },

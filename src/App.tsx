@@ -34,6 +34,7 @@ import AdminHolidayCalendar from "./pages/admin/AdminHolidayCalendar";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminSOP from "./pages/admin/AdminSOP";
 import AdminGitHub from "./pages/admin/AdminGitHub";
+import AdminPromoImages from "./pages/admin/AdminPromoImages";
 import AdminContent from "./pages/admin/AdminContent";
 import AdminSettings from "./pages/admin/AdminSettings";
 import AdminPayments from "./pages/admin/AdminPayments";
@@ -89,6 +90,7 @@ const App = () => (
             <Route path="contact" element={<AdminContact />} />
             <Route path="sop" element={<AdminSOP />} />
             <Route path="github" element={<RequireSuperAdmin><AdminGitHub /></RequireSuperAdmin>} />
+            <Route path="promo-images" element={<AdminPromoImages />} />
             <Route path="homepage" element={<AdminHomepage />} />
             <Route path="service-area" element={<AdminServiceArea />} />
             <Route path="content" element={<RequireSuperAdmin><AdminContent /></RequireSuperAdmin>} />
